@@ -12,9 +12,8 @@ using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
 using Shaidow.Data;
-using PopupUI;
 using MauiPopup.Views;
-using App.Popup;
+
 
 
 namespace App
@@ -33,7 +32,7 @@ namespace App
         private readonly HttpClient httpClient = new HttpClient();
 
         private readonly string mistralApiUrl = "https://api.mistral-7b.com/v1/chat/completions";
-        
+
         private readonly string claudeApiUrl = "https://api.anthropic.com/v1/messages";
         private readonly string geminiApiUrl = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=AIzaSyCY630oJvwNHgE_fmN-ab9UKyI4A5oXi_c";
         private bool Isresponding = false;
@@ -58,6 +57,8 @@ namespace App
                 {2, HandleImgQuery},
                 {3, HandleCreativeQuery}
             };
+            Microsoft.Maui.Controls.Application.Current.UserAppTheme = AppTheme.Dark;
+            Preferences.Set("AppTheme", "Dark");
         }
 
         public async void UpdateLoadingIndicator()
@@ -74,6 +75,20 @@ namespace App
                 Spinner.IsVisible = false;
                 Spinner.IsRunning = false;
                 Spinner.TranslationX = 0;
+            }
+        }
+
+        private void OnLightModeClicked(object sender, EventArgs e)
+        {
+            if (Microsoft.Maui.Controls.Application.Current.UserAppTheme == AppTheme.Dark)
+            {
+                Microsoft.Maui.Controls.Application.Current.UserAppTheme = AppTheme.Light;
+                Preferences.Set("AppTheme", "Light");
+            }
+            else
+            {
+                Microsoft.Maui.Controls.Application.Current.UserAppTheme = AppTheme.Dark;
+                Preferences.Set("AppTheme", "Dark");
             }
         }
 
@@ -98,7 +113,7 @@ namespace App
                     if (!string.IsNullOrEmpty(response))
                     {
                         if (Uri.IsWellFormedUriString(response, UriKind.Absolute))
-                        chatMessages.Add(new ChatMessage { ImageUrl = response });
+                            chatMessages.Add(new ChatMessage { ImageUrl = response });
 
                     }
                 }
@@ -215,61 +230,61 @@ namespace App
         }
 
         private async Task<string> HandleInfoQuery(string query)
-{
-    Isresponding = true;
-    UpdateLoadingIndicator();
-    try
-    {
-        var requestBody = new
         {
-            model = "mistral-small",
-            messages = new[]
+            Isresponding = true;
+            UpdateLoadingIndicator();
+            try
             {
+                var requestBody = new
+                {
+                    model = "mistral-small",
+                    messages = new[]
+                    {
                 new { role = "system", content = "You are SHAIDOW, a powerful AI assistant using multiple free models. You are not Mistral. Only introduce yourself if asked." },
                 new { role = "user", content = query }
             }
-        };
+                };
 
-        string jsonBody = JsonSerializer.Serialize(requestBody);
-        var request = new HttpRequestMessage(HttpMethod.Post, mistralApiUrl)
-        {
-            Content = new StringContent(jsonBody, Encoding.UTF8, "application/json")
-        };
-        request.Headers.Add("Authorization", "Bearer wjy20ymt9gFt4EMgvD4ymjxpeMun1cVD");
+                string jsonBody = JsonSerializer.Serialize(requestBody);
+                var request = new HttpRequestMessage(HttpMethod.Post, mistralApiUrl)
+                {
+                    Content = new StringContent(jsonBody, Encoding.UTF8, "application/json")
+                };
+                request.Headers.Add("Authorization", "Bearer wjy20ymt9gFt4EMgvD4ymjxpeMun1cVD");
 
-        var response = await httpClient.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
-            return $"Mistral Info Query Error: {response.StatusCode}";
+                var response = await httpClient.SendAsync(request);
+                if (!response.IsSuccessStatusCode)
+                    return $"Mistral Info Query Error: {response.StatusCode}";
 
-        var responseBody = await response.Content.ReadAsStringAsync();
-        using var jsonDoc = JsonDocument.Parse(responseBody);
-        var text = jsonDoc.RootElement
-            .GetProperty("choices")[0]
-            .GetProperty("message")
-            .GetProperty("content")
-            .GetString();
+                var responseBody = await response.Content.ReadAsStringAsync();
+                using var jsonDoc = JsonDocument.Parse(responseBody);
+                var text = jsonDoc.RootElement
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
 
-        return text ?? "SHAIDOW couldn't generate a proper response.";
-    }
-    catch (Exception ex)
-    {
-        return $"Info Query Error: {ex.Message}";
-    }
-    finally
-    {
-        Isresponding = false;
-        UpdateLoadingIndicator();
-    }
-}
+                return text ?? "SHAIDOW couldn't generate a proper response.";
+            }
+            catch (Exception ex)
+            {
+                return $"Info Query Error: {ex.Message}";
+            }
+            finally
+            {
+                Isresponding = false;
+                UpdateLoadingIndicator();
+            }
+        }
 
 
 
         private async Task<string> HandleImgQuery(string query)
         {
-             Isresponding = true;
+            Isresponding = true;
             UpdateLoadingIndicator();
-            await popupservice.ShowPopupAsync(new ImagePopup(), "Generating Image...");
-            
+            //await popupservice.ShowPopupAsync(new ImagePopup(), "Generating Image...");
+
             try
             {
                 using var client = new HttpClient();
@@ -306,11 +321,11 @@ namespace App
                 Isresponding = false;
                 UpdateLoadingIndicator();
             }
-            
+
         }
 
 
-    
+
 
         private async Task<string> HandleCreativeQuery(string query)
         {

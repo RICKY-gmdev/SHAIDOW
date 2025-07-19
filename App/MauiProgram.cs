@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Plugin.Maui.Popup;
+using MauiPopup;
 
 namespace App;
 
@@ -11,7 +11,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
-			.UseMauiPopup()
+
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -19,7 +19,6 @@ public static class MauiProgram
 			});
 
 			
-
 
 #if DEBUG
 		builder.Logging.AddDebug();

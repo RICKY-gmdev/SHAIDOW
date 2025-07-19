@@ -59,7 +59,6 @@ D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\ap
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\appiconLogo.scale-100.png
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\appicon.ico
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\shaidow.scale-100.png
-D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\runtimes\win-x64\native\WebView2Loader.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\CoreMessagingXP.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\dcompi.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\dwmcorei.dll
@@ -470,3 +469,8 @@ D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\pr
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
+D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\imagehandler.scale-100.png
+D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\MauiPopup.dll
+D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\imagehandler.scale-100.png
+D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\themeswitch.scale-100.png
+D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\themeswitch.scale-100.png

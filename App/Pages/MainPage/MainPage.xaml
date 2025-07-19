@@ -3,10 +3,25 @@
              x:Class="App.MainPage">
     <Grid>
         <ScrollView>
-            <VerticalStackLayout Padding="30"
-                    Spacing="25"
-                    HorizontalOptions="Center">
 
+            <VerticalStackLayout Padding="30"
+                                 Spacing="25"
+                                 HorizontalOptions="Center">
+                <Grid>
+                    <Frame BackgroundColor="Transparent"
+                           BorderColor="LightGray"
+                           Padding="0"
+                           HorizontalOptions="End"
+                           VerticalOptions="Start">
+                        <Button ImageSource="themeswitch.png"
+                                HorizontalOptions="End"
+                                VerticalOptions="Start"
+                                WidthRequest="65"
+                                HeightRequest="65"
+                                BackgroundColor="Transparent"
+                                Clicked="OnLightModeClicked"/>
+                    </Frame>
+                </Grid>
                 <!-- Logo -->
                 <Image Source="shaidow.png"
                        WidthRequest="600"
@@ -45,12 +60,12 @@
                                         Padding="10">
                                     <StackLayout Padding="10">
                                         <Label Text="{Binding Text}"
-                                                TextColor="White"
-                                                IsVisible="{Binding IsText}"/>
+                                               TextColor="White"
+                                               IsVisible="{Binding IsText}"/>
                                         <Image Source="{Binding ImageUrl}"
-                                                HeightRequest="220"
-                                                Aspect="AspectFit"
-                                                IsVisible="{Binding IsImage}"/>
+                                               HeightRequest="220"
+                                               Aspect="AspectFit"
+                                               IsVisible="{Binding IsImage}"/>
                                     </StackLayout>
                                 </Border>
                             </ViewCell>
@@ -59,13 +74,13 @@
                 </ListView>
                 <!-- Input Box -->
                 <HorizontalStackLayout HorizontalOptions="Center"
-                        Spacing="10">
+                                       Spacing="10">
                     <Entry x:Name="UserInput"
                            Placeholder="Ask SHAIDOW AI..."
                            WidthRequest="250"
                            VerticalOptions="Center"
                            TextColor="cyan"
-                           Completed ="OnSendMessage"/>
+                           Completed="OnSendMessage"/>
                     <Button Text="Send"
                             Clicked="OnSendMessage"/>
                     <ActivityIndicator x:Name="Spinner"

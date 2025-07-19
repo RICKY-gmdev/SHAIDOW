@@ -30,12 +30,6 @@ build_metadata.AdditionalFiles.ManifestResourceName = App.AppShell.xaml
 build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
 build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
 
-[D:/programs/CSprograms/App/App/Pages/MainPage/ImagePopup.xaml]
-build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = App.Pages.MainPage.ImagePopup.xaml
-build_metadata.AdditionalFiles.TargetPath = Pages\MainPage\ImagePopup.xaml
-build_metadata.AdditionalFiles.RelativePath = Pages\MainPage\ImagePopup.xaml
-
 [D:/programs/CSprograms/App/App/Pages/MainPage/MainPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = App.Pages.MainPage.MainPage.xaml

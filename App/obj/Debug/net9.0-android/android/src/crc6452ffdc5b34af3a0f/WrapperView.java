@@ -10,12 +10,9 @@ public class WrapperView
 	public static final String __md_methods;
 	static {
 		__md_methods = 
-			"n_onDetachedFromWindow:()V:GetOnDetachedFromWindowHandler\n" +
 			"n_onLayout:(ZIIII)V:GetOnLayout_ZIIIIHandler\n" +
-			"n_requestLayout:()V:GetRequestLayoutHandler\n" +
 			"n_dispatchTouchEvent:(Landroid/view/MotionEvent;)Z:GetDispatchTouchEvent_Landroid_view_MotionEvent_Handler\n" +
 			"n_getClipPath:(II)Landroid/graphics/Path;:GetGetClipPath_IIHandler\n" +
-			"n_drawShadow:(Landroid/graphics/Canvas;II)V:GetDrawShadow_Landroid_graphics_Canvas_IIHandler\n" +
 			"n_getVisibility:()I:GetGetVisibilityHandler\n" +
 			"n_setVisibility:(I)V:GetSetVisibility_IHandler\n" +
 			"";
@@ -30,26 +27,12 @@ public class WrapperView
 		}
 	}
 
-	public void onDetachedFromWindow ()
-	{
-		n_onDetachedFromWindow ();
-	}
-
-	private native void n_onDetachedFromWindow ();
-
 	public void onLayout (boolean p0, int p1, int p2, int p3, int p4)
 	{
 		n_onLayout (p0, p1, p2, p3, p4);
 	}
 
 	private native void n_onLayout (boolean p0, int p1, int p2, int p3, int p4);
-
-	public void requestLayout ()
-	{
-		n_requestLayout ();
-	}
-
-	private native void n_requestLayout ();
 
 	public boolean dispatchTouchEvent (android.view.MotionEvent p0)
 	{
@@ -64,13 +47,6 @@ public class WrapperView
 	}
 
 	private native android.graphics.Path n_getClipPath (int p0, int p1);
-
-	public void drawShadow (android.graphics.Canvas p0, int p1, int p2)
-	{
-		n_drawShadow (p0, p1, p2);
-	}
-
-	private native void n_drawShadow (android.graphics.Canvas p0, int p1, int p2);
 
 	public int getVisibility ()
 	{
