@@ -8,19 +8,19 @@
                                  Spacing="25"
                                  HorizontalOptions="Center">
                 <Grid>
-                    <Frame BackgroundColor="Transparent"
-                           BorderColor="LightGray"
-                           Padding="0"
-                           HorizontalOptions="End"
-                           VerticalOptions="Start">
+                    <Border BackgroundColor="Transparent"
+                            Stroke="LightGray"
+                            Padding="0"
+                            HorizontalOptions="End"
+                            VerticalOptions="Start">
                         <Button ImageSource="themeswitch.png"
                                 HorizontalOptions="End"
                                 VerticalOptions="Start"
-                                WidthRequest="65"
-                                HeightRequest="65"
+                                WidthRequest="30"
+                                HeightRequest="30"
                                 BackgroundColor="Transparent"
                                 Clicked="OnLightModeClicked"/>
-                    </Frame>
+                    </Border>
                 </Grid>
                 <!-- Logo -->
                 <Image Source="shaidow.png"
@@ -46,32 +46,40 @@
 
                 <!-- Chat List -->
                 <ListView x:Name="ChatList"
-                          ItemsSource="{Binding chatMessages}"
+                          ItemsSource="{Binding ChatMessages}"
                           HasUnevenRows="True"
-                          Background="Transparent"
+                          BackgroundColor="Transparent"
                           SeparatorVisibility="None"
+                          SelectionMode="None"
                           VerticalOptions="FillAndExpand">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
+                                <!-- This Border provides the simple, black bubble style you preferred -->
                                 <Border Stroke="Black"
                                         StrokeShape="RoundRectangle 10"
                                         BackgroundColor="Black"
-                                        Padding="10">
+                                        Padding="10"
+                                        Margin="5,10">
                                     <StackLayout Padding="10">
+                                        <!-- Text View (Visible only if there is text) -->
                                         <Label Text="{Binding Text}"
+                                               IsVisible="{Binding IsText}"
                                                TextColor="White"
-                                               IsVisible="{Binding IsText}"/>
+                                               />
+
+                                        <!-- Image View (Visible only if there is an image URL) -->
                                         <Image Source="{Binding ImageUrl}"
-                                               HeightRequest="220"
-                                               Aspect="AspectFit"
-                                               IsVisible="{Binding IsImage}"/>
+                                               IsVisible="{Binding IsImage}"
+                                               HeightRequest="256"
+                                               Aspect="AspectFit"/>
                                     </StackLayout>
                                 </Border>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+
                 <!-- Input Box -->
                 <HorizontalStackLayout HorizontalOptions="Center"
                                        Spacing="10">

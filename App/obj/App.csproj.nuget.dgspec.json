@@ -75,6 +75,10 @@
               "version": "[9.0.0, )",
               "autoReferenced": true
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "OpenAI": {
               "target": "Package",
               "version": "[2.1.0, )"
@@ -131,6 +135,10 @@
               "target": "Package",
               "version": "[9.0.0, )",
               "autoReferenced": true
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "OpenAI": {
               "target": "Package",
@@ -189,6 +197,10 @@
               "version": "[9.0.0, )",
               "autoReferenced": true
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "OpenAI": {
               "target": "Package",
               "version": "[2.1.0, )"
@@ -240,6 +252,10 @@
             "Microsoft.Maui.Controls": {
               "target": "Package",
               "version": "[9.0.51, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "OpenAI": {
               "target": "Package",
