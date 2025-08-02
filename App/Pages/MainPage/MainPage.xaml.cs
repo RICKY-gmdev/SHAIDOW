@@ -53,92 +53,93 @@ namespace App
         }
 
         private async void OnSendMessage(object sender, EventArgs e)
-{
-    if (_isResponding) return;
-    var userMessageText = UserInput.Text?.Trim();
-    if (string.IsNullOrWhiteSpace(userMessageText)) return;
-
-    // 1. Add the user's message to the UI (this part is the same)
-    AddMessage(new ChatMessage { Author = "You", Text = userMessageText, Background = Colors.DarkCyan, Alignment = LayoutOptions.End });
-    UserInput.Text = string.Empty;
-
-    _isResponding = true;
-    UpdateLoadingIndicatorAnimated();
-
-    // --- LOGIC CHANGE STARTS HERE ---
-
-    // 2. We will build the AI's response in memory first, NOT in a placeholder
-    var responseTextBuilder = new StringBuilder();
-    string? finalImageUrl = null;
-    string? finalToolUsed = null;
-
-    try
-    {
-        // 3. Loop through the stream in the background
-        await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId))
         {
-            switch (response.Type)
+            if (_isResponding) return;
+            var userMessageText = UserInput.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(userMessageText)) return;
+
+            // 1. Add the user's message to the UI (this part is the same)
+            AddMessage(new ChatMessage { Author = "You", Text = userMessageText, Background = Colors.DarkCyan, Alignment = LayoutOptions.End });
+            UserInput.Text = string.Empty;
+
+            _isResponding = true;
+            UpdateLoadingIndicatorAnimated();
+
+            // --- LOGIC CHANGE STARTS HERE ---
+
+            // 2. We will build the AI's response in memory first, NOT in a placeholder
+            var responseTextBuilder = new StringBuilder();
+            string? finalImageUrl = null;
+            string? finalToolUsed = null;
+
+            try
             {
-                case "text_chunk":
-                    responseTextBuilder.Append(response.Content);
-                    break;
-                case "tool_start":
-                    finalToolUsed = response.Tool; // Keep track of the tool used
-                    break;
-                case "tool_end":
-                    responseTextBuilder.Clear(); // Clear any previous text
-                    if (response.Output != null)
+                // 3. Loop through the stream in the background
+                await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId))
+                {
+                    switch (response.Type)
                     {
-                        if (response.Output.StartsWith("IMAGE_URL::"))
-                        {
-                            finalImageUrl = response.Output.Substring("IMAGE_URL::".Length);
-                            responseTextBuilder.Append("Here is the image you requested:");
-                        }
-                        else
-                        {
-                            responseTextBuilder.Append(response.Output);
-                        }
+                        case "text_chunk":
+                            responseTextBuilder.Append(response.Content);
+                            break;
+                        case "tool_start":
+                            finalToolUsed = response.Tool; // Keep track of the tool used
+                            break;
+                        case "tool_end":
+                            responseTextBuilder.Clear(); // Clear any previous text
+                            if (response.Output != null)
+                            {
+                                if (response.Output.StartsWith("IMAGE_URL::"))
+                                {
+                                    finalImageUrl = response.Output.Substring("IMAGE_URL::".Length);
+                                    responseTextBuilder.Append("Here is the image you requested:");
+                                }
+                                else
+                                {
+                                    responseTextBuilder.Append(response.Output);
+                                    finalImageUrl = "imagehandler.png";
+                                }
+                            }
+                            break;
+                        case "stream_end":
+                            _currentThreadId = response.ThreadId;
+                            break;
+                        case "error":
+                            responseTextBuilder.Append($"\n\nSYSTEM ERROR: {response.Content}");
+                            break;
                     }
-                    break;
-                case "stream_end":
-                    _currentThreadId = response.ThreadId;
-                    break;
-                case "error":
-                    responseTextBuilder.Append($"\n\nSYSTEM ERROR: {response.Content}");
-                    break;
+                }
+
+                // 4. NOW that the loop is finished, create and add the final message bubble
+                var finalAiMessage = new ChatMessage
+                {
+                    Author = "SHAIDOW",
+                    Text = responseTextBuilder.ToString(),
+                    ImageUrl = finalImageUrl,
+                    Background = Colors.Black,
+                    Alignment = LayoutOptions.Start
+                };
+
+                // If the AI used a tool but didn't produce text, add a status message.
+                if (string.IsNullOrEmpty(finalAiMessage.Text) && string.IsNullOrEmpty(finalAiMessage.ImageUrl) && finalToolUsed != null)
+                {
+                    finalAiMessage.Text = $"Task completed using {finalToolUsed}.";
+                }
+
+                // This is the only time we add the AI's message to the UI collection
+                AddMessage(finalAiMessage);
+            }
+            catch (Exception ex)
+            {
+                // If there's a critical error, show it in a new message bubble
+                AddMessage(new ChatMessage { Author = "SHAIDOW", Text = $"CRITICAL ERROR: {ex.Message}", Background = Colors.DarkRed, Alignment = LayoutOptions.Start });
+            }
+            finally
+            {
+                _isResponding = false;
+                UpdateLoadingIndicatorAnimated();
             }
         }
-
-        // 4. NOW that the loop is finished, create and add the final message bubble
-        var finalAiMessage = new ChatMessage
-        {
-            Author = "SHAIDOW",
-            Text = responseTextBuilder.ToString(),
-            ImageUrl = finalImageUrl,
-            Background = Colors.Black,
-            Alignment = LayoutOptions.Start
-        };
-
-        // If the AI used a tool but didn't produce text, add a status message.
-        if (string.IsNullOrEmpty(finalAiMessage.Text) && string.IsNullOrEmpty(finalAiMessage.ImageUrl) && finalToolUsed != null)
-        {
-            finalAiMessage.Text = $"Task completed using {finalToolUsed}.";
-        }
-        
-        // This is the only time we add the AI's message to the UI collection
-        AddMessage(finalAiMessage);
-    }
-    catch (Exception ex)
-    {
-        // If there's a critical error, show it in a new message bubble
-        AddMessage(new ChatMessage { Author = "SHAIDOW", Text = $"CRITICAL ERROR: {ex.Message}", Background = Colors.DarkRed, Alignment = LayoutOptions.Start });
-    }
-    finally
-    {
-        _isResponding = false;
-        UpdateLoadingIndicatorAnimated();
-    }
-}
 
 
         private void AddMessage(ChatMessage message)

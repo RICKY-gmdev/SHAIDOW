@@ -39,17 +39,17 @@ namespace App
         {
             _httpClient = new HttpClient();
             // Set a finite timeout for debugging to prevent infinite hangs
-            _httpClient.Timeout = TimeSpan.FromSeconds(30); 
+            _httpClient.Timeout = TimeSpan.FromSeconds(30);
             _baseAddress = GetBaseAddress();
         }
 
         private string GetBaseAddress()
         {
-            #if ANDROID
+#if ANDROID
                 return "http://10.0.2.2:8000";
-            #else
-                return "http://127.0.0.1:8000";
-            #endif
+#else
+            return "http://127.0.0.1:8000";
+#endif
         }
 
         public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(string message, string? threadId)
@@ -62,7 +62,7 @@ namespace App
             var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
             using var request = new HttpRequestMessage(HttpMethod.Post, requestUrl) { Content = content };
-            
+
             HttpResponseMessage response = null;
             StreamedResponse? errorResponse = null;
             try

@@ -9,7 +9,11 @@ import re # Import the regular expression module
 # --- Model initializations remain the same ---
 try:
     claude_sonnet = ChatAnthropic(model="claude-3-opus-20240229", temperature=0)
-    mistral_large = ChatMistralAI(model="mistral-large-latest", temperature=0)
+    mistral_large = ChatMistralAI(
+    model="mistral-large-latest",
+    temperature=0,
+    api_key=os.getenv("MISTRAL_API_KEY") # Explicitly pass the API key
+)
     gemini_flash = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
     
     stable_diffusion_model_id = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4"
