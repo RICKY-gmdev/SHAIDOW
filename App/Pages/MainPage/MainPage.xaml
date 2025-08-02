@@ -39,7 +39,7 @@
                     <Label Text="SHAIDOW"
                            TextColor="Cyan"
                            BackgroundColor="Black"
-                           FontSize="{OnPlatform iOS=40, Android=40, MacCatalyst=40}"
+                           FontSize="{OnPlatform iOS=40, Android=40, MacCatalyst=40,WinUI=40}"
                            HorizontalTextAlignment="Center"
                            VerticalTextAlignment="Center"/>
                 </Border>
@@ -51,22 +51,19 @@
                           BackgroundColor="Transparent"
                           SeparatorVisibility="None"
                           SelectionMode="None"
-                          VerticalOptions="FillAndExpand">
+                          VerticalOptions="Fill">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
                                 <!-- This Border provides the simple, black bubble style you preferred -->
                                 <Border Stroke="Black"
                                         StrokeShape="RoundRectangle 10"
-                                        BackgroundColor="Black"
-                                        Padding="10"
-                                        Margin="5,10">
+                                        BackgroundColor="Black">
                                     <StackLayout Padding="10">
                                         <!-- Text View (Visible only if there is text) -->
                                         <Label Text="{Binding Text}"
                                                IsVisible="{Binding IsText}"
-                                               TextColor="White"
-                                               />
+                                               TextColor="White"/>
 
                                         <!-- Image View (Visible only if there is an image URL) -->
                                         <Image Source="{Binding ImageUrl}"

@@ -1,4 +1,4 @@
-// ApiService.cs
+// ApiService.cs (with debugging)
 
 using System.Text;
 using Newtonsoft.Json;
@@ -6,12 +6,29 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics; // Required for Debug.WriteLine
 
 namespace App
 {
-    // Define C# records to match the JSON structure from the API
-    public record ChatRequest(string message, string thread_id);
-    public record StreamedResponse(string type, string content, string tool, string output, string thread_id);
+    public record ChatRequest(string message, string? thread_id);
+
+    public class StreamedResponse
+    {
+        [JsonProperty("type")]
+        public string? Type { get; set; }
+
+        [JsonProperty("content")]
+        public string? Content { get; set; }
+
+        [JsonProperty("tool")]
+        public string? Tool { get; set; }
+
+        [JsonProperty("output")]
+        public string? Output { get; set; }
+
+        [JsonProperty("thread_id")]
+        public string? ThreadId { get; set; }
+    }
 
     public class ApiService
     {
@@ -21,40 +38,60 @@ namespace App
         public ApiService()
         {
             _httpClient = new HttpClient();
-            // Set a timeout to prevent the app from hanging indefinitely
-            _httpClient.Timeout = System.Threading.Timeout.InfiniteTimeSpan;
-
-            // Select the correct base address based on the platform
+            // Set a finite timeout for debugging to prevent infinite hangs
+            _httpClient.Timeout = TimeSpan.FromSeconds(30); 
             _baseAddress = GetBaseAddress();
         }
 
         private string GetBaseAddress()
         {
-            // This logic correctly handles the different network environments
-            // for local development.
-#if ANDROID
-            return "http://10.0.2.2:8000";
-#elif IOS
-            return "http://localhost:8000";
-#else // Windows, MacCatalyst, etc.
-            return "http://localhost:8000";
-#endif
+            #if ANDROID
+                return "http://10.0.2.2:8000";
+            #else
+                return "http://127.0.0.1:8000";
+            #endif
         }
 
-        public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(string message, string threadId)
+        public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(string message, string? threadId)
         {
             var requestUrl = $"{_baseAddress}/chat";
+            Debug.WriteLine($"[ApiService] Preparing to send request to: {requestUrl}");
+
             var chatRequest = new ChatRequest(message, threadId);
             var jsonPayload = JsonConvert.SerializeObject(chatRequest);
-            var content = new StringContent(jsonPayload, Encoding.UTF8, new System.Net.Http.Headers.MediaTypeHeaderValue("application/json"));
+            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
             using var request = new HttpRequestMessage(HttpMethod.Post, requestUrl) { Content = content };
+            
+            HttpResponseMessage response = null;
+            StreamedResponse? errorResponse = null;
+            try
+            {
+                Debug.WriteLine("[ApiService] Sending HTTP request...");
+                response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                Debug.WriteLine($"[ApiService] Received response with status code: {response.StatusCode}");
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                // This is the most important log. It will tell us why the connection failed.
+                Debug.WriteLine($"[ApiService] HTTP REQUEST FAILED: {ex.Message}");
+                Debug.WriteLine($"[ApiService] Base exception: {ex.InnerException?.Message}");
+                // Prepare a custom error to be displayed in the UI
+                errorResponse = new StreamedResponse { Type = "error", Content = $"Connection to the backend failed. Is the server running? Error: {ex.Message}" };
+            }
+            catch (TaskCanceledException ex)
+            {
+                Debug.WriteLine($"[ApiService] HTTP REQUEST TIMED OUT: {ex.Message}");
+                errorResponse = new StreamedResponse { Type = "error", Content = "Connection to the backend timed out." };
+            }
 
-            // Use HttpCompletionOption.ResponseHeadersRead to start processing the response
-            // as soon as the headers are received, without waiting for the full body.
-            using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            if (errorResponse != null)
+            {
+                yield return errorResponse;
+                yield break;
+            }
 
-            response.EnsureSuccessStatusCode();
 
             using var stream = await response.Content.ReadAsStreamAsync();
             using var reader = new StreamReader(stream);
@@ -62,8 +99,6 @@ namespace App
             while (!reader.EndOfStream)
             {
                 var line = await reader.ReadLineAsync();
-
-                // The server sends data in the format "data: {json_payload}"
                 if (string.IsNullOrWhiteSpace(line) || !line.StartsWith("data:"))
                 {
                     continue;
@@ -75,9 +110,9 @@ namespace App
                 if (streamedResponse != null)
                 {
                     yield return streamedResponse;
-                    if (streamedResponse.type == "stream_end")
+                    if (streamedResponse.Type == "stream_end")
                     {
-                        yield break; // Stop iterating once the stream is finished
+                        yield break;
                     }
                 }
             }
