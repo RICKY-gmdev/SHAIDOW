@@ -45,11 +45,7 @@ namespace App
 
         private string GetBaseAddress()
         {
-#if ANDROID
-                return "http://10.0.2.2:8000";
-#else
-            return "http://127.0.0.1:8000";
-#endif
+            return "https://shaidow-backend-production.up.railway.app";
         }
 
         public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(string message, string? threadId)
