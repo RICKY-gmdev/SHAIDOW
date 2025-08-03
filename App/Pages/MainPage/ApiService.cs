@@ -1,12 +1,12 @@
-// ApiService.cs (with debugging)
-
 using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
-using System.Diagnostics; // Required for Debug.WriteLine
+using System.Diagnostics;
+using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace App
 {
@@ -16,16 +16,12 @@ namespace App
     {
         [JsonProperty("type")]
         public string? Type { get; set; }
-
         [JsonProperty("content")]
         public string? Content { get; set; }
-
         [JsonProperty("tool")]
         public string? Tool { get; set; }
-
         [JsonProperty("output")]
         public string? Output { get; set; }
-
         [JsonProperty("thread_id")]
         public string? ThreadId { get; set; }
     }
@@ -37,21 +33,20 @@ namespace App
 
         public ApiService()
         {
-            _httpClient = new HttpClient();
-            // Set a finite timeout for debugging to prevent infinite hangs
-            _httpClient.Timeout = TimeSpan.FromSeconds(30);
-            _baseAddress = GetBaseAddress();
+            _httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(30) // Prevent infinite hangs
+            };
+            _baseAddress = "http://127.0.0.1:8000";
         }
 
-        private string GetBaseAddress()
-        {
-            return "https://shaidow-backend-production.up.railway.app";
-        }
-
-        public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(string message, string? threadId)
+        public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(
+            string message,
+            string? threadId,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var requestUrl = $"{_baseAddress}/chat";
-            Debug.WriteLine($"[ApiService] Preparing to send request to: {requestUrl}");
+            Debug.WriteLine($"[ApiService] Sending request to: {requestUrl}");
 
             var chatRequest = new ChatRequest(message, threadId);
             var jsonPayload = JsonConvert.SerializeObject(chatRequest);
@@ -59,46 +54,41 @@ namespace App
 
             using var request = new HttpRequestMessage(HttpMethod.Post, requestUrl) { Content = content };
 
-            HttpResponseMessage response = null;
-            StreamedResponse? errorResponse = null;
+            HttpResponseMessage? response = null;
+            string? errorContent = null;
             try
             {
-                Debug.WriteLine("[ApiService] Sending HTTP request...");
-                response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                Debug.WriteLine($"[ApiService] Received response with status code: {response.StatusCode}");
+                response = await _httpClient.SendAsync(
+                    request,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    cancellationToken
+                );
+                Debug.WriteLine($"[ApiService] Status: {response.StatusCode}");
                 response.EnsureSuccessStatusCode();
             }
             catch (HttpRequestException ex)
             {
-                // This is the most important log. It will tell us why the connection failed.
-                Debug.WriteLine($"[ApiService] HTTP REQUEST FAILED: {ex.Message}");
-                Debug.WriteLine($"[ApiService] Base exception: {ex.InnerException?.Message}");
-                // Prepare a custom error to be displayed in the UI
-                errorResponse = new StreamedResponse { Type = "error", Content = $"Connection to the backend failed. Is the server running? Error: {ex.Message}" };
+                errorContent = $"Connection failed: {ex.Message}";
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
-                Debug.WriteLine($"[ApiService] HTTP REQUEST TIMED OUT: {ex.Message}");
-                errorResponse = new StreamedResponse { Type = "error", Content = "Connection to the backend timed out." };
+                errorContent = "Request timed out or cancelled.";
             }
 
-            if (errorResponse != null)
+            if (errorContent != null)
             {
-                yield return errorResponse;
+                yield return new StreamedResponse { Type = "error", Content = errorContent };
                 yield break;
             }
 
-
-            using var stream = await response.Content.ReadAsStreamAsync();
+            using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
             using var reader = new StreamReader(stream);
 
-            while (!reader.EndOfStream)
+            while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
             {
                 var line = await reader.ReadLineAsync();
                 if (string.IsNullOrWhiteSpace(line) || !line.StartsWith("data:"))
-                {
                     continue;
-                }
 
                 var jsonData = line.Substring(5).Trim();
                 var streamedResponse = JsonConvert.DeserializeObject<StreamedResponse>(jsonData);
@@ -107,9 +97,7 @@ namespace App
                 {
                     yield return streamedResponse;
                     if (streamedResponse.Type == "stream_end")
-                    {
                         yield break;
-                    }
                 }
             }
         }

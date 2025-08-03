@@ -1,4 +1,6 @@
-﻿obj\Release\net9.0-android\resizetizer\r\drawable\shaidow.png
+﻿obj\Release\net9.0-android\resizetizer\r\drawable\imagehandler.png
+obj\Release\net9.0-android\resizetizer\r\drawable\shaidow.png
+obj\Release\net9.0-android\resizetizer\r\drawable\themeswitch.png
 obj\Release\net9.0-android\resizetizer\r\mipmap-anydpi-v26\appicon.xml
 obj\Release\net9.0-android\resizetizer\r\mipmap-anydpi-v26\appicon_round.xml
 obj\Release\net9.0-android\resizetizer\r\mipmap-hdpi\appicon.png

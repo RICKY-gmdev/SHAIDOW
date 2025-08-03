@@ -1,5 +1,6 @@
 GoogleGson.dll
 Jsr305Binding.dll
+MauiPopup.dll
 Microsoft.Maui.Controls.dll
 Microsoft.Maui.Controls.Xaml.dll
 Microsoft.Maui.dll
@@ -88,7 +89,6 @@ Xamarin.Google.Crypto.Tink.Android.dll
 Xamarin.Google.ErrorProne.Annotations.dll
 Xamarin.Google.Guava.ListenableFuture.dll
 Xamarin.Jetbrains.Annotations.dll
-Xamarin.Kotlin.StdLib.Common.dll
 Xamarin.Kotlin.StdLib.dll
 Xamarin.KotlinX.AtomicFU.dll
 Xamarin.KotlinX.AtomicFU.Jvm.dll
@@ -159,8 +159,6 @@ androidx.navigation.navigation-fragment.aar
 androidx.lifecycle.lifecycle-livedata.aar
 androidx.exifinterface.exifinterface.aar
 androidx.browser.browser.aar
-gifdecoder.aar
-glide.aar
 GoogleGson.aar
 Jsr305Binding.aar
 Microsoft.Maui.Controls.aar
@@ -168,5 +166,19 @@ maui.aar
 Microsoft.Maui.aar
 Microsoft.Maui.Essentials.aar
 SQLitePCLRaw.lib.e_sqlite3.android.aar
+Xamarin.Android.Glide.Annotations.aar
+Xamarin.Android.Glide.DiskLruCache.aar
+glide.aar
+gifdecoder.aar
 Xamarin.Google.Crypto.Tink.Android.aar
 Xamarin.Google.ErrorProne.Annotations.aar
+Xamarin.Google.Guava.ListenableFuture.aar
+Xamarin.Jetbrains.Annotations.aar
+Xamarin.Kotlin.StdLib.aar
+Xamarin.KotlinX.AtomicFU.aar
+Xamarin.KotlinX.AtomicFU.Jvm.aar
+Xamarin.KotlinX.Coroutines.Android.aar
+Xamarin.KotlinX.Coroutines.Core.aar
+Xamarin.KotlinX.Coroutines.Core.Jvm.aar
+Xamarin.KotlinX.Serialization.Core.aar
+Xamarin.KotlinX.Serialization.Core.Jvm.aar

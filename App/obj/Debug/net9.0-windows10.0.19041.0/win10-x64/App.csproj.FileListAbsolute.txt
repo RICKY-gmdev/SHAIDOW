@@ -1,7 +1,3 @@
-D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\App.csproj.AssemblyReference.cache
-D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauiimage.inputs
-D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauifont.inputs
-D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauisplash.inputs
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Platforms\Windows\App.xbf
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\AboutAssets.txt
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\splashSplashScreen.scale-100.png
@@ -58,7 +54,9 @@ D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\ap
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\appiconLogo.scale-125.png
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\appiconLogo.scale-100.png
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\appicon.ico
+D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\imagehandler.scale-100.png
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\shaidow.scale-100.png
+D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\themeswitch.scale-100.png
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\CoreMessagingXP.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\dcompi.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\dwmcorei.dll
@@ -326,7 +324,9 @@ D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Mi
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.System.Projection.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.Widgets.Projection.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
+D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Newtonsoft.Json.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\OpenAI.dll
+D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\MauiPopup.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\SQLite-net.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\SQLitePCLRaw.batteries_v2.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\SQLitePCLRaw.core.dll
@@ -376,6 +376,10 @@ D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Wi
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Web.WebView2.Core.Projection.dll
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.UI.pri
 D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Controls.pri
+D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\App.csproj.AssemblyReference.cache
+D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauiimage.inputs
+D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauifont.inputs
+D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauisplash.inputs
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauimanifest.stamp
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\Platforms\Windows\App.g.i.cs
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\Platforms\Windows\App.g.cs
@@ -440,7 +444,9 @@ D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\re
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-125.png
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\appiconLogo.scale-100.png
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\appicon.ico
+D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\imagehandler.scale-100.png
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\shaidow.scale-100.png
+D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\themeswitch.scale-100.png
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauiimage.stamp
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauiimage.outputs
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\App.AssemblyInfoInputs.cache
@@ -469,9 +475,3 @@ D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\pr
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
-D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\imagehandler.scale-100.png
-D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\MauiPopup.dll
-D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\imagehandler.scale-100.png
-D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\themeswitch.scale-100.png
-D:\programs\CSprograms\App\App\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\themeswitch.scale-100.png
-D:\programs\CSprograms\App\App\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Newtonsoft.Json.dll

@@ -9,7 +9,7 @@ from tools import all_tools
 class AgentState(TypedDict):
     messages: Sequence[BaseMessage]
 
-agent_model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", convert_system_message_to_human=True)
+agent_model = ChatGoogleGenerativeAI(model="gemini-2.0-flash", convert_system_message_to_human=True)
 agent_with_tools = agent_model.bind_tools(all_tools)
 tool_node = ToolNode(all_tools)
 

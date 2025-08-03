@@ -11,12 +11,12 @@ public final class R {
 		public static final int defaultNavHost = 0x7f03017d;
 	}
 	public static final class dimen {
-		public static final int sliding_pane_detail_pane_width = 0x7f060316;
+		public static final int sliding_pane_detail_pane_width = 0x7f06031d;
 	}
 	public static final class id {
-		public static final int nav_host_fragment_container = 0x7f08013d;
-		public static final int sliding_pane_detail_container = 0x7f0801a9;
-		public static final int sliding_pane_layout = 0x7f0801aa;
+		public static final int nav_host_fragment_container = 0x7f080143;
+		public static final int sliding_pane_detail_container = 0x7f0801af;
+		public static final int sliding_pane_layout = 0x7f0801b0;
 	}
 	public static final class styleable {
 		public static final int[] DialogFragmentNavigator = new int[] { 0x01010003 };

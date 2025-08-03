@@ -449,6 +449,9 @@ d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\126\jl\files.cache
 d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\133\jl\files.cache
 d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\148\jl\files.cache
 d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\157\jl\files.cache
-d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\162\jl\files.cache
-d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\167\jl\files.cache
-d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\168\jl\files.cache
+d:\programs\CSprograms\App\App\obj\Release\net9.0-android\resizetizer\r\drawable\imagehandler.png
+d:\programs\CSprograms\App\App\obj\Release\net9.0-android\resizetizer\r\drawable\themeswitch.png
+d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\110\jl\files.cache
+d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\163\jl\files.cache
+d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\164\jl\files.cache
+d:\programs\CSprograms\App\App\obj\Release\net9.0-android\lp\170\jl\files.cache

@@ -18,11 +18,11 @@ public final class R {
 		public static final int browser_actions_context_menu_min_padding = 0x7f060053;
 	}
 	public static final class id {
-		public static final int browser_actions_header_text = 0x7f080067;
-		public static final int browser_actions_menu_item_icon = 0x7f080068;
-		public static final int browser_actions_menu_item_text = 0x7f080069;
-		public static final int browser_actions_menu_items = 0x7f08006a;
-		public static final int browser_actions_menu_view = 0x7f08006b;
+		public static final int browser_actions_header_text = 0x7f08006a;
+		public static final int browser_actions_menu_item_icon = 0x7f08006b;
+		public static final int browser_actions_menu_item_text = 0x7f08006c;
+		public static final int browser_actions_menu_items = 0x7f08006d;
+		public static final int browser_actions_menu_view = 0x7f08006e;
 	}
 	public static final class layout {
 		public static final int browser_actions_context_menu_page = 0x7f0b001c;
