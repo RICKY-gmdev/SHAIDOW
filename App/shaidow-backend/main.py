@@ -33,7 +33,7 @@ app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.1", lifespan=lifesp
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the Shaidow API"}
+    return {"message": "Welcome to the Shaidow API's backend  This is where the magic happens!"}
 
 memory = MemorySaver()
 agent_executor = create_agent_graph(SYSTEM_PROMPT).with_config(checkpointer=memory)
@@ -72,7 +72,7 @@ async def chat(req: ChatRequest):
                 elif kind == "on_tool_end":
                     tool_output = event["data"].get("output")
                     
-                    # --- START: ROBUST PARSING LOGIC ---
+                    
                     clean_output = ""
                     if tool_output:
                         # This logic handles all expected cases to extract the clean text.

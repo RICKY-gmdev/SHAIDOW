@@ -37,7 +37,7 @@ namespace App
             {
                 Timeout = TimeSpan.FromSeconds(30) // Prevent infinite hangs
             };
-            _baseAddress = "http://127.0.0.1:8000";
+            _baseAddress = "https://shaidow-backend-production.up.railway.app";
         }
 
         public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(

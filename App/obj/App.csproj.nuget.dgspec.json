@@ -32,11 +32,11 @@
             "targetAlias": "net9.0-android",
             "projectReferences": {}
           },
-          "net9.0-ios18.4": {
+          "net9.0-ios18.5": {
             "targetAlias": "net9.0-ios",
             "projectReferences": {}
           },
-          "net9.0-maccatalyst18.4": {
+          "net9.0-maccatalyst18.5": {
             "targetAlias": "net9.0-maccatalyst",
             "projectReferences": {}
           },
@@ -106,7 +106,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.5, 9.0.5]"
+              "version": "[9.0.7, 9.0.7]"
             }
           ],
           "frameworkReferences": {
@@ -119,7 +119,7 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
         },
-        "net9.0-ios18.4": {
+        "net9.0-ios18.5": {
           "targetAlias": "net9.0-ios",
           "dependencies": {
             "Microsoft.Extensions.Logging.Debug": {
@@ -167,7 +167,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.5, 9.0.5]"
+              "version": "[9.0.7, 9.0.7]"
             }
           ],
           "frameworkReferences": {
@@ -180,7 +180,7 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
         },
-        "net9.0-maccatalyst18.4": {
+        "net9.0-maccatalyst18.5": {
           "targetAlias": "net9.0-maccatalyst",
           "dependencies": {
             "Microsoft.Extensions.Logging.Debug": {
@@ -229,7 +229,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.5, 9.0.5]"
+              "version": "[9.0.7, 9.0.7]"
             }
           ],
           "frameworkReferences": {
