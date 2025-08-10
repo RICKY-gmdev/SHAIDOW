@@ -1,3 +1,4 @@
+//API SERVICEpip install tavily-python
 using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http;
@@ -35,9 +36,9 @@ namespace App
         {
             _httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(30) // Prevent infinite hangs
+                Timeout = TimeSpan.FromSeconds(30)
             };
-            _baseAddress = "https://shaidow-backend-production.up.railway.app";
+            _baseAddress = "http://127.0.0.1:8000";
         }
 
         public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(
@@ -78,6 +79,12 @@ namespace App
             if (errorContent != null)
             {
                 yield return new StreamedResponse { Type = "error", Content = errorContent };
+                yield break;
+            }
+
+            if (response == null)
+            {
+                yield return new StreamedResponse { Type = "error", Content = "No response received from server." };
                 yield break;
             }
 

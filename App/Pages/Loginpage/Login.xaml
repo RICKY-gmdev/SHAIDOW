@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Login_Demo.MainPage"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30"
+            Spacing="30"
+            VerticalOptions="CenterAndExpand"
+            HorizontalOptions="Center">
+
+            <!-- App Logo -->
+            <Image
+                Source="dotnet_bot.png"
+                HeightRequest="150"
+                Aspect="AspectFit"
+                HorizontalOptions="Center"/>
+
+            <!-- Page Title -->
+            <Label
+                Text="LOGIN"
+                FontSize="32"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"/>
+
+            <Label
+                Text="Login to Shaidow"
+                FontSize="20"
+                HorizontalOptions="Center"/>
+
+            <!-- Google Login Button -->
+            <Button
+                x:Name="LoginBtn"
+                ImageSource="google.png"
+                Text="Sign in with Google"
+                SemanticProperties.Hint="Click to login with Google"
+                Clicked="OnLoginClicked"
+                HorizontalOptions="Center"
+                WidthRequest="250"
+                HeightRequest="50"
+                CornerRadius="25"
+                BackgroundColor="White"
+                TextColor="Black"/>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

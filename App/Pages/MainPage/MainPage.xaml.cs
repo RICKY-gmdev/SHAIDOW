@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿//MAINPAGE CODE
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -54,104 +55,103 @@ namespace App
         }
 
         private async void OnSendMessage(object sender, EventArgs e)
-{
-    if (_isResponding) return;
-
-    var userMessageText = UserInput.Text?.Trim();
-    if (string.IsNullOrWhiteSpace(userMessageText)) return;
-
-    AddMessage(new ChatMessage
-    {
-        Author = "You",
-        Text = userMessageText,
-        Background = Colors.DarkCyan,
-        Alignment = LayoutOptions.End
-    });
-    UserInput.Text = string.Empty;
-
-    _isResponding = true;
-    UpdateLoadingIndicatorAnimated();
-    _cts = new CancellationTokenSource();
-
-    _ = Task.Run(async () =>
-    {
-        var responseTextBuilder = new StringBuilder();
-        string? finalImageUrl = null;
-        string? finalToolUsed = null;
-
-        try
         {
-            await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
+            if (_isResponding) return;
+
+            var userMessageText = UserInput.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(userMessageText)) return;
+
+            AddMessage(new ChatMessage
             {
-                switch (response.Type)
+                Author = "You",
+                Text = userMessageText,
+                Background = Colors.DarkCyan,
+                Alignment = LayoutOptions.End
+            });
+            UserInput.Text = string.Empty;
+
+            _isResponding = true;
+            UpdateLoadingIndicatorAnimated();
+            _cts = new CancellationTokenSource();
+
+            _ = Task.Run(async () =>
+            {
+                var responseTextBuilder = new StringBuilder();
+                string? finalImageUrl = null;
+                string? finalToolUsed = null;
+
+                try
                 {
-                    case "text_chunk":
-                        responseTextBuilder.Append(response.Content);
-                        break;
-                    case "tool_start":
-                        finalToolUsed = response.Tool;
-                        break;
-                    case "tool_end":
-                        responseTextBuilder.Clear();
-                        if (response.Output != null)
+                    await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
+                    {
+                        switch (response.Type)
                         {
-                            if (response.Output.StartsWith("IMAGE_URL::"))
-                            {
-                                finalImageUrl = response.Output.Substring("IMAGE_URL::".Length);
-                                responseTextBuilder.Append("Here is the image you requested:");
-                            }
-                            else
-                            {
-                                responseTextBuilder.Append(response.Output);
-                                finalImageUrl = "imagehandler.png";
-                            }
+                            case "text_chunk":
+                                responseTextBuilder.Append(response.Content);
+                                break;
+                            case "tool_start":
+                                finalToolUsed = response.Tool;
+                                break;
+                            case "tool_end":
+                                responseTextBuilder.Clear();
+                                if (response.Output != null)
+                                {
+                                    if (response.Output.StartsWith("IMAGE_URL::"))
+                                    {
+                                        finalImageUrl = response.Output.Substring("IMAGE_URL::".Length);
+                                        responseTextBuilder.Append("Here is the image you requested:");
+                                    }
+                                    else
+                                    {
+                                        responseTextBuilder.Append(response.Output);
+                                    }
+                                }
+                                break;
+                            case "stream_end":
+                                _currentThreadId = response.ThreadId;
+                                break;
+                            case "error":
+                                responseTextBuilder.Append($"\n\nSYSTEM ERROR: {response.Content}");
+                                break;
                         }
-                        break;
-                    case "stream_end":
-                        _currentThreadId = response.ThreadId;
-                        break;
-                    case "error":
-                        responseTextBuilder.Append($"\n\nSYSTEM ERROR: {response.Content}");
-                        break;
+                    }
+
+                    var finalAiMessage = new ChatMessage
+                    {
+                        Author = "SHAIDOW",
+                        Text = responseTextBuilder.ToString(),
+                        ImageUrl = finalImageUrl,
+                        Background = Colors.Black,
+                        Alignment = LayoutOptions.Start
+                    };
+
+                    if (string.IsNullOrEmpty(finalAiMessage.Text) && string.IsNullOrEmpty(finalAiMessage.ImageUrl) && finalToolUsed != null)
+                        finalAiMessage.Text = $"Task completed using {finalToolUsed}.";
+
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        AddMessage(finalAiMessage);
+                        _isResponding = false;
+                        UpdateLoadingIndicatorAnimated();
+                    });
                 }
-            }
-
-            var finalAiMessage = new ChatMessage
-            {
-                Author = "SHAIDOW",
-                Text = responseTextBuilder.ToString(),
-                ImageUrl = finalImageUrl,
-                Background = Colors.Black,
-                Alignment = LayoutOptions.Start
-            };
-
-            if (string.IsNullOrEmpty(finalAiMessage.Text) && string.IsNullOrEmpty(finalAiMessage.ImageUrl) && finalToolUsed != null)
-                finalAiMessage.Text = $"Task completed using {finalToolUsed}.";
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                AddMessage(finalAiMessage);
-                _isResponding = false;
-                UpdateLoadingIndicatorAnimated();
-            });
-        }
-        catch (Exception ex)
-        {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                AddMessage(new ChatMessage
+                catch (Exception ex)
                 {
-                    Author = "SHAIDOW",
-                    Text = $"CRITICAL ERROR: {ex.Message}",
-                    Background = Colors.DarkRed,
-                    Alignment = LayoutOptions.Start
-                });
-                _isResponding = false;
-                UpdateLoadingIndicatorAnimated();
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        AddMessage(new ChatMessage
+                        {
+                            Author = "SHAIDOW",
+                            Text = $"CRITICAL ERROR: {ex.Message}",
+                            Background = Colors.DarkRed,
+                            Alignment = LayoutOptions.Start
+                        });
+                        _isResponding = false;
+                        UpdateLoadingIndicatorAnimated();
+                    });
+                }
             });
         }
-    });
-}
 
         private void AddMessage(ChatMessage message)
         {
