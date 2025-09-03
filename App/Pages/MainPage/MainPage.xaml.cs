@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Dispatching; // Required for MainThread
+using Microsoft.Maui.Dispatching;
 
 namespace App
 {
@@ -32,7 +32,7 @@ namespace App
             public string Author { get; set; } = string.Empty;
             public LayoutOptions Alignment { get; set; } = LayoutOptions.Start;
             public Color Background { get; set; } = Colors.Transparent;
-
+            
             public event PropertyChangedEventHandler? PropertyChanged;
             protected void OnPropertyChanged(string propertyName) =>
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -54,98 +54,103 @@ namespace App
             Preferences.Set("AppTheme", "Dark");
         }
 
-        private async void OnSendMessage(object sender, EventArgs e)
+        private void OnSendMessage(object sender, EventArgs e)
         {
+            string userMessageText = UserInput.Text?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(userMessageText)) return;
             if (_isResponding) return;
 
-            var userMessageText = UserInput.Text?.Trim();
-            if (string.IsNullOrWhiteSpace(userMessageText)) return;
-
-            AddMessage(new ChatMessage
+            // Add user message to chat
+            var userMessage = new ChatMessage
             {
                 Author = "You",
                 Text = userMessageText,
                 Background = Colors.DarkCyan,
                 Alignment = LayoutOptions.End
-            });
+            };
+            AddMessage(userMessage);
             UserInput.Text = string.Empty;
 
             _isResponding = true;
             UpdateLoadingIndicatorAnimated();
+
             _cts = new CancellationTokenSource();
+            
+            
+            var aiMessage = new ChatMessage
+            {
+                Author = "SHAIDOW",
+                Text = "",
+                Background = Colors.Black,
+                Alignment = LayoutOptions.Start
+            };
+            AddMessage(aiMessage);
 
             _ = Task.Run(async () =>
             {
-                var responseTextBuilder = new StringBuilder();
-                string? finalImageUrl = null;
-                string? finalToolUsed = null;
-
                 try
                 {
                     await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
                     {
-                        switch (response.Type)
+                        MainThread.BeginInvokeOnMainThread(() =>
                         {
-                            case "text_chunk":
-                                responseTextBuilder.Append(response.Content);
-                                break;
-                            case "tool_start":
-                                finalToolUsed = response.Tool;
-                                break;
-                            case "tool_end":
-                                responseTextBuilder.Clear();
-                                if (response.Output != null)
-                                {
-                                    if (response.Output.StartsWith("IMAGE_URL::"))
+                            switch (response.Type)
+                            {
+                                case "text_chunk":
+                                    
+                                    var newText = aiMessage.Text + response.Content;
+                                    var newAiMessage = new ChatMessage 
                                     {
-                                        finalImageUrl = response.Output.Substring("IMAGE_URL::".Length);
-                                        responseTextBuilder.Append("Here is the image you requested:");
-                                    }
-                                    else
+                                        Author = aiMessage.Author,
+                                        Text = newText,
+                                        Background = aiMessage.Background,
+                                        Alignment = aiMessage.Alignment
+                                    };
+                                    
+                                    ReplaceMessage(aiMessage, newAiMessage);
+                                    aiMessage = newAiMessage; 
+                                    ScrollToBottom();
+                                    break;
+                                case "tool_start":
+                                    aiMessage.Text += $"\n* (Using {response.Tool}) * ";
+                                    ScrollToBottom();
+                                    break;
+                                case "tool_end":
+                                    aiMessage.Text = "";
+                                    if (response.Output != null)
                                     {
-                                        responseTextBuilder.Append(response.Output);
+                                        if (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::"))
+                                        {
+                                            aiMessage.Text = "Here is the image you requested:";
+                                            aiMessage.ImageUrl = response.Output;
+                                        }
+                                        else
+                                        {
+                                            aiMessage.Text = response.Output;
+                                        }
                                     }
-                                }
-                                break;
-                            case "stream_end":
-                                _currentThreadId = response.ThreadId;
-                                break;
-                            case "error":
-                                responseTextBuilder.Append($"\n\nSYSTEM ERROR: {response.Content}");
-                                break;
-                        }
+                                    ScrollToBottom();
+                                    break;
+                                case "stream_end":
+                                    _currentThreadId = response.ThreadId;
+                                    _isResponding = false;
+                                    UpdateLoadingIndicatorAnimated();
+                                    break;
+                                case "error":
+                                    aiMessage.Text += $"\n\nSYSTEM ERROR: {response.Content}";
+                                    _isResponding = false;
+                                    UpdateLoadingIndicatorAnimated();
+                                    break;
+                            }
+                        });
                     }
-
-                    var finalAiMessage = new ChatMessage
-                    {
-                        Author = "SHAIDOW",
-                        Text = responseTextBuilder.ToString(),
-                        ImageUrl = finalImageUrl,
-                        Background = Colors.Black,
-                        Alignment = LayoutOptions.Start
-                    };
-
-                    if (string.IsNullOrEmpty(finalAiMessage.Text) && string.IsNullOrEmpty(finalAiMessage.ImageUrl) && finalToolUsed != null)
-                        finalAiMessage.Text = $"Task completed using {finalToolUsed}.";
-
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        AddMessage(finalAiMessage);
-                        _isResponding = false;
-                        UpdateLoadingIndicatorAnimated();
-                    });
                 }
                 catch (Exception ex)
                 {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        AddMessage(new ChatMessage
-                        {
-                            Author = "SHAIDOW",
-                            Text = $"CRITICAL ERROR: {ex.Message}",
-                            Background = Colors.DarkRed,
-                            Alignment = LayoutOptions.Start
-                        });
+                        aiMessage.Text = $"CRITICAL ERROR: {ex.Message}";
+                        aiMessage.Background = Colors.DarkRed;
                         _isResponding = false;
                         UpdateLoadingIndicatorAnimated();
                     });
@@ -157,6 +162,16 @@ namespace App
         {
             ChatMessages.Add(message);
             ScrollToBottom();
+        }
+
+        
+        private void ReplaceMessage(ChatMessage oldMessage, ChatMessage newMessage)
+        {
+            var index = ChatMessages.IndexOf(oldMessage);
+            if (index != -1)
+            {
+                ChatMessages[index] = newMessage;
+            }
         }
 
         public async void UpdateLoadingIndicatorAnimated()

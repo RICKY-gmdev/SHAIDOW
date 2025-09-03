@@ -57,17 +57,17 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <!-- This Border provides the simple, black bubble style you preferred -->
+                                
                                 <Border Stroke="Black"
                                         StrokeShape="RoundRectangle 10"
                                         BackgroundColor="Black">
                                     <StackLayout Padding="10">
-                                        <!-- Text View (Visible only if there is text) -->
+                                        
                                         <Label Text="{Binding Text}"
                                                IsVisible="{Binding IsText}"
                                                TextColor="White"/>
 
-                                        <!-- Image View (Visible only if there is an image URL) -->
+                                        
                                         <Image Source="{Binding ImageUrl}"
                                                IsVisible="{Binding IsImage}"
                                                HeightRequest="256"
@@ -79,7 +79,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <!-- Input Box -->
+                
                 <HorizontalStackLayout HorizontalOptions="Center"
                                        Spacing="10">
                     <Entry x:Name="UserInput"

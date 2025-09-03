@@ -1,5 +1,4 @@
 # tools.py
-
 import os
 import requests
 import base64
@@ -10,7 +9,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_mistralai import ChatMistralAI
 
 
-def _claude(): return ChatAnthropic(model="claude-3-opus-20240229", temperature=0)
+def _claude(): return ChatAnthropic(model="claude-3-opus-20240229", temperature=0.1)
 def _mistral(): return ChatMistralAI(model="mistral-large-latest", temperature=0, api_key=os.getenv("MISTRAL_API_KEY"))
 
 
@@ -37,7 +36,7 @@ def _extract_content(resp: Any) -> str:
         return "No content."
     return str(resp)[:4000] or "No content."
 
-# Core LLM tools remain the same
+
 @tool
 def claude_tool(query: str) -> str:
     """Complex reasoning, creative or multi-step tasks."""
@@ -55,7 +54,7 @@ def mistral_tool(query: str) -> str:
         return f"Error invoking Mistral tool: {e}"
 
 
-# --- CORRECTED: Tool for SEARCHING for an image using Tavily AI ---
+
 @tool
 def search_for_image_tool(query: str) -> str:
     """
@@ -73,12 +72,12 @@ def search_for_image_tool(query: str) -> str:
         url = f"https://api.pexels.com/v1/search?query={query}&per_page=1"
         
         response = requests.get(url, headers=headers)
-        response.raise_for_status() # Raises an exception for bad status codes
+        response.raise_for_status() 
         
         data = response.json()
 
         if data["photos"]:
-            # Use 'src.original' or 'src.large' for the image URL
+            
             image_url = data["photos"][0]["src"]["large"] 
             print(f"--- Pexels image search success. URL: {image_url} ---")
             return f"IMAGE_URL::{image_url}"
@@ -90,7 +89,7 @@ def search_for_image_tool(query: str) -> str:
         return f"Pexels search error: {e}"
 
 
-# --- Tool for GENERATING a new image (unchanged) ---
+
 @tool
 def generate_image_tool(prompt: str) -> str:
     """
@@ -99,7 +98,7 @@ def generate_image_tool(prompt: str) -> str:
     Returns the generated image data directly.
     """
     print(f"--- Calling Stability AI v2beta API to generate image for prompt: '{prompt}' ---")
-    # ... (The rest of this function is unchanged)
+    
     api_url = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
     api_key = os.getenv("STABILITY_API_KEY")
     if not api_key: return "Error: STABILITY_API_KEY environment variable not set."
@@ -121,5 +120,5 @@ def generate_image_tool(prompt: str) -> str:
         return f"Stability AI request error: {e}"
 
 
-# --- Update the list of all available tools ---
+
 all_tools = [claude_tool, mistral_tool, search_for_image_tool, generate_image_tool]

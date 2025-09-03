@@ -14,10 +14,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 load_dotenv()
 
-SYSTEM_PROMPT = """
-
-
-"""
+SYSTEM_PROMPT = ""
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -76,7 +73,7 @@ async def chat(req: ChatRequest):
                 elif kind == "on_tool_end":
                     tool_output = event["data"].get("output")
                     
-                    # --- START: ROBUST PARSING LOGIC ---
+                    
                     clean_output = ""
                     if tool_output:
                         if isinstance(tool_output, str):
@@ -90,10 +87,10 @@ async def chat(req: ChatRequest):
                             clean_output = str(tool_output)
 
                     if clean_output:
-                        # Ensure we only send non-empty, clean strings
+                        
                         data = json.dumps({"type": "tool_end", "output": clean_output.strip()})
                         yield f"data: {data}\n\n"
-                    # --- END: ROBUST PARSING LOGIC ---
+                    
             
             print(" Agent stream finished. Sending stream_end event.")
             data = json.dumps({"type": "stream_end", "thread_id": thread_id})

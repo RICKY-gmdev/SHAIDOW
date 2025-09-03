@@ -1,4 +1,4 @@
-//API SERVICEpip install tavily-python
+//API SERVICE
 using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http;
