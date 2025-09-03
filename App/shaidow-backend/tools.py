@@ -7,6 +7,13 @@ from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage
 from langchain_anthropic import ChatAnthropic
 from langchain_mistralai import ChatMistralAI
+from markdownify import markdownify as md
+
+def strip_markdown(text: str) -> str:
+    if not text:
+        return ""
+    return md(str(text)).strip()
+
 
 
 def _claude(): return ChatAnthropic(model="claude-3-opus-20240229", temperature=0.1)
@@ -15,8 +22,10 @@ def _mistral(): return ChatMistralAI(model="mistral-large-latest", temperature=0
 
 
 def _extract_content(resp: Any) -> str:
-    if resp is None: return "No content."
-    if isinstance(resp, str): return resp.strip() or "No content."
+    if resp is None:
+        return "No content."
+    if isinstance(resp, str):
+        return strip_markdown(resp) or "No content."
     if isinstance(resp, BaseMessage):
         c = resp.content
         if isinstance(c, list):
@@ -24,17 +33,21 @@ def _extract_content(resp: Any) -> str:
             for p in c:
                 if isinstance(p, dict):
                     txt = p.get("text")
-                    if txt: parts.append(str(txt))
-                elif isinstance(p, str): parts.append(p)
+                    if txt:
+                        parts.append(str(txt))
+                elif isinstance(p, str):
+                    parts.append(p)
             c = "\n".join(parts)
-        if isinstance(c, str): c = c.strip()
+        if isinstance(c, str):
+            c = strip_markdown(c)
         return c or "No content."
     if isinstance(resp, list):
         for item in resp:
             extracted = _extract_content(item)
-            if extracted and extracted != "No content.": return extracted
+            if extracted and extracted != "No content.":
+                return extracted
         return "No content."
-    return str(resp)[:4000] or "No content."
+    return strip_markdown(str(resp)[:4000]) or "No content."
 
 
 @tool

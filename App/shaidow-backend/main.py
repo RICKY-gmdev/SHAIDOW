@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-
+from tools import strip_markdown 
 from agent import create_agent_graph
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -62,18 +62,17 @@ async def chat(req: ChatRequest):
                 if kind == "on_chat_model_stream":
                     chunk = event["data"]["chunk"]
                     if chunk.content:
-                        data = json.dumps({"type": "text_chunk", "content": chunk.content})
+                        clean_text = strip_markdown(chunk.content)
+                        data = json.dumps({"type": "text_chunk", "content": clean_text})
                         yield f"data: {data}\n\n"
-                
+
                 elif kind == "on_tool_start":
                     tool_name = event["name"]
                     data = json.dumps({"type": "tool_start", "tool": tool_name})
                     yield f"data: {data}\n\n"
-                
+
                 elif kind == "on_tool_end":
                     tool_output = event["data"].get("output")
-                    
-                    
                     clean_output = ""
                     if tool_output:
                         if isinstance(tool_output, str):
@@ -82,14 +81,14 @@ async def chat(req: ChatRequest):
                             clean_output = tool_output.content
                         elif isinstance(tool_output, list) and tool_output and hasattr(tool_output[0], 'content'):
                             clean_output = tool_output[0].content
-                        
                         else:
                             clean_output = str(tool_output)
 
                     if clean_output:
-                        
+                        clean_output = strip_markdown(clean_output)
                         data = json.dumps({"type": "tool_end", "output": clean_output.strip()})
                         yield f"data: {data}\n\n"
+
                     
             
             print(" Agent stream finished. Sending stream_end event.")
