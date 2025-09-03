@@ -116,31 +116,36 @@ namespace App
                                     ScrollToBottom();
                                     break;
                                 case "tool_end":
-                                    aiMessage.Text = "";
-                                    if (response.Output != null)
+                                aiMessage.Text = "";
+
+                                if (!string.IsNullOrEmpty(response.Output))
+                                {
+                                    if (response.Output.StartsWith("IMAGE_URL::"))
                                     {
-                                        if (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::"))
-                                        {
-                                            aiMessage.Text = "Here is the image you requested:";
-                                            aiMessage.ImageUrl = response.Output;
-                                        }
-                                        else
-                                        {
-                                            aiMessage.Text = response.Output;
-                                        }
+                                        // Strip the IMAGE_URL:: prefix
+                                        string url = response.Output.Substring("IMAGE_URL::".Length).Trim();
+
+                                        aiMessage.Text = "Here is the image you requested:";
+                                        aiMessage.ImageUrl = url;
                                     }
-                                    ScrollToBottom();
-                                    break;
-                                case "stream_end":
-                                    _currentThreadId = response.ThreadId;
-                                    _isResponding = false;
-                                    UpdateLoadingIndicatorAnimated();
-                                    break;
-                                case "error":
-                                    aiMessage.Text += $"\n\nSYSTEM ERROR: {response.Content}";
-                                    _isResponding = false;
-                                    UpdateLoadingIndicatorAnimated();
-                                    break;
+                                    else if (response.Output.StartsWith("IMAGE_DATA::"))
+                                    {
+                                        // Strip the IMAGE_DATA:: prefix
+                                        string base64Data = response.Output.Substring("IMAGE_DATA::".Length).Trim();
+
+                                        aiMessage.Text = "Here is the image you requested:";
+                                        aiMessage.ImageUrl = base64Data;
+                                    }
+                                    else
+                                    {
+                                        // Normal text output
+                                        aiMessage.Text = response.Output;
+                                    }
+                                }
+
+                                ScrollToBottom();
+                                break;
+
                             }
                         });
                     }
