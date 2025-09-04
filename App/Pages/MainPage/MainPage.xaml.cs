@@ -1,11 +1,12 @@
 ﻿//MAINPAGE CODE
+
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Dispatching;
+using Microsoft.Maui.Storage;
 
 namespace App
 {
@@ -32,7 +33,7 @@ namespace App
             public string Author { get; set; } = string.Empty;
             public LayoutOptions Alignment { get; set; } = LayoutOptions.Start;
             public Color Background { get; set; } = Colors.Transparent;
-            
+
             public event PropertyChangedEventHandler? PropertyChanged;
             protected void OnPropertyChanged(string propertyName) =>
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -41,7 +42,6 @@ namespace App
         private readonly ApiService _apiService;
         public ObservableCollection<ChatMessage> ChatMessages { get; } = new();
         private CancellationTokenSource? _cts;
-
         private string? _currentThreadId = null;
         private bool _isResponding = false;
 
@@ -50,17 +50,18 @@ namespace App
             InitializeComponent();
             _apiService = new ApiService();
             ChatList.ItemsSource = ChatMessages;
-            if (Application.Current != null) { Application.Current.UserAppTheme = AppTheme.Dark; }
+            if (Application.Current != null)
+            {
+                Application.Current.UserAppTheme = AppTheme.Dark;
+            }
             Preferences.Set("AppTheme", "Dark");
         }
 
         private void OnSendMessage(object sender, EventArgs e)
         {
             string userMessageText = UserInput.Text?.Trim() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(userMessageText)) return;
-            if (_isResponding) return;
+            if (string.IsNullOrWhiteSpace(userMessageText) || _isResponding) return;
 
-            // Add user message to chat
             var userMessage = new ChatMessage
             {
                 Author = "You",
@@ -73,10 +74,8 @@ namespace App
 
             _isResponding = true;
             UpdateLoadingIndicatorAnimated();
-
             _cts = new CancellationTokenSource();
-            
-            
+
             var aiMessage = new ChatMessage
             {
                 Author = "SHAIDOW",
@@ -86,10 +85,13 @@ namespace App
             };
             AddMessage(aiMessage);
 
-            _ = Task.Run(async () =>
+              _ = Task.Run(async () =>
             {
                 try
                 {
+                    // --- START: MODIFICATION ---
+                    bool firstTextChunkReceived = false; 
+
                     await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
                     {
                         MainThread.BeginInvokeOnMainThread(() =>
@@ -97,58 +99,65 @@ namespace App
                             switch (response.Type)
                             {
                                 case "text_chunk":
-                                    
-                                    var newText = aiMessage.Text + response.Content;
-                                    var newAiMessage = new ChatMessage 
+                                    // The first text chunk should replace any existing text (like tool usage messages).
+                                    // Subsequent chunks should append to it.
+                                    if (!firstTextChunkReceived)
                                     {
-                                        Author = aiMessage.Author,
-                                        Text = newText,
-                                        Background = aiMessage.Background,
-                                        Alignment = aiMessage.Alignment
-                                    };
-                                    
-                                    ReplaceMessage(aiMessage, newAiMessage);
-                                    aiMessage = newAiMessage; 
-                                    ScrollToBottom();
-                                    break;
-                                case "tool_start":
-                                    aiMessage.Text += $"\n* (Using {response.Tool}) * ";
-                                    ScrollToBottom();
-                                    break;
-                                case "tool_end":
-                                aiMessage.Text = "";
-
-                                if (!string.IsNullOrEmpty(response.Output))
-                                {
-                                    if (response.Output.StartsWith("IMAGE_URL::"))
-                                    {
-                                        // Strip the IMAGE_URL:: prefix
-                                        string url = response.Output.Substring("IMAGE_URL::".Length).Trim();
-
-                                        aiMessage.Text = "Here is the image you requested:";
-                                        aiMessage.ImageUrl = url;
-                                    }
-                                    else if (response.Output.StartsWith("IMAGE_DATA::"))
-                                    {
-                                        // Strip the IMAGE_DATA:: prefix
-                                        string base64Data = response.Output.Substring("IMAGE_DATA::".Length).Trim();
-
-                                        aiMessage.Text = "Here is the image you requested:";
-                                        aiMessage.ImageUrl = base64Data;
+                                        aiMessage.Text = response.Content;
+                                        firstTextChunkReceived = true;
                                     }
                                     else
                                     {
-                                        // Normal text output
-                                        aiMessage.Text = response.Output;
+                                        aiMessage.Text += response.Content;
                                     }
-                                }
+                                    
+                                    // We create a new message object to force the UI to update properly.
+                                    var newAiMessage = new ChatMessage
+                                    {
+                                        Author = aiMessage.Author,
+                                        Text = aiMessage.Text,
+                                        Background = aiMessage.Background,
+                                        Alignment = aiMessage.Alignment,
+                                        ImageUrl = aiMessage.ImageUrl // Preserve the image url
+                                    };
+                                    ReplaceMessage(aiMessage, newAiMessage);
+                                    aiMessage = newAiMessage;
+                                    ScrollToBottom();
+                                    break;
 
-                                ScrollToBottom();
-                                break;
+                                case "tool_start":
+                                    // We can clear previous text and show the tool usage.
+                                    // The final text chunks will overwrite this.
+                                    aiMessage.Text = $"* (Using {response.Tool}...) *";
+                                    ScrollToBottom();
+                                    break;
 
+                                case "tool_end":
+                                    // This case should ONLY handle setting the image.
+                                    // Do NOT modify aiMessage.Text here. The LLM will provide the final text.
+                                    if (response.Output != null && (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::")))
+                                    {
+                                        aiMessage.ImageUrl = response.Output.Replace("IMAGE_URL::", "").Replace("IMAGE_DATA::", "");
+                                    }
+                                    
+                                    ScrollToBottom();
+                                    break;
+
+                                case "stream_end":
+                                    _currentThreadId = response.ThreadId;
+                                    _isResponding = false;
+                                    UpdateLoadingIndicatorAnimated();
+                                    break;
+
+                                case "error":
+                                    aiMessage.Text += $"\n\nSYSTEM ERROR: {response.Content}";
+                                    _isResponding = false;
+                                    UpdateLoadingIndicatorAnimated();   
+                                    break;
                             }
                         });
                     }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -169,7 +178,6 @@ namespace App
             ScrollToBottom();
         }
 
-        
         private void ReplaceMessage(ChatMessage oldMessage, ChatMessage newMessage)
         {
             var index = ChatMessages.IndexOf(oldMessage);

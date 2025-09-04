@@ -60,7 +60,25 @@ def should_continue(state: MessagesState) -> str:
     
     return END
 
-
+def sanitize_tool_output(state: MessagesState) -> Dict[str, Any]:
+    """
+    Inspects the last messages in the state, which are expected to be ToolMessages.
+    If a tool message contains image data, it replaces the long base64 string
+    with a short placeholder to keep the history clean.
+    """
+    messages = list(state.get("messages", []))
+    sanitized_messages = []
+    for msg in messages:
+        if isinstance(msg, ToolMessage):
+            # Create a new ToolMessage to avoid modifying the original in-place
+            new_msg = ToolMessage(tool_call_id=msg.tool_call_id, name=msg.name, content=msg.content)
+            if isinstance(new_msg.content, str) and new_msg.content.startswith("IMAGE_DATA::data:image"):
+                new_msg.content = "[Image was generated and displayed to the user.]"
+            sanitized_messages.append(new_msg)
+        else:
+            sanitized_messages.append(msg)
+            
+    return {"messages": sanitized_messages}
 
 def create_agent_graph(system_prompt: str):
     workflow = StateGraph(MessagesState)
@@ -73,7 +91,7 @@ def create_agent_graph(system_prompt: str):
     workflow.add_node("preprocess", add_system_message)
     workflow.add_node("agent", call_model)
     workflow.add_node("tools", tool_node)
-
+    workflow.add_node("sanitize_tools", sanitize_tool_output)
     workflow.set_entry_point("preprocess")
     workflow.add_edge("preprocess", "agent")
     workflow.add_conditional_edges("agent", should_continue, {"tools": "tools", END: END})
