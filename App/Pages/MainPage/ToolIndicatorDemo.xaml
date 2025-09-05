@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:App"
+             x:Class="App.ToolIndicatorDemo"
+             Title="Tool Indicator Demo">
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <Label Text="SHAIDOW Tool Indicator Demo"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="Cyan"/>
+            
+            <Label Text="Test the animated tool indicators below:"
+                   FontSize="16"
+                   HorizontalOptions="Center"
+                   TextColor="White"/>
+            
+            <!-- Demo Tool Indicator -->
+            <local:ToolIndicatorView x:Name="DemoToolIndicator"
+                                     HorizontalOptions="Center"
+                                     VerticalOptions="Center"/>
+            
+            <!-- Control Buttons -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Single Tool Tests:" FontSize="18" FontAttributes="Bold" TextColor="Cyan"/>
+                
+                <Button Text="Show Mistral" 
+                        Clicked="OnShowMistralClicked"
+                        BackgroundColor="#FF6B35"
+                        TextColor="White"/>
+                
+                <Button Text="Show Claude" 
+                        Clicked="OnShowClaudeClicked"
+                        BackgroundColor="#D97706"
+                        TextColor="White"/>
+                
+                <Button Text="Show GPT" 
+                        Clicked="OnShowGPTClicked"
+                        BackgroundColor="#10B981"
+                        TextColor="White"/>
+                
+                <Label Text="Multiple Tools Tests:" FontSize="18" FontAttributes="Bold" TextColor="Cyan"/>
+                
+                <Button Text="Show Multiple Tools" 
+                        Clicked="OnShowMultipleClicked"
+                        BackgroundColor="#8B5CF6"
+                        TextColor="White"/>
+                
+                <Button Text="Cycle Through Tools" 
+                        Clicked="OnCycleToolsClicked"
+                        BackgroundColor="#EC4899"
+                        TextColor="White"/>
+                
+                <Button Text="Clear All Tools" 
+                        Clicked="OnClearAllClicked"
+                        BackgroundColor="#EF4444"
+                        TextColor="White"/>
+            </VerticalStackLayout>
+            
+            <!-- Animation Info -->
+            <Frame BackgroundColor="Black" 
+                   Stroke="Cyan" 
+                   StrokeShape="RoundRectangle 10"
+                   Padding="15">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Animation Features:" 
+                           FontSize="16" 
+                           FontAttributes="Bold" 
+                           TextColor="Cyan"/>
+                    <Label Text="• Single tool: Glowing pulse effect" 
+                           TextColor="White"/>
+                    <Label Text="• Multiple tools: Orbiting animation" 
+                           TextColor="White"/>
+                    <Label Text="• Background: Pulsing cyan ellipse" 
+                           TextColor="White"/>
+                    <Label Text="• Smooth transitions between states" 
+                           TextColor="White"/>
+                </VerticalStackLayout>
+            </Frame>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

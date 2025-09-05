@@ -1,4 +1,4 @@
-﻿//MAINPAGE CODE
+//MAINPAGE CODE
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -126,15 +126,15 @@ namespace App
                                     break;
 
                                 case "tool_start":
-                                    // We can clear previous text and show the tool usage.
-                                    // The final text chunks will overwrite this.
+                                    // Show tool indicator and update message
+                                    ToolIndicator.ShowTool(response.Tool ?? "default");
                                     aiMessage.Text = $"* (Using {response.Tool}...) *";
                                     ScrollToBottom();
                                     break;
 
                                 case "tool_end":
-                                    // This case should ONLY handle setting the image.
-                                    // Do NOT modify aiMessage.Text here. The LLM will provide the final text.
+                                    // Hide tool indicator and handle image output
+                                    ToolIndicator.HideTool(response.Tool ?? "default");
                                     if (response.Output != null && (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::")))
                                     {
                                         aiMessage.ImageUrl = response.Output.Replace("IMAGE_URL::", "").Replace("IMAGE_DATA::", "");
@@ -146,12 +146,14 @@ namespace App
                                 case "stream_end":
                                     _currentThreadId = response.ThreadId;
                                     _isResponding = false;
+                                    ToolIndicator.ClearAllTools();
                                     UpdateLoadingIndicatorAnimated();
                                     break;
 
                                 case "error":
                                     aiMessage.Text += $"\n\nSYSTEM ERROR: {response.Content}";
                                     _isResponding = false;
+                                    ToolIndicator.ClearAllTools();
                                     UpdateLoadingIndicatorAnimated();   
                                     break;
                             }
@@ -166,6 +168,7 @@ namespace App
                         aiMessage.Text = $"CRITICAL ERROR: {ex.Message}";
                         aiMessage.Background = Colors.DarkRed;
                         _isResponding = false;
+                        ToolIndicator.ClearAllTools();
                         UpdateLoadingIndicatorAnimated();
                     });
                 }
