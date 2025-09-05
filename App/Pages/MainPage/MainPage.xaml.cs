@@ -1,4 +1,4 @@
-//MAINPAGE CODE
+﻿//MAINPAGE CODE
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,7 +18,7 @@ namespace App
             public string? Text
             {
                 get => _text;
-                set { _text = value; OnPropertyChanged(nameof(Text)); }
+                set { _text = value; OnPropertyChanged(nameof(Text)); OnPropertyChanged(nameof(IsText)); }
             }
 
             private string? _imageUrl;
@@ -85,12 +85,11 @@ namespace App
             };
             AddMessage(aiMessage);
 
-              _ = Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
                 try
                 {
-                    // --- START: MODIFICATION ---
-                    bool firstTextChunkReceived = false; 
+                    bool firstTextChunkReceived = false;
 
                     await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
                     {
@@ -99,8 +98,8 @@ namespace App
                             switch (response.Type)
                             {
                                 case "text_chunk":
-                                    // The first text chunk should replace any existing text (like tool usage messages).
-                                    // Subsequent chunks should append to it.
+                                    // If this is the first piece of text, it replaces any previous
+                                    // content (like "Using tool..."). Otherwise, it appends.
                                     if (!firstTextChunkReceived)
                                     {
                                         aiMessage.Text = response.Content;
@@ -110,36 +109,23 @@ namespace App
                                     {
                                         aiMessage.Text += response.Content;
                                     }
-                                    
-                                    // We create a new message object to force the UI to update properly.
-                                    var newAiMessage = new ChatMessage
-                                    {
-                                        Author = aiMessage.Author,
-                                        Text = aiMessage.Text,
-                                        Background = aiMessage.Background,
-                                        Alignment = aiMessage.Alignment,
-                                        ImageUrl = aiMessage.ImageUrl // Preserve the image url
-                                    };
-                                    ReplaceMessage(aiMessage, newAiMessage);
-                                    aiMessage = newAiMessage;
                                     ScrollToBottom();
                                     break;
 
                                 case "tool_start":
-                                    // Show tool indicator and update message
                                     ToolIndicator.ShowTool(response.Tool ?? "default");
                                     aiMessage.Text = $"* (Using {response.Tool}...) *";
                                     ScrollToBottom();
                                     break;
 
                                 case "tool_end":
-                                    // Hide tool indicator and handle image output
                                     ToolIndicator.HideTool(response.Tool ?? "default");
                                     if (response.Output != null && (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::")))
                                     {
                                         aiMessage.ImageUrl = response.Output.Replace("IMAGE_URL::", "").Replace("IMAGE_DATA::", "");
                                     }
-                                    
+                                    // Note: We don't display non-image tool output directly,
+                                    // as it's intermediate context for the agent. The final text_chunks will form the response.
                                     ScrollToBottom();
                                     break;
 
@@ -154,12 +140,11 @@ namespace App
                                     aiMessage.Text += $"\n\nSYSTEM ERROR: {response.Content}";
                                     _isResponding = false;
                                     ToolIndicator.ClearAllTools();
-                                    UpdateLoadingIndicatorAnimated();   
+                                    UpdateLoadingIndicatorAnimated();
                                     break;
                             }
                         });
                     }
-                    
                 }
                 catch (Exception ex)
                 {
@@ -181,6 +166,7 @@ namespace App
             ScrollToBottom();
         }
 
+        // This is no longer needed with the improved logic but can be kept for other purposes.
         private void ReplaceMessage(ChatMessage oldMessage, ChatMessage newMessage)
         {
             var index = ChatMessages.IndexOf(oldMessage);
@@ -190,6 +176,7 @@ namespace App
             }
         }
 
+        // ... rest of the functions (UpdateLoadingIndicatorAnimated, OnLightModeClicked, ScrollToBottom) remain unchanged ...
         public async void UpdateLoadingIndicatorAnimated()
         {
             if (_isResponding)

@@ -3,102 +3,102 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.ToolIndicatorView"
              x:Name="ToolIndicator">
-    
-    <Grid x:Name="IndicatorGrid" 
-          WidthRequest="80" 
-          HeightRequest="80"
-          IsVisible="False">
-        
-        <!-- Single tool indicator -->
-        <Frame x:Name="SingleToolFrame"
-               BackgroundColor="Transparent"
-               HasShadow="False"
-               Padding="0"
-               IsVisible="True">
-            <Image x:Name="SingleToolIcon"
-                   WidthRequest="48"
-                   HeightRequest="48"
-                   Aspect="AspectFit"
-                   Opacity="0.8"/>
-        </Frame>
-        
-        <!-- Multiple tools indicator -->
-        <Grid x:Name="MultipleToolsGrid"
-              IsVisible="False">
-            
-            <!-- Orbiting tool icons -->
-            <Frame x:Name="OrbitFrame1"
-                   BackgroundColor="Transparent"
-                   HasShadow="False"
-                   Padding="0"
-                   TranslationX="0"
-                   TranslationY="-25">
-                <Image x:Name="OrbitIcon1"
-                       WidthRequest="32"
-                       HeightRequest="32"
-                       Aspect="AspectFit"
-                       Opacity="0.7"/>
-            </Frame>
-            
-            <Frame x:Name="OrbitFrame2"
-                   BackgroundColor="Transparent"
-                   HasShadow="False"
-                   Padding="0"
-                   TranslationX="25"
-                   TranslationY="0">
-                <Image x:Name="OrbitIcon2"
-                       WidthRequest="32"
-                       HeightRequest="32"
-                       Aspect="AspectFit"
-                       Opacity="0.7"/>
-            </Frame>
-            
-            <Frame x:Name="OrbitFrame3"
-                   BackgroundColor="Transparent"
-                   HasShadow="False"
-                   Padding="0"
-                   TranslationX="0"
-                   TranslationY="25">
-                <Image x:Name="OrbitIcon3"
-                       WidthRequest="32"
-                       HeightRequest="32"
-                       Aspect="AspectFit"
-                       Opacity="0.7"/>
-            </Frame>
-            
-            <Frame x:Name="OrbitFrame4"
-                   BackgroundColor="Transparent"
-                   HasShadow="False"
-                   Padding="0"
-                   TranslationX="-25"
-                   TranslationY="0">
-                <Image x:Name="OrbitIcon4"
-                       WidthRequest="32"
-                       HeightRequest="32"
-                       Aspect="AspectFit"
-                       Opacity="0.7"/>
-            </Frame>
-            
-            <!-- Center icon -->
-            <Frame x:Name="CenterFrame"
-                   BackgroundColor="Transparent"
-                   HasShadow="False"
-                   Padding="0">
-                <Image x:Name="CenterIcon"
-                       WidthRequest="40"
-                       HeightRequest="40"
-                       Aspect="AspectFit"
-                       Opacity="0.9"/>
-            </Frame>
-        </Grid>
-        
-        <!-- Pulsing background effect -->
-        <Ellipse x:Name="PulseEllipse"
-                 Fill="Cyan"
-                 Opacity="0.2"
-                 WidthRequest="60"
-                 HeightRequest="60"
-                 HorizontalOptions="Center"
-                 VerticalOptions="Center"/>
-    </Grid>
+
+       <Grid x:Name="IndicatorGrid"
+             WidthRequest="80"
+             HeightRequest="80"
+             IsVisible="False">
+
+              <!-- Single tool indicator -->
+              <Frame x:Name="SingleToolFrame"
+                     BackgroundColor="Transparent"
+                     HasShadow="False"
+                     Padding="0"
+                     IsVisible="True">
+                     <Image x:Name="SingleToolIcon"
+                            WidthRequest="48"
+                            HeightRequest="48"
+                            Aspect="AspectFit"
+                            Opacity="0.8"/>
+              </Frame>
+
+              <!-- Multiple tools indicator -->
+              <Grid x:Name="MultipleToolsGrid"
+                    IsVisible="False">
+
+                     <!-- Orbiting tool icons -->
+                     <Frame x:Name="OrbitFrame1"
+                            BackgroundColor="Transparent"
+                            HasShadow="False"
+                            Padding="0"
+                            TranslationX="0"
+                            TranslationY="-25">
+                            <Image x:Name="OrbitIcon1"
+                                   WidthRequest="32"
+                                   HeightRequest="32"
+                                   Aspect="AspectFit"
+                                   Opacity="0.7"/>
+                     </Frame>
+
+                     <Frame x:Name="OrbitFrame2"
+                            BackgroundColor="Transparent"
+                            HasShadow="False"
+                            Padding="0"
+                            TranslationX="25"
+                            TranslationY="0">
+                            <Image x:Name="OrbitIcon2"
+                                   WidthRequest="32"
+                                   HeightRequest="32"
+                                   Aspect="AspectFit"
+                                   Opacity="0.7"/>
+                     </Frame>
+
+                     <Frame x:Name="OrbitFrame3"
+                            BackgroundColor="Transparent"
+                            HasShadow="False"
+                            Padding="0"
+                            TranslationX="0"
+                            TranslationY="25">
+                            <Image x:Name="OrbitIcon3"
+                                   WidthRequest="32"
+                                   HeightRequest="32"
+                                   Aspect="AspectFit"
+                                   Opacity="0.7"/>
+                     </Frame>
+
+                     <Frame x:Name="OrbitFrame4"
+                            BackgroundColor="Transparent"
+                            HasShadow="False"
+                            Padding="0"
+                            TranslationX="-25"
+                            TranslationY="0">
+                            <Image x:Name="OrbitIcon4"
+                                   WidthRequest="32"
+                                   HeightRequest="32"
+                                   Aspect="AspectFit"
+                                   Opacity="0.7"/>
+                     </Frame>
+
+                     <!-- Center icon -->
+                     <Frame x:Name="CenterFrame"
+                            BackgroundColor="Transparent"
+                            HasShadow="False"
+                            Padding="0">
+                            <Image x:Name="CenterIcon"
+                                   WidthRequest="40"
+                                   HeightRequest="40"
+                                   Aspect="AspectFit"
+                                   Opacity="0.9"/>
+                     </Frame>
+              </Grid>
+
+              <!-- Pulsing background effect -->
+              <Ellipse x:Name="PulseEllipse"
+                       Fill="Cyan"
+                       Opacity="0.2"
+                       WidthRequest="60"
+                       HeightRequest="60"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+       </Grid>
 </ContentView>

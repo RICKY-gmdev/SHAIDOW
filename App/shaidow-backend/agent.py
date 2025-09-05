@@ -1,4 +1,3 @@
-# agent.py
 from typing import List, Dict, Any
 from langchain_core.messages import (
     HumanMessage,
@@ -14,7 +13,7 @@ from tools import all_tools
 
 
 agent_model = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
+    model="gemini-1.5-flash", # Using 1.5 Flash for potentially better tool use
     convert_system_message_to_human=True,
     temperature=0.2,
 )
@@ -35,14 +34,11 @@ def _ensure_system_first(messages: List[BaseMessage], system_prompt: str) -> Lis
 
 def call_model(state: MessagesState) -> Dict[str, Any]:
     messages: List[BaseMessage] = list(state.get("messages", []))
-
     
     if not messages:
         messages = [HumanMessage(content="Hello")]
 
- 
     response = agent_with_tools.invoke(messages)
-
     
     new_messages = messages + [response]
     return {"messages": new_messages}
@@ -62,9 +58,8 @@ def should_continue(state: MessagesState) -> str:
 
 def sanitize_tool_output(state: MessagesState) -> Dict[str, Any]:
     """
-    Inspects the last messages in the state, which are expected to be ToolMessages.
-    If a tool message contains image data, it replaces the long base64 string
-    with a short placeholder to keep the history clean.
+    Inspects the last messages (ToolMessages) and replaces large image data
+    with a placeholder to keep the conversation history clean for the next LLM call.
     """
     messages = list(state.get("messages", []))
     sanitized_messages = []
@@ -73,7 +68,7 @@ def sanitize_tool_output(state: MessagesState) -> Dict[str, Any]:
             # Create a new ToolMessage to avoid modifying the original in-place
             new_msg = ToolMessage(tool_call_id=msg.tool_call_id, name=msg.name, content=msg.content)
             if isinstance(new_msg.content, str) and new_msg.content.startswith("IMAGE_DATA::data:image"):
-                new_msg.content = "[Image was generated and displayed to the user.]"
+                new_msg.content = "[Image was generated successfully and displayed to the user.]"
             sanitized_messages.append(new_msg)
         else:
             sanitized_messages.append(msg)
@@ -91,10 +86,14 @@ def create_agent_graph(system_prompt: str):
     workflow.add_node("preprocess", add_system_message)
     workflow.add_node("agent", call_model)
     workflow.add_node("tools", tool_node)
-    workflow.add_node("sanitize_tools", sanitize_tool_output)
+    workflow.add_node("sanitize_tools", sanitize_tool_output) # Node was already here
+
     workflow.set_entry_point("preprocess")
     workflow.add_edge("preprocess", "agent")
     workflow.add_conditional_edges("agent", should_continue, {"tools": "tools", END: END})
-    workflow.add_edge("tools", "agent")
+    
+    # --- FIX: Correctly connect the sanitize node ---
+    workflow.add_edge("tools", "sanitize_tools")
+    workflow.add_edge("sanitize_tools", "agent")
 
     return workflow.compile()

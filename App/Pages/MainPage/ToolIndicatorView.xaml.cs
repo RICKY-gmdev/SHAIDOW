@@ -213,11 +213,11 @@ namespace App
                         var pulse1 = PulseEllipse.ScaleTo(1.4, 800, Easing.SinInOut);
                         var opacity1 = PulseEllipse.FadeTo(0.3, 800, Easing.SinInOut);
                         await Task.WhenAll(pulse1, opacity1);
-                        
+
                         var pulse2 = PulseEllipse.ScaleTo(1.0, 800, Easing.SinInOut);
                         var opacity2 = PulseEllipse.FadeTo(0.1, 800, Easing.SinInOut);
                         await Task.WhenAll(pulse2, opacity2);
-                        
+
                         // Brief pause for breathing effect
                         await Task.Delay(200);
                     }
@@ -257,7 +257,7 @@ namespace App
                             orbitFrames[i].TranslationX = x;
                             orbitFrames[i].TranslationY = y;
                             orbitFrames[i].Scale = scale;
-                            
+
                             // Add rotation for dynamic effect
                             orbitFrames[i].Rotation = angles[i];
                         }
@@ -265,7 +265,7 @@ namespace App
                     tasks.Add(task);
 
                     // Increment angle for next frame
-                    angles[i] = (angles[i] + rotationSpeed) % 360;
+                    angles[i] = (int)((angles[i] + rotationSpeed) % 360);
                 }
 
                 await Task.WhenAll(tasks);
@@ -285,7 +285,7 @@ namespace App
                         var glow1 = SingleToolIcon.FadeTo(1.0, 600, Easing.SinInOut);
                         var scale1 = SingleToolIcon.ScaleTo(1.1, 600, Easing.SinInOut);
                         await Task.WhenAll(glow1, scale1);
-                        
+
                         var glow2 = SingleToolIcon.FadeTo(0.7, 600, Easing.SinInOut);
                         var scale2 = SingleToolIcon.ScaleTo(1.0, 600, Easing.SinInOut);
                         await Task.WhenAll(glow2, scale2);

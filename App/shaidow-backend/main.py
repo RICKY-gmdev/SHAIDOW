@@ -1,5 +1,3 @@
-# main.py
-
 import os
 import uuid
 import json
@@ -14,10 +12,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 load_dotenv()
 
-SYSTEM_PROMPT = """
-
-
-"""
+SYSTEM_PROMPT = ""
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,7 +28,7 @@ async def lifespan(app: FastAPI):
     yield
     print("Application shutting down.")
 
-app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.1", lifespan=lifespan)
+app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.2", lifespan=lifespan)
 
 @app.get("/")
 def read_root():
@@ -50,10 +45,9 @@ class ChatRequest(BaseModel):
 async def chat(req: ChatRequest):
     thread_id = req.thread_id or str(uuid.uuid4())
     config = {"configurable": {"thread_id": thread_id}}
-    user_input = {"messages":
-                  [("system", SYSTEM_PROMPT),
-                   ("user", req.message)]
-                   }
+    
+    # --- IMPROVEMENT: Removed redundant system prompt. The agent graph handles this. ---
+    user_input = {"messages": [("user", req.message)]}
 
     async def event_stream():
         print("\n--- NEW REQUEST RECEIVED ---")
@@ -79,7 +73,6 @@ async def chat(req: ChatRequest):
                 elif kind == "on_tool_end":
                     tool_output = event["data"].get("output")
                     
-                    # --- START: ROBUST PARSING LOGIC ---
                     clean_output = ""
                     if tool_output:
                         if isinstance(tool_output, str):
@@ -88,15 +81,12 @@ async def chat(req: ChatRequest):
                             clean_output = tool_output.content
                         elif isinstance(tool_output, list) and tool_output and hasattr(tool_output[0], 'content'):
                             clean_output = tool_output[0].content
-                        
                         else:
                             clean_output = str(tool_output)
 
                     if clean_output:
-                        # Ensure we only send non-empty, clean strings
-                        data = json.dumps({"type": "tool_end", "output": clean_output.strip()})
+                        data = json.dumps({"type": "tool_end", "tool": event["name"], "output": clean_output.strip()})
                         yield f"data: {data}\n\n"
-                    # --- END: ROBUST PARSING LOGIC ---
             
             print(" Agent stream finished. Sending stream_end event.")
             data = json.dumps({"type": "stream_end", "thread_id": thread_id})
