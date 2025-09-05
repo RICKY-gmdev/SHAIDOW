@@ -1,7 +1,8 @@
-﻿<!-- MainPage.xaml -->
+<!-- MainPage.xaml -->
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:App"
              x:Class="App.MainPage">
     <Grid>
         <ScrollView>
@@ -90,6 +91,12 @@
                            Completed="OnSendMessage"/>
                     <Button Text="Send"
                             Clicked="OnSendMessage"/>
+                    
+                    <!-- Tool Indicator -->
+                    <local:ToolIndicatorView x:Name="ToolIndicator"
+                                             HorizontalOptions="Center"
+                                             VerticalOptions="Center"/>
+                    
                     <ActivityIndicator x:Name="Spinner"
                                        IsVisible="False"
                                        IsRunning="False"

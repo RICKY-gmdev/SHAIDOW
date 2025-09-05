@@ -1,0 +1,30 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="claudeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D97706;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+    <filter id="claudeGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="28" fill="url(#claudeGradient)" filter="url(#claudeGlow)"/>
+  
+  <!-- C letter -->
+  <path d="M32 18 C24 18 18 24 18 32 C18 40 24 46 32 46 C36 46 40 44 42 42 L38 38 C37 39 35 40 32 40 C28 40 26 36 26 32 C26 28 28 24 32 24 C35 24 37 25 38 26 L42 22 C40 20 36 18 32 18 Z" 
+        fill="white" 
+        stroke="white" 
+        stroke-width="1"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="20" cy="20" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="44" cy="20" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="20" cy="44" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="44" cy="44" r="1.5" fill="white" opacity="0.7"/>
+</svg>
