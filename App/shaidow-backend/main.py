@@ -13,10 +13,14 @@ from langgraph.checkpoint.memory import MemorySaver
 load_dotenv()
 
 SYSTEM_PROMPT = ""
+memory = MemorySaver()
+agent_executor = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global SYSTEM_PROMPT
+    global agent_executor
+
     try:
         with open("system_prompt.txt", "r", encoding="utf-8") as f:
             SYSTEM_PROMPT = f.read()
@@ -24,8 +28,12 @@ async def lifespan(app: FastAPI):
     except FileNotFoundError:
         print("WARNING: system_prompt.txt not found.")
         SYSTEM_PROMPT = "You are a helpful AI assistant."
-        
+    
+    agent_executor = create_agent_graph(SYSTEM_PROMPT).with_config(checkpointer=memory)
+    print("Agent executor created successfully.")
+    
     yield
+    
     print("Application shutting down.")
 
 app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.2", lifespan=lifespan)
@@ -34,29 +42,24 @@ app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.2", lifespan=lifesp
 def read_root():
     return {"message": "Welcome to the Shaidow API"}
 
-memory = MemorySaver()
-agent_executor = create_agent_graph(SYSTEM_PROMPT).with_config(checkpointer=memory)
-
 class ChatRequest(BaseModel):
     message: str
     thread_id: str | None = Field(default=None)
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
+    if agent_executor is None:
+        return {"error": "Agent not initialized"}
+
     thread_id = req.thread_id or str(uuid.uuid4())
     config = {"configurable": {"thread_id": thread_id}}
     
-    # --- IMPROVEMENT: Removed redundant system prompt. The agent graph handles this. ---
     user_input = {"messages": [("user", req.message)]}
 
     async def event_stream():
         print("\n--- NEW REQUEST RECEIVED ---")
-        print(f"Input: {user_input}")
         try:
-            print(" Starting to iterate through agent events...")
             async for event in agent_executor.astream_events(user_input, config, version="v1"):
-                print(f"RAW AGENT EVENT: {event}\n")
-                
                 kind = event["event"]
                 
                 if kind == "on_chat_model_stream":
@@ -72,23 +75,10 @@ async def chat(req: ChatRequest):
                 
                 elif kind == "on_tool_end":
                     tool_output = event["data"].get("output")
-                    
-                    clean_output = ""
-                    if tool_output:
-                        if isinstance(tool_output, str):
-                            clean_output = tool_output
-                        elif hasattr(tool_output, 'content'):
-                            clean_output = tool_output.content
-                        elif isinstance(tool_output, list) and tool_output and hasattr(tool_output[0], 'content'):
-                            clean_output = tool_output[0].content
-                        else:
-                            clean_output = str(tool_output)
-
-                    if clean_output:
-                        data = json.dumps({"type": "tool_end", "tool": event["name"], "output": clean_output.strip()})
-                        yield f"data: {data}\n\n"
+                    clean_output = str(tool_output) if tool_output else ""
+                    data = json.dumps({"type": "tool_end", "tool": event["name"], "output": clean_output.strip()})
+                    yield f"data: {data}\n\n"
             
-            print(" Agent stream finished. Sending stream_end event.")
             data = json.dumps({"type": "stream_end", "thread_id": thread_id})
             yield f"data: {data}\n\n"
 

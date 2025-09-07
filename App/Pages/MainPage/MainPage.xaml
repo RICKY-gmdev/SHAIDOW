@@ -1,15 +1,12 @@
-﻿<!-- MainPage.xaml -->
-
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:App"
              x:Class="App.MainPage">
     <Grid>
         <ScrollView>
-
-            <VerticalStackLayout Padding="30"
-                                 Spacing="25"
-                                 HorizontalOptions="Center">
+            <VerticalStackLayout x:Name="PageContentLayout"
+                                 Padding="30"
+                                 Spacing="25">
                 <Grid>
                     <Border BackgroundColor="Transparent"
                             Stroke="LightGray"
@@ -25,13 +22,17 @@
                                 Clicked="OnLightModeClicked"/>
                     </Border>
                 </Grid>
-                <!-- Logo -->
-                <Image Source="shaidow.png"
-                       WidthRequest="600"
-                       HeightRequest="360"
-                       Aspect="AspectFit"/>
 
-                <!-- App Title -->
+                <Grid Grid.Row="1">
+                    <Image Source="shaidow.png"
+                           Aspect="AspectFit"
+                           HeightRequest="360"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+
+                    <local:ToolAnimationView x:Name="ToolAnimationView"/>
+                </Grid>
+
                 <Border Stroke="#FF3F3D3D"
                         StrokeShape="RoundRectangle 20"
                         Padding="5"
@@ -47,7 +48,6 @@
                            VerticalTextAlignment="Center"/>
                 </Border>
 
-                <!-- Chat List -->
                 <ListView x:Name="ChatList"
                           ItemsSource="{Binding ChatMessages}"
                           HasUnevenRows="True"
@@ -58,21 +58,17 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-
                                 <Border Stroke="Black"
                                         StrokeShape="RoundRectangle 10"
                                         BackgroundColor="Black">
                                     <StackLayout Padding="10">
-
                                         <Label Text="{Binding Text}"
                                                IsVisible="{Binding IsText}"
                                                TextColor="White"/>
-
-
                                         <Image Source="{Binding ImageUrl}"
-                                               IsVisible="{Binding IsImage}"
+                                               Aspect="AspectFit"
                                                HeightRequest="256"
-                                               Aspect="AspectFit"/>
+                                               IsVisible="{Binding IsImage}"/>
                                     </StackLayout>
                                 </Border>
                             </ViewCell>
@@ -80,33 +76,35 @@
                     </ListView.ItemTemplate>
                 </ListView>
 
-
-                <HorizontalStackLayout HorizontalOptions="Center"
-                                       Spacing="10">
+                <Grid x:Name="InputContainer"
+                      ColumnDefinitions="*, Auto, Auto"
+                      ColumnSpacing="10"
+                      HorizontalOptions="Center">
                     <Entry x:Name="UserInput"
-                           Placeholder="Ask SHAIDOW AI..."
-                           WidthRequest="250"
+                           Grid.Column="0"
+                           Placeholder="Ask SHAIDOW ..."
                            VerticalOptions="Center"
                            TextColor="cyan"
-                           Completed="OnSendMessage"/>
-                    <Button Text="Send"
-                            Clicked="OnSendMessage"/>
+                           Completed="OnSendMessage"
+                           Focused="OnUserInputFocused"
+                           Unfocused="OnUserInputUnfocused"/>
 
-                    <!-- Tool Indicator -->
-                    <local:ToolIndicatorView x:Name="ToolIndicator"
-                                             HorizontalOptions="Center"
-                                             VerticalOptions="Center"/>
+                    <Button x:Name="SendButton"
+                            Grid.Column="1"
+                            Text="Send"
+                            Clicked="OnSendMessage"
+                            WidthRequest="80"
+                            VerticalOptions="Center"/>
 
                     <ActivityIndicator x:Name="Spinner"
+                                       Grid.Column="2"
                                        IsVisible="False"
                                        IsRunning="False"
-                                       WidthRequest="25"
-                                       HeightRequest="25"
-                                       TranslationX="0"
-                                       HorizontalOptions="Start"
+                                       WidthRequest="30"
+                                       HeightRequest="30"
                                        VerticalOptions="Center"
                                        Color="Cyan"/>
-                </HorizontalStackLayout>
+                </Grid>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

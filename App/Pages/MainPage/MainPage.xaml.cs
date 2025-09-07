@@ -45,9 +45,11 @@ namespace App
         private string? _currentThreadId = null;
         private bool _isResponding = false;
 
+
         public MainPage()
         {
             InitializeComponent();
+            BindingContext = this;
             _apiService = new ApiService();
             ChatList.ItemsSource = ChatMessages;
             if (Application.Current != null)
@@ -57,10 +59,40 @@ namespace App
             Preferences.Set("AppTheme", "Dark");
         }
 
+        private void OnUserInputFocused(object sender, FocusEventArgs e)
+        {
+            double targetWidth = PageContentLayout.Width - PageContentLayout.Padding.HorizontalThickness;
+            var animation = new Animation(
+                v => InputContainer.WidthRequest = v,
+                InputContainer.Width,
+                targetWidth,
+                Easing.CubicOut
+            );
+            animation.Commit(this, "ExpandAnimation", 16, 250);
+        }
+
+        private void OnUserInputUnfocused(object sender, FocusEventArgs e)
+        {
+            double targetWidth = 350;
+            var animation = new Animation(
+                v => InputContainer.WidthRequest = v,
+                InputContainer.Width,
+                targetWidth,
+                Easing.CubicIn
+            );
+            animation.Commit(this, "ContractAnimation", 16, 250);
+        }
+
+
+
         private void OnSendMessage(object sender, EventArgs e)
         {
             string userMessageText = UserInput.Text?.Trim() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(userMessageText) || _isResponding) return;
+            if (string.IsNullOrWhiteSpace(userMessageText) || _isResponding)
+            {
+
+                return;
+            }
 
             var userMessage = new ChatMessage
             {
@@ -90,7 +122,6 @@ namespace App
                 try
                 {
                     bool firstTextChunkReceived = false;
-
                     await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
                     {
                         MainThread.BeginInvokeOnMainThread(() =>
@@ -98,8 +129,6 @@ namespace App
                             switch (response.Type)
                             {
                                 case "text_chunk":
-                                    // If this is the first piece of text, it replaces any previous
-                                    // content (like "Using tool..."). Otherwise, it appends.
                                     if (!firstTextChunkReceived)
                                     {
                                         aiMessage.Text = response.Content;
@@ -113,33 +142,31 @@ namespace App
                                     break;
 
                                 case "tool_start":
-                                    ToolIndicator.ShowTool(response.Tool ?? "default");
+                                    ToolAnimationView.ShowTool(response.Tool ?? "default");
                                     aiMessage.Text = $"* (Using {response.Tool}...) *";
                                     ScrollToBottom();
                                     break;
 
                                 case "tool_end":
-                                    ToolIndicator.HideTool(response.Tool ?? "default");
+                                    ToolAnimationView.HideTool(response.Tool ?? "default");
                                     if (response.Output != null && (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::")))
                                     {
                                         aiMessage.ImageUrl = response.Output.Replace("IMAGE_URL::", "").Replace("IMAGE_DATA::", "");
                                     }
-                                    // Note: We don't display non-image tool output directly,
-                                    // as it's intermediate context for the agent. The final text_chunks will form the response.
                                     ScrollToBottom();
                                     break;
 
                                 case "stream_end":
                                     _currentThreadId = response.ThreadId;
                                     _isResponding = false;
-                                    ToolIndicator.ClearAllTools();
+                                    ToolAnimationView.ClearAllTools();
                                     UpdateLoadingIndicatorAnimated();
                                     break;
 
                                 case "error":
                                     aiMessage.Text += $"\n\nSYSTEM ERROR: {response.Content}";
                                     _isResponding = false;
-                                    ToolIndicator.ClearAllTools();
+                                    ToolAnimationView.ClearAllTools();
                                     UpdateLoadingIndicatorAnimated();
                                     break;
                             }
@@ -153,7 +180,7 @@ namespace App
                         aiMessage.Text = $"CRITICAL ERROR: {ex.Message}";
                         aiMessage.Background = Colors.DarkRed;
                         _isResponding = false;
-                        ToolIndicator.ClearAllTools();
+                        ToolAnimationView.ClearAllTools();
                         UpdateLoadingIndicatorAnimated();
                     });
                 }
@@ -166,7 +193,6 @@ namespace App
             ScrollToBottom();
         }
 
-        // This is no longer needed with the improved logic but can be kept for other purposes.
         private void ReplaceMessage(ChatMessage oldMessage, ChatMessage newMessage)
         {
             var index = ChatMessages.IndexOf(oldMessage);
@@ -176,7 +202,6 @@ namespace App
             }
         }
 
-        // ... rest of the functions (UpdateLoadingIndicatorAnimated, OnLightModeClicked, ScrollToBottom) remain unchanged ...
         public async void UpdateLoadingIndicatorAnimated()
         {
             if (_isResponding)
@@ -212,4 +237,6 @@ namespace App
             }
         }
     }
+
+    
 }

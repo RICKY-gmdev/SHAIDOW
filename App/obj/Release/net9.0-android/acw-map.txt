@@ -616,6 +616,18 @@ androidx.appcompat.view.menu.MenuPresenter;androidx.appcompat.view.menu.MenuPres
 AndroidX.AppCompat.View.Menu.IMenuView, Xamarin.AndroidX.AppCompat;androidx.appcompat.view.menu.MenuView
 AndroidX.AppCompat.View.Menu.IMenuView;androidx.appcompat.view.menu.MenuView
 androidx.appcompat.view.menu.MenuView;androidx.appcompat.view.menu.MenuView
+AndroidX.Browser.CustomTabs.CustomTabsClient+CustomTabsCallbackImpl, Xamarin.AndroidX.Browser;androidx.browser.customtabs.CustomTabsClient_CustomTabsCallbackImpl
+AndroidX.Browser.CustomTabs.CustomTabsClient.CustomTabsCallbackImpl;androidx.browser.customtabs.CustomTabsClient_CustomTabsCallbackImpl
+androidx.browser.customtabs.CustomTabsClient_CustomTabsCallbackImpl;androidx.browser.customtabs.CustomTabsClient_CustomTabsCallbackImpl
+AndroidX.Browser.CustomTabs.CustomTabsServiceConnectionImpl, Xamarin.AndroidX.Browser;crc64396a3fe5f8138e3f.CustomTabsServiceConnectionImpl
+AndroidX.Browser.CustomTabs.CustomTabsServiceConnectionImpl;crc64396a3fe5f8138e3f.CustomTabsServiceConnectionImpl
+androidx.browser.customtabs.CustomTabsServiceConnectionImpl;crc64396a3fe5f8138e3f.CustomTabsServiceConnectionImpl
+AndroidX.Browser.CustomTabs.KeepAliveService, Xamarin.AndroidX.Browser;crc64396a3fe5f8138e3f.KeepAliveService
+AndroidX.Browser.CustomTabs.KeepAliveService;crc64396a3fe5f8138e3f.KeepAliveService
+androidx.browser.customtabs.KeepAliveService;crc64396a3fe5f8138e3f.KeepAliveService
+AndroidX.Browser.CustomTabs.IEngagementSignalsCallback, Xamarin.AndroidX.Browser;androidx.browser.customtabs.EngagementSignalsCallback
+AndroidX.Browser.CustomTabs.IEngagementSignalsCallback;androidx.browser.customtabs.EngagementSignalsCallback
+androidx.browser.customtabs.EngagementSignalsCallback;androidx.browser.customtabs.EngagementSignalsCallback
 AndroidX.Core.Util.IConsumer, Xamarin.AndroidX.Core;androidx.core.util.Consumer
 AndroidX.Core.Util.IConsumer;androidx.core.util.Consumer
 androidx.core.util.Consumer;androidx.core.util.Consumer

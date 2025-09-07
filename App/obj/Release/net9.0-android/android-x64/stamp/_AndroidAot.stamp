@@ -26,6 +26,7 @@ obj\Release\net9.0-android\android-x64\aot\System.Memory.Data.dll.so
 obj\Release\net9.0-android\android-x64\aot\Xamarin.AndroidX.Activity.dll.so
 obj\Release\net9.0-android\android-x64\aot\Xamarin.AndroidX.AppCompat.dll.so
 obj\Release\net9.0-android\android-x64\aot\Xamarin.AndroidX.AppCompat.AppCompatResources.dll.so
+obj\Release\net9.0-android\android-x64\aot\Xamarin.AndroidX.Browser.dll.so
 obj\Release\net9.0-android\android-x64\aot\Xamarin.AndroidX.CardView.dll.so
 obj\Release\net9.0-android\android-x64\aot\Xamarin.AndroidX.Collection.Jvm.dll.so
 obj\Release\net9.0-android\android-x64\aot\Xamarin.AndroidX.CoordinatorLayout.dll.so

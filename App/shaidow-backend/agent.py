@@ -1,4 +1,5 @@
 from typing import List, Dict, Any
+from functools import partial
 from langchain_core.messages import (
     HumanMessage,
     ToolMessage,
@@ -13,7 +14,7 @@ from tools import all_tools
 
 
 agent_model = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash", # Using 1.5 Flash for potentially better tool use
+    model="gemini-1.5-flash",
     convert_system_message_to_human=True,
     temperature=0.2,
 )
@@ -23,76 +24,49 @@ tool_node = ToolNode(all_tools)
 
 
 def _ensure_system_first(messages: List[BaseMessage], system_prompt: str) -> List[BaseMessage]:
-    if not messages:
-        return [SystemMessage(content=system_prompt.strip())]
-    first = messages[0]
-    if not isinstance(first, SystemMessage):
-        return [SystemMessage(content=system_prompt.strip())] + list(messages)
-    return list(messages)
+    if not messages or not isinstance(messages[0], SystemMessage):
+        return [SystemMessage(content=system_prompt.strip())] + messages
+    return messages
 
 
-
-def call_model(state: MessagesState) -> Dict[str, Any]:
-    messages: List[BaseMessage] = list(state.get("messages", []))
-    
-    if not messages:
-        messages = [HumanMessage(content="Hello")]
-
-    response = agent_with_tools.invoke(messages)
-    
-    new_messages = messages + [response]
-    return {"messages": new_messages}
-
+def call_model(state: MessagesState, config: dict) -> Dict[str, Any]:
+    system_prompt = config["configurable"].get("system_prompt", "You are a helpful assistant.")
+    messages = state["messages"]
+    messages_with_system_prompt = _ensure_system_first(messages, system_prompt)
+    response = agent_with_tools.invoke(messages_with_system_prompt)
+    return {"messages": [response]}
 
 
 def should_continue(state: MessagesState) -> str:
-    messages: List[BaseMessage] = list(state.get("messages", []))
-    if not messages:
-        return END
-    last = messages[-1]
-    
-    if isinstance(last, AIMessage) and getattr(last, "tool_calls", None):
+    last_message = state['messages'][-1]
+    if hasattr(last_message, "tool_calls") and len(last_message.tool_calls) > 0:
         return "tools"
-    
     return END
 
+
 def sanitize_tool_output(state: MessagesState) -> Dict[str, Any]:
-    """
-    Inspects the last messages (ToolMessages) and replaces large image data
-    with a placeholder to keep the conversation history clean for the next LLM call.
-    """
-    messages = list(state.get("messages", []))
-    sanitized_messages = []
-    for msg in messages:
-        if isinstance(msg, ToolMessage):
-            # Create a new ToolMessage to avoid modifying the original in-place
-            new_msg = ToolMessage(tool_call_id=msg.tool_call_id, name=msg.name, content=msg.content)
-            if isinstance(new_msg.content, str) and new_msg.content.startswith("IMAGE_DATA::data:image"):
-                new_msg.content = "[Image was generated successfully and displayed to the user.]"
-            sanitized_messages.append(new_msg)
-        else:
-            sanitized_messages.append(msg)
-            
-    return {"messages": sanitized_messages}
+    last_message = state['messages'][-1]
+    if isinstance(last_message, ToolMessage):
+        if isinstance(last_message.content, str) and last_message.content.startswith("IMAGE_DATA::data:image"):
+            last_message.content = "[Image was generated successfully and displayed to the user.]"
+    return {"messages": [last_message]}
+
 
 def create_agent_graph(system_prompt: str):
     workflow = StateGraph(MessagesState)
-
-    def add_system_message(state: MessagesState) -> MessagesState:
-        msgs = list(state.get("messages", []))
-        msgs = _ensure_system_first(msgs, system_prompt)
-        return {"messages": msgs}
-
-    workflow.add_node("preprocess", add_system_message)
-    workflow.add_node("agent", call_model)
+    agent_node = partial(call_model, config={"configurable": {"system_prompt": system_prompt}})
+    workflow.add_node("agent", agent_node)
     workflow.add_node("tools", tool_node)
-    workflow.add_node("sanitize_tools", sanitize_tool_output) # Node was already here
-
-    workflow.set_entry_point("preprocess")
-    workflow.add_edge("preprocess", "agent")
-    workflow.add_conditional_edges("agent", should_continue, {"tools": "tools", END: END})
-    
-    # --- FIX: Correctly connect the sanitize node ---
+    workflow.add_node("sanitize_tools", sanitize_tool_output)
+    workflow.set_entry_point("agent")
+    workflow.add_conditional_edges(
+        "agent",
+        should_continue,
+        {
+            "tools": "tools",
+            END: END,
+        },
+    )
     workflow.add_edge("tools", "sanitize_tools")
     workflow.add_edge("sanitize_tools", "agent")
 
