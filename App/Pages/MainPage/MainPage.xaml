@@ -2,70 +2,67 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:App"
+             xmlns:models="clr-namespace:App.Models"
+             xmlns:data="clr-namespace:App.Data"
              xmlns:converters="clr-namespace:App.Converters"
              x:Class="App.MainPage"
              Title="SHAIDOW"
              >
+
     <ContentPage.Resources>
-    <converters:MarkdownToHtmlConverter x:Key="MarkdownToHtml" />
-</ContentPage.Resources>
-    <Grid>
-        <ScrollView>
-            <VerticalStackLayout x:Name="PageContentLayout" Padding="30" Spacing="25">
-                
-                <Grid>
-                    <Border BackgroundColor="Transparent" Stroke="LightGray" Padding="0" HorizontalOptions="End" VerticalOptions="Start">
-                        <Button ImageSource="themeswitch.png" WidthRequest="30" HeightRequest="30" BackgroundColor="Transparent" Clicked="OnLightModeClicked"/>
-                    </Border>
-                </Grid>
+        <converters:MarkdownToHtmlConverter x:Key="MarkdownToHtml" />
 
-                <Grid >
-                    <Image Source="shaidow.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="250"/>
-                    <local:ToolAnimationView x:Name="ToolAnimationView"/>
-                </Grid>
+        <DataTemplate x:Key="UserMessageTemplate" x:DataType="models:ChatMessage">
+            <Grid Padding="5,10">
+                <Border BackgroundColor="Green" StrokeShape="RoundRectangle 10" Padding="10" HorizontalOptions="End" MaximumWidthRequest="320">
+                    <Label Text="{Binding Text}" TextColor="White" />
+                </Border>
+            </Grid>
+        </DataTemplate>
 
-                
+        <DataTemplate x:Key="AiMessageTemplate" x:DataType="models:ChatMessage">
+            <Grid Padding="5,10">
+                <Border BackgroundColor="#FF0F0C1A" Stroke="#333333" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="10" HorizontalOptions="Start" MaximumWidthRequest="1080">
+                    <Label TextType="Html" Text="{Binding Text, Converter={StaticResource MarkdownToHtml}}" TextColor="White" />
+                </Border>
+            </Grid>
+        </DataTemplate>
 
-                <ListView x:Name="ChatList"
-                          ItemsSource="{Binding ChatMessages}"
-                          HasUnevenRows="True"
-                          BackgroundColor="Transparent"
-                          SeparatorVisibility="None"
-                          SelectionMode="None"
-                          VerticalOptions="Fill">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <Grid Padding="5,10">
-                                    <Border StrokeShape="RoundRectangle 10"
-                                            Padding="10"
-                                            BackgroundColor="{Binding Background}"
-                                            HorizontalOptions="{Binding Alignment}"
-                                            MaximumWidthRequest="1080">
-                                        <StackLayout Spacing="5">
-                                            <Label Text="{Binding Text}" TextColor="White" IsVisible="{Binding IsText}" LineBreakMode="WordWrap"/>
-                                            <Image Source="{Binding ImageUrl}" Aspect="AspectFit" HeightRequest="256" IsVisible="{Binding IsImage}"/>
-                                        </StackLayout>
-                                    </Border>
-                                </Grid>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+        <DataTemplate x:Key="ImageMessageTemplate" x:DataType="models:ChatMessage">
+            <Grid Padding="5,10">
+                <Border BackgroundColor="#FF0F0C1A" Stroke="#333333" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="10" HorizontalOptions="Start" MaximumWidthRequest="500">
+                    <VerticalStackLayout Spacing="5">
+                        <Label TextType="Html" IsVisible="{Binding IsText}" Text="{Binding Text, Converter={StaticResource MarkdownToHtml}}" TextColor="White" />
+                        <Image Source="{Binding ImageUrl}" Aspect="AspectFit" HeightRequest="256" HorizontalOptions="Start"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </DataTemplate>
 
-                
-        <Grid x:Name="InputContainer"
-              Grid.Row="2"
-              ColumnDefinitions="*, Auto, Auto"
-              ColumnSpacing="10"
-              HorizontalOptions="Center"
-              WidthRequest="350">
-            <Entry x:Name="UserInput" Grid.Column="0" Placeholder="Ask SHAIDOW ..." VerticalOptions="Center" TextColor="Cyan" Completed="OnSendMessage" Focused="OnUserInputFocused" Unfocused="OnUserInputUnfocused"/>
+        <data:ChatTemplateSelector x:Key="MessageTemplateSelector"
+                                   UserTemplate="{StaticResource UserMessageTemplate}"
+                                   AiTemplate="{StaticResource AiMessageTemplate}"
+                                   ImageTemplate="{StaticResource ImageMessageTemplate}" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="10" RowSpacing="10">
+        <VerticalStackLayout Grid.Row="0">
+            <Grid HeightRequest="300">
+                <Image Source="shaidow.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="250"/>
+                <local:ToolAnimationView x:Name="ToolAnimationView"/>
+            </Grid>
+        </VerticalStackLayout>
+        
+        <CollectionView x:Name="ChatList"
+                        Grid.Row="1"
+                        ItemsSource="{Binding ChatMessages}"
+                        SelectionMode="None"
+                        ItemTemplate="{StaticResource MessageTemplateSelector}" />
+
+        <Grid x:Name="InputContainer" Grid.Row="2" ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10" HorizontalOptions="Center" WidthRequest="350">
+            <Entry x:Name="UserInput" Grid.Column="0" Placeholder="Ask SHAIDOW ..." VerticalOptions="Center" TextColor="Cyan" Completed="OnSendMessage"/>
             <Button x:Name="SendButton" Grid.Column="1" Text="Send" Clicked="OnSendMessage" WidthRequest="80" VerticalOptions="Center"/>
             <ActivityIndicator x:Name="Spinner" Grid.Column="2" IsVisible="False" IsRunning="False" WidthRequest="30" HeightRequest="30" VerticalOptions="Center" Color="Cyan"/>
         </Grid>
-
-    </VerticalStackLayout>
-        </ScrollView>
     </Grid>
 </ContentPage>

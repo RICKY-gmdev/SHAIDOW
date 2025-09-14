@@ -1,53 +1,23 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Dispatching;
-using Microsoft.Maui.Storage;
+using App.Models; // <-- IMPORTANT: Use the new Models namespace
 
 namespace App
 {
     public partial class MainPage : ContentPage
     {
-        // The ChatMessage class is back inside MainPage for simplicity
-        public class ChatMessage : INotifyPropertyChanged
-        {
-            private string? _text;
-            public string? Text
-            {
-                get => _text;
-                set { _text = value; OnPropertyChanged(nameof(Text)); OnPropertyChanged(nameof(IsText)); }
-            }
-
-            private string? _imageUrl;
-            public string? ImageUrl
-            {
-                get => _imageUrl;
-                set { _imageUrl = value; OnPropertyChanged(nameof(ImageUrl)); OnPropertyChanged(nameof(IsImage)); }
-            }
-
-            public bool IsText => !string.IsNullOrEmpty(Text);
-            public bool IsImage => !string.IsNullOrEmpty(ImageUrl);
-            public string Author { get; set; } = string.Empty;
-            public LayoutOptions Alignment { get; set; } = LayoutOptions.Start;
-            public Color Background { get; set; } = Colors.Transparent;
-
-            public event PropertyChangedEventHandler? PropertyChanged;
-            protected void OnPropertyChanged(string propertyName) =>
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         private readonly ApiService _apiService;
         public ObservableCollection<ChatMessage> ChatMessages { get; } = new();
         private CancellationTokenSource? _cts;
         private string? _currentThreadId = null;
         private bool _isResponding = false;
-
+        
         public MainPage()
         {
             InitializeComponent();
-            BindingContext = this; // For reliable data binding
             _apiService = new ApiService();
             ChatList.ItemsSource = ChatMessages;
             if (Application.Current != null)
@@ -65,8 +35,6 @@ namespace App
             {
                 Author = "You",
                 Text = userMessageText,
-                Background = Colors.Green,
-                Alignment = LayoutOptions.End
             };
             AddMessage(userMessage);
             UserInput.Text = string.Empty;
@@ -79,8 +47,6 @@ namespace App
             {
                 Author = "SHAIDOW",
                 Text = "",
-                Background = Colors.DarkGray,
-                Alignment = LayoutOptions.Start
             };
             AddMessage(aiMessage);
 
@@ -118,7 +84,6 @@ namespace App
 
                                 case "tool_end":
                                     ToolAnimationView.HideTool(response.Tool ?? "default");
-                                    // Capture the URL here
                                     if (response.Output != null && (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::")))
                                     {
                                         imageUrlFromTool = response.Output.Replace("IMAGE_URL::", "").Replace("IMAGE_DATA::", "");
@@ -127,7 +92,6 @@ namespace App
                                     break;
 
                                 case "stream_end":
-                                    
                                     if (!string.IsNullOrEmpty(imageUrlFromTool))
                                     {
                                         aiMessage.ImageUrl = imageUrlFromTool;
@@ -157,7 +121,6 @@ namespace App
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
                         aiMessage.Text = $"CRITICAL ERROR: {ex.Message}";
-                        aiMessage.Background = Colors.DarkRed;
                         _isResponding = false;
                         ToolAnimationView.ClearAllTools();
                         UpdateLoadingIndicatorAnimated();
@@ -165,8 +128,6 @@ namespace App
                 }
             });
         }
-        
-        // --- Other Methods (AddMessage, ScrollToBottom, Animations, etc.) ---
 
         private void AddMessage(ChatMessage message)
         {
@@ -178,10 +139,10 @@ namespace App
         {
             if (ChatMessages.Any())
             {
-                ChatList.ScrollTo(ChatMessages.Last(), position: ScrollToPosition.End,  true);
+                ChatList.ScrollTo(ChatMessages.Last(), position: ScrollToPosition.End, animate: true);
             }
         }
-
+        
         public async void UpdateLoadingIndicatorAnimated()
         {
             if (_isResponding)
@@ -196,21 +157,6 @@ namespace App
                 Spinner.IsRunning = false;
                 Spinner.IsVisible = false;
             }
-        }
-        
-        private void OnUserInputFocused(object sender, FocusEventArgs e)
-        {
-            // Note: Ensure your Input Grid in XAML is named InputContainer
-            double targetWidth = PageContentLayout.Width - PageContentLayout.Padding.HorizontalThickness;
-            var animation = new Animation(v => InputContainer.WidthRequest = v, InputContainer.Width, targetWidth, Easing.CubicOut);
-            animation.Commit(this, "ExpandAnimation", 16, 250);
-        }
-
-        private void OnUserInputUnfocused(object sender, FocusEventArgs e)
-        {
-            double targetWidth = 350;
-            var animation = new Animation(v => InputContainer.WidthRequest = v, InputContainer.Width, targetWidth, Easing.CubicIn);
-            animation.Commit(this, "ContractAnimation", 16, 250);
         }
 
         private void OnLightModeClicked(object sender, EventArgs e)
