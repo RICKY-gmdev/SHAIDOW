@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Shaidow.Services; 
 using System.IO;
 using MauiPopup;
 
@@ -21,7 +20,7 @@ public static class MauiProgram
 			});
 
 		string dbPath = Path.Combine(FileSystem.AppDataDirectory, "ChatHistory.db3");
-		builder.Services.AddSingleton(s => new ChatDatabase(dbPath));
+		
 
             
         builder.Services.AddSingleton<MainPage>();

@@ -6,14 +6,17 @@ import base64
 from typing import Any, List
 from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage
-from langchain_anthropic import ChatAnthropic
 from langchain_mistralai import ChatMistralAI
+import uuid
 
+def _mistral(): 
+    return ChatMistralAI(
+        model="mistral-large-latest", 
+        temperature=0, 
+        api_key=os.getenv("MISTRAL_API_KEY")
+    )
 
-def _claude(): return ChatAnthropic(model="claude-3-opus-20240229", temperature=0)
-def _mistral(): return ChatMistralAI(model="mistral-large-latest", temperature=0, api_key=os.getenv("MISTRAL_API_KEY"))
-
-
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 def _extract_content(resp: Any) -> str:
     if resp is None: return "No content."
@@ -37,16 +40,57 @@ def _extract_content(resp: Any) -> str:
         return "No content."
     return str(resp)[:4000] or "No content."
 
-# Core LLM tools remain the same
+def _groq_chat(model: str, query: str, system_prompt: str = "You are a helpful assistant.") -> str:
+    """Helper to call Groq chat completions API."""
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        return "Error: GROQ_API_KEY not set."
+
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query},
+        ],
+        "temperature": 0.3,
+        "max_tokens": 2048,   # bumped up for longer answers
+    }
+
+    try:
+        resp = requests.post(GROQ_URL, json=payload, headers=headers, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+        return data["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        return f"Groq error: {e}"
+
+
+# ------------------- TOOLS -------------------
+
 @tool
-def claude_tool(query: str) -> str:
-    """Complex reasoning, creative or multi-step tasks."""
-    try: return _extract_content(_claude().invoke(query))
-    except Exception as e: return f"Claude error: {e}"
+def reasoning_tool(query: str) -> str:
+    """General reasoning and versatile Q&A (Claude replacement)."""
+    return _groq_chat(
+        model="qwen/qwen3-32b",
+        query=query,
+        reasoning_effort="default",
+        temperature=0.6,
+        stream=True
+    )
+
+
+
+
+
+@tool
+def coding_tool(query: str) -> str:
+    """Use DeepSeek for coding, debugging, and clean code generation."""
+    return _groq_chat("llama-3.1-8b-instant", query, "You are an expert coding assistant. Generate clean, working code.")
 
 @tool
 def mistral_tool(query: str) -> str:
-    """Use for quick, factual answers, summarization, and general knowledge questions."""
+    """Quick, factual answers, summaries, and general knowledge lookup."""
     print("--- INVOKING MISTRAL TOOL ---")
     try:
         response = _mistral().invoke(query)
@@ -54,15 +98,9 @@ def mistral_tool(query: str) -> str:
     except Exception as e:
         return f"Error invoking Mistral tool: {e}"
 
-
-# --- CORRECTED: Tool for SEARCHING for an image using Tavily AI ---
 @tool
 def search_for_image_tool(query: str) -> str:
-    """
-    Use this tool to search for a real, embeddable image.
-    Provide a descriptive search query.
-    Returns a URL to a relevant image found online.
-    """
+    """Search for a real image using the Pexels API and return a URL."""
     print(f"--- Searching for an image with Pexels API for query: '{query}' ---")
     try:
         api_key = os.getenv("PEXELS_API_KEY")
@@ -73,53 +111,68 @@ def search_for_image_tool(query: str) -> str:
         url = f"https://api.pexels.com/v1/search?query={query}&per_page=1"
         
         response = requests.get(url, headers=headers)
-        response.raise_for_status() # Raises an exception for bad status codes
-        
+        response.raise_for_status()
         data = response.json()
 
         if data["photos"]:
-            # Use 'src.original' or 'src.large' for the image URL
             image_url = data["photos"][0]["src"]["large"] 
-            print(f"--- Pexels image search success. URL: {image_url} ---")
             return f"IMAGE_URL::{image_url}"
         else:
-            return "Error: Pexels API did not find any images for this query."
-
+            return "No images found."
     except Exception as e:
-        print(f"--- Pexels search Error: {e} ---")
         return f"Pexels search error: {e}"
 
-
-# --- Tool for GENERATING a new image (unchanged) ---
 @tool
 def generate_image_tool(prompt: str) -> str:
     """
     Use this tool to create or generate a completely new image from a text description.
-    Use it for requests like 'draw', 'create', 'generate an artwork of', or for fictional or imaginative scenes.
-    Returns the generated image data directly.
+    Saves the image to a file and returns a URL to it.
     """
-    print(f"--- Calling Stability AI v2beta API to generate image for prompt: '{prompt}' ---")
-    # ... (The rest of this function is unchanged)
+    print(f"--- Calling Stability AI API to generate image for prompt: '{prompt}' ---")
     api_url = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
     api_key = os.getenv("STABILITY_API_KEY")
     if not api_key: return "Error: STABILITY_API_KEY environment variable not set."
+    
     headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
-    files = {'prompt': (None, prompt), 'model': (None, 'sd3.5-flash'), 'output_format': (None, 'png')}
+    files = {'prompt': (None, prompt), 'model': (None, 'sd3-medium'), 'output_format': (None, 'png')}
+    
     try:
         response = requests.post(api_url, headers=headers, files=files)
+        response.raise_for_status() # Check for HTTP errors
+
         if response.status_code == 200:
-            base64_image = base64.b64encode(response.content).decode('utf-8')
-            data_uri = f"data:image/png;base64,{base64_image}"
-            print("--- Image generation success. Returning Base64 data URI. ---")
-            return f"IMAGE_DATA::{data_uri}"
+            # --- THIS IS THE NEW LOGIC ---
+            
+            # 1. Create the directory if it doesn't exist
+            if not os.path.exists("generated_images"):
+                os.makedirs("generated_images")
+
+            # 2. Generate a unique filename
+            image_filename = f"{uuid.uuid4()}.png"
+            image_filepath = os.path.join("generated_images", image_filename)
+
+            # 3. Save the image content to the file
+            with open(image_filepath, "wb") as f:
+                f.write(response.content)
+            
+            print(f"--- Image generation success. Saved to {image_filepath} ---")
+
+            # 4. Return a URL that the FastAPI server will provide
+            # NOTE: Your server must be running on http://127.0.0.1:8000
+            image_url = f"http://127.0.0.1:8000/images/{image_filename}"
+            return f"IMAGE_URL::{image_url}"
         else:
             error_details = response.json().get('errors', [str(response.text)])
-            print(f"--- Stability AI Error: {response.status_code} - {error_details[0]} ---")
             return f"Stability AI API Error: {response.status_code} - {error_details[0]}"
     except Exception as e:
-        print(f"--- Stability AI Request Error: {e} ---")
         return f"Stability AI request error: {e}"
 
 
-# --- Update the list of all available tools ---
-all_tools = [claude_tool, mistral_tool, search_for_image_tool, generate_image_tool]
+
+all_tools = [
+    reasoning_tool,
+    coding_tool,
+    mistral_tool,
+    search_for_image_tool,
+    generate_image_tool,
+]

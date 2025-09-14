@@ -1,52 +1,30 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:App"
-             x:Class="App.MainPage">
+             xmlns:converters="clr-namespace:App.Converters"
+             x:Class="App.MainPage"
+             Title="SHAIDOW"
+             >
+    <ContentPage.Resources>
+    <converters:MarkdownToHtmlConverter x:Key="MarkdownToHtml" />
+</ContentPage.Resources>
     <Grid>
         <ScrollView>
-            <VerticalStackLayout x:Name="PageContentLayout"
-                                 Padding="30"
-                                 Spacing="25">
+            <VerticalStackLayout x:Name="PageContentLayout" Padding="30" Spacing="25">
+                
                 <Grid>
-                    <Border BackgroundColor="Transparent"
-                            Stroke="LightGray"
-                            Padding="0"
-                            HorizontalOptions="End"
-                            VerticalOptions="Start">
-                        <Button ImageSource="themeswitch.png"
-                                HorizontalOptions="End"
-                                VerticalOptions="Start"
-                                WidthRequest="30"
-                                HeightRequest="30"
-                                BackgroundColor="Transparent"
-                                Clicked="OnLightModeClicked"/>
+                    <Border BackgroundColor="Transparent" Stroke="LightGray" Padding="0" HorizontalOptions="End" VerticalOptions="Start">
+                        <Button ImageSource="themeswitch.png" WidthRequest="30" HeightRequest="30" BackgroundColor="Transparent" Clicked="OnLightModeClicked"/>
                     </Border>
                 </Grid>
 
-                <Grid Grid.Row="1">
-                    <Image Source="shaidow.png"
-                           Aspect="AspectFit"
-                           HeightRequest="360"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"/>
-
+                <Grid >
+                    <Image Source="shaidow.png" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center" HeightRequest="250"/>
                     <local:ToolAnimationView x:Name="ToolAnimationView"/>
                 </Grid>
 
-                <Border Stroke="#FF3F3D3D"
-                        StrokeShape="RoundRectangle 20"
-                        Padding="5"
-                        BackgroundColor="Black"
-                        WidthRequest="280"
-                        HeightRequest="90"
-                        HorizontalOptions="Center">
-                    <Label Text="SHAIDOW"
-                           TextColor="Cyan"
-                           BackgroundColor="Black"
-                           FontSize="{OnPlatform iOS=40, Android=40, MacCatalyst=40,WinUI=40}"
-                           HorizontalTextAlignment="Center"
-                           VerticalTextAlignment="Center"/>
-                </Border>
+                
 
                 <ListView x:Name="ChatList"
                           ItemsSource="{Binding ChatMessages}"
@@ -58,54 +36,36 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <Border Stroke="Black"
-                                        StrokeShape="RoundRectangle 10"
-                                        BackgroundColor="Black">
-                                    <StackLayout Padding="10">
-                                        <Label Text="{Binding Text}"
-                                               IsVisible="{Binding IsText}"
-                                               TextColor="White"/>
-                                        <Image Source="{Binding ImageUrl}"
-                                               Aspect="AspectFit"
-                                               HeightRequest="256"
-                                               IsVisible="{Binding IsImage}"/>
-                                    </StackLayout>
-                                </Border>
+                                <Grid Padding="5,10">
+                                    <Border StrokeShape="RoundRectangle 10"
+                                            Padding="10"
+                                            BackgroundColor="{Binding Background}"
+                                            HorizontalOptions="{Binding Alignment}"
+                                            MaximumWidthRequest="1080">
+                                        <StackLayout Spacing="5">
+                                            <Label Text="{Binding Text}" TextColor="White" IsVisible="{Binding IsText}" LineBreakMode="WordWrap"/>
+                                            <Image Source="{Binding ImageUrl}" Aspect="AspectFit" HeightRequest="256" IsVisible="{Binding IsImage}"/>
+                                        </StackLayout>
+                                    </Border>
+                                </Grid>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <Grid x:Name="InputContainer"
-                      ColumnDefinitions="*, Auto, Auto"
-                      ColumnSpacing="10"
-                      HorizontalOptions="Center">
-                    <Entry x:Name="UserInput"
-                           Grid.Column="0"
-                           Placeholder="Ask SHAIDOW ..."
-                           VerticalOptions="Center"
-                           TextColor="cyan"
-                           Completed="OnSendMessage"
-                           Focused="OnUserInputFocused"
-                           Unfocused="OnUserInputUnfocused"/>
+                
+        <Grid x:Name="InputContainer"
+              Grid.Row="2"
+              ColumnDefinitions="*, Auto, Auto"
+              ColumnSpacing="10"
+              HorizontalOptions="Center"
+              WidthRequest="350">
+            <Entry x:Name="UserInput" Grid.Column="0" Placeholder="Ask SHAIDOW ..." VerticalOptions="Center" TextColor="Cyan" Completed="OnSendMessage" Focused="OnUserInputFocused" Unfocused="OnUserInputUnfocused"/>
+            <Button x:Name="SendButton" Grid.Column="1" Text="Send" Clicked="OnSendMessage" WidthRequest="80" VerticalOptions="Center"/>
+            <ActivityIndicator x:Name="Spinner" Grid.Column="2" IsVisible="False" IsRunning="False" WidthRequest="30" HeightRequest="30" VerticalOptions="Center" Color="Cyan"/>
+        </Grid>
 
-                    <Button x:Name="SendButton"
-                            Grid.Column="1"
-                            Text="Send"
-                            Clicked="OnSendMessage"
-                            WidthRequest="80"
-                            VerticalOptions="Center"/>
-
-                    <ActivityIndicator x:Name="Spinner"
-                                       Grid.Column="2"
-                                       IsVisible="False"
-                                       IsRunning="False"
-                                       WidthRequest="30"
-                                       HeightRequest="30"
-                                       VerticalOptions="Center"
-                                       Color="Cyan"/>
-                </Grid>
-            </VerticalStackLayout>
+    </VerticalStackLayout>
         </ScrollView>
     </Grid>
 </ContentPage>

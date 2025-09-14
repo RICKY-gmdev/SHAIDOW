@@ -1,6 +1,4 @@
-﻿//MAINPAGE CODE
-
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +10,7 @@ namespace App
 {
     public partial class MainPage : ContentPage
     {
+        // The ChatMessage class is back inside MainPage for simplicity
         public class ChatMessage : INotifyPropertyChanged
         {
             private string? _text;
@@ -45,60 +44,28 @@ namespace App
         private string? _currentThreadId = null;
         private bool _isResponding = false;
 
-
         public MainPage()
         {
             InitializeComponent();
-            BindingContext = this;
+            BindingContext = this; // For reliable data binding
             _apiService = new ApiService();
             ChatList.ItemsSource = ChatMessages;
             if (Application.Current != null)
             {
                 Application.Current.UserAppTheme = AppTheme.Dark;
             }
-            Preferences.Set("AppTheme", "Dark");
         }
-
-        private void OnUserInputFocused(object sender, FocusEventArgs e)
-        {
-            double targetWidth = PageContentLayout.Width - PageContentLayout.Padding.HorizontalThickness;
-            var animation = new Animation(
-                v => InputContainer.WidthRequest = v,
-                InputContainer.Width,
-                targetWidth,
-                Easing.CubicOut
-            );
-            animation.Commit(this, "ExpandAnimation", 16, 250);
-        }
-
-        private void OnUserInputUnfocused(object sender, FocusEventArgs e)
-        {
-            double targetWidth = 350;
-            var animation = new Animation(
-                v => InputContainer.WidthRequest = v,
-                InputContainer.Width,
-                targetWidth,
-                Easing.CubicIn
-            );
-            animation.Commit(this, "ContractAnimation", 16, 250);
-        }
-
-
 
         private void OnSendMessage(object sender, EventArgs e)
         {
             string userMessageText = UserInput.Text?.Trim() ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(userMessageText) || _isResponding)
-            {
-
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(userMessageText) || _isResponding) return;
 
             var userMessage = new ChatMessage
             {
                 Author = "You",
                 Text = userMessageText,
-                Background = Colors.DarkCyan,
+                Background = Colors.Green,
                 Alignment = LayoutOptions.End
             };
             AddMessage(userMessage);
@@ -112,7 +79,7 @@ namespace App
             {
                 Author = "SHAIDOW",
                 Text = "",
-                Background = Colors.Black,
+                Background = Colors.DarkGray,
                 Alignment = LayoutOptions.Start
             };
             AddMessage(aiMessage);
@@ -122,6 +89,8 @@ namespace App
                 try
                 {
                     bool firstTextChunkReceived = false;
+                    string? imageUrlFromTool = null;
+
                     await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
                     {
                         MainThread.BeginInvokeOnMainThread(() =>
@@ -149,14 +118,24 @@ namespace App
 
                                 case "tool_end":
                                     ToolAnimationView.HideTool(response.Tool ?? "default");
+                                    // Capture the URL here
                                     if (response.Output != null && (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::")))
                                     {
-                                        aiMessage.ImageUrl = response.Output.Replace("IMAGE_URL::", "").Replace("IMAGE_DATA::", "");
+                                        imageUrlFromTool = response.Output.Replace("IMAGE_URL::", "").Replace("IMAGE_DATA::", "");
                                     }
                                     ScrollToBottom();
                                     break;
 
                                 case "stream_end":
+                                    
+                                    if (!string.IsNullOrEmpty(imageUrlFromTool))
+                                    {
+                                        aiMessage.ImageUrl = imageUrlFromTool;
+                                        if (aiMessage.Text != null)
+                                        {
+                                            aiMessage.Text = aiMessage.Text.Replace(imageUrlFromTool, "").Trim();
+                                        }
+                                    }
                                     _currentThreadId = response.ThreadId;
                                     _isResponding = false;
                                     ToolAnimationView.ClearAllTools();
@@ -186,6 +165,8 @@ namespace App
                 }
             });
         }
+        
+        // --- Other Methods (AddMessage, ScrollToBottom, Animations, etc.) ---
 
         private void AddMessage(ChatMessage message)
         {
@@ -193,12 +174,11 @@ namespace App
             ScrollToBottom();
         }
 
-        private void ReplaceMessage(ChatMessage oldMessage, ChatMessage newMessage)
+        private void ScrollToBottom()
         {
-            var index = ChatMessages.IndexOf(oldMessage);
-            if (index != -1)
+            if (ChatMessages.Any())
             {
-                ChatMessages[index] = newMessage;
+                ChatList.ScrollTo(ChatMessages.Last(), position: ScrollToPosition.End,  true);
             }
         }
 
@@ -217,6 +197,21 @@ namespace App
                 Spinner.IsVisible = false;
             }
         }
+        
+        private void OnUserInputFocused(object sender, FocusEventArgs e)
+        {
+            // Note: Ensure your Input Grid in XAML is named InputContainer
+            double targetWidth = PageContentLayout.Width - PageContentLayout.Padding.HorizontalThickness;
+            var animation = new Animation(v => InputContainer.WidthRequest = v, InputContainer.Width, targetWidth, Easing.CubicOut);
+            animation.Commit(this, "ExpandAnimation", 16, 250);
+        }
+
+        private void OnUserInputUnfocused(object sender, FocusEventArgs e)
+        {
+            double targetWidth = 350;
+            var animation = new Animation(v => InputContainer.WidthRequest = v, InputContainer.Width, targetWidth, Easing.CubicIn);
+            animation.Commit(this, "ContractAnimation", 16, 250);
+        }
 
         private void OnLightModeClicked(object sender, EventArgs e)
         {
@@ -224,19 +219,8 @@ namespace App
             {
                 var newTheme = Application.Current.UserAppTheme == AppTheme.Dark ? AppTheme.Light : AppTheme.Dark;
                 Application.Current.UserAppTheme = newTheme;
-                Preferences.Set("AppTheme", newTheme == AppTheme.Dark ? "Dark" : "Light");
                 UserInput.TextColor = newTheme == AppTheme.Dark ? Colors.Cyan : Colors.Black;
             }
         }
-
-        private void ScrollToBottom()
-        {
-            if (ChatMessages.Any())
-            {
-                ChatList.ScrollTo(ChatMessages.Last(), ScrollToPosition.End, true);
-            }
-        }
     }
-
-    
 }

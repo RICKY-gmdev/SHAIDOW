@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from fastapi.staticfiles import StaticFiles
 
 from agent import create_agent_graph
 from langgraph.checkpoint.memory import MemorySaver
@@ -53,7 +54,7 @@ async def chat(req: ChatRequest):
 
     thread_id = req.thread_id or str(uuid.uuid4())
     config = {"configurable": {"thread_id": thread_id}}
-    
+
     user_input = {"messages": [("user", req.message)]}
 
     async def event_stream():

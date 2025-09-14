@@ -18,6 +18,19 @@
           }
         }
       },
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -2589,6 +2602,19 @@
           }
         }
       },
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -5151,6 +5177,19 @@
         "runtime": {
           "lib/net8.0-android34.0/GoogleGson.dll": {
             "related": ".aar;.pdb;.xml"
+          }
+        }
+      },
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
           }
         }
       },
@@ -7719,6 +7758,19 @@
           }
         }
       },
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -10281,6 +10333,19 @@
         "runtime": {
           "lib/net8.0-android34.0/GoogleGson.dll": {
             "related": ".aar;.pdb;.xml"
+          }
+        }
+      },
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
           }
         }
       },
@@ -12849,6 +12914,19 @@
           }
         }
       },
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -15398,6 +15476,19 @@
       }
     },
     "net9.0-ios18.5": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -16028,6 +16119,19 @@
       }
     },
     "net9.0-ios18.5/android-arm64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -16652,6 +16756,19 @@
       }
     },
     "net9.0-ios18.5/android-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -17276,6 +17393,19 @@
       }
     },
     "net9.0-ios18.5/iossimulator-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -17900,6 +18030,19 @@
       }
     },
     "net9.0-ios18.5/maccatalyst-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -18524,6 +18667,19 @@
       }
     },
     "net9.0-ios18.5/win10-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -19148,6 +19304,19 @@
       }
     },
     "net9.0-maccatalyst18.5": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -19880,6 +20049,19 @@
       }
     },
     "net9.0-maccatalyst18.5/android-arm64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -20519,6 +20701,19 @@
       }
     },
     "net9.0-maccatalyst18.5/android-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -21158,6 +21353,19 @@
       }
     },
     "net9.0-maccatalyst18.5/iossimulator-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -21794,6 +22002,19 @@
       }
     },
     "net9.0-maccatalyst18.5/maccatalyst-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -22433,6 +22654,19 @@
       }
     },
     "net9.0-maccatalyst18.5/win10-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -23069,6 +23303,19 @@
       }
     },
     "net9.0-windows10.0.19041": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -24000,6 +24247,19 @@
       }
     },
     "net9.0-windows10.0.19041/android-arm64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -24796,6 +25056,19 @@
       }
     },
     "net9.0-windows10.0.19041/android-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -25592,6 +25865,19 @@
       }
     },
     "net9.0-windows10.0.19041/iossimulator-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -26385,6 +26671,19 @@
       }
     },
     "net9.0-windows10.0.19041/maccatalyst-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -27181,6 +27480,19 @@
       }
     },
     "net9.0-windows10.0.19041/win10-x64": {
+      "Markdig/0.42.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Markdig.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -28005,6 +28317,29 @@
         "lib/net8.0-android34.0/GoogleGson.dll",
         "lib/net8.0-android34.0/GoogleGson.pdb",
         "lib/net8.0-android34.0/GoogleGson.xml",
+        "readme.md"
+      ]
+    },
+    "Markdig/0.42.0": {
+      "sha512": "tINdftVfbTujqfPXrQOSl9/6XCS2Y4Zwz+i7UPBgxRNnDtI1CjyQ5UA/5sKoSOmfECyWkTztY/vbcc/u1DA8nA==",
+      "type": "package",
+      "path": "markdig/0.42.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net462/Markdig.dll",
+        "lib/net462/Markdig.xml",
+        "lib/net8.0/Markdig.dll",
+        "lib/net8.0/Markdig.xml",
+        "lib/net9.0/Markdig.dll",
+        "lib/net9.0/Markdig.xml",
+        "lib/netstandard2.0/Markdig.dll",
+        "lib/netstandard2.0/Markdig.xml",
+        "lib/netstandard2.1/Markdig.dll",
+        "lib/netstandard2.1/Markdig.xml",
+        "markdig.0.42.0.nupkg.sha512",
+        "markdig.nuspec",
+        "markdig.png",
         "readme.md"
       ]
     },
@@ -32405,6 +32740,7 @@
   },
   "projectFileDependencyGroups": {
     "net9.0-android35.0": [
+      "Markdig >= 0.42.0",
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
       "Microsoft.Maui.Controls >= 9.0.51",
       "Microsoft.NET.ILLink.Tasks >= 9.0.0",
@@ -32414,6 +32750,7 @@
       "sqlite-net-pcl >= 1.9.172"
     ],
     "net9.0-ios18.5": [
+      "Markdig >= 0.42.0",
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
       "Microsoft.Maui.Controls >= 9.0.51",
       "Microsoft.NET.ILLink.Tasks >= 9.0.0",
@@ -32423,6 +32760,7 @@
       "sqlite-net-pcl >= 1.9.172"
     ],
     "net9.0-maccatalyst18.5": [
+      "Markdig >= 0.42.0",
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
       "Microsoft.Maui.Controls >= 9.0.51",
       "Microsoft.NET.ILLink.Tasks >= 9.0.0",
@@ -32432,6 +32770,7 @@
       "sqlite-net-pcl >= 1.9.172"
     ],
     "net9.0-windows10.0.19041": [
+      "Markdig >= 0.42.0",
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
       "Microsoft.Maui.Controls >= 9.0.51",
       "Newtonsoft.Json >= 13.0.3",
@@ -32500,6 +32839,10 @@
       "net9.0-android35.0": {
         "targetAlias": "net9.0-android",
         "dependencies": {
+          "Markdig": {
+            "target": "Package",
+            "version": "[0.42.0, )"
+          },
           "Microsoft.Extensions.Logging.Debug": {
             "target": "Package",
             "version": "[9.0.0, )"
@@ -32561,6 +32904,10 @@
       "net9.0-ios18.5": {
         "targetAlias": "net9.0-ios",
         "dependencies": {
+          "Markdig": {
+            "target": "Package",
+            "version": "[0.42.0, )"
+          },
           "Microsoft.Extensions.Logging.Debug": {
             "target": "Package",
             "version": "[9.0.0, )"
@@ -32622,6 +32969,10 @@
       "net9.0-maccatalyst18.5": {
         "targetAlias": "net9.0-maccatalyst",
         "dependencies": {
+          "Markdig": {
+            "target": "Package",
+            "version": "[0.42.0, )"
+          },
           "Microsoft.Extensions.Logging.Debug": {
             "target": "Package",
             "version": "[9.0.0, )"
@@ -32684,6 +33035,10 @@
       "net9.0-windows10.0.19041": {
         "targetAlias": "net9.0-windows10.0.19041.0",
         "dependencies": {
+          "Markdig": {
+            "target": "Package",
+            "version": "[0.42.0, )"
+          },
           "Microsoft.Extensions.Logging.Debug": {
             "target": "Package",
             "version": "[9.0.0, )"
