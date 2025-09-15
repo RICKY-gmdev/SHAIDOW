@@ -3,10 +3,11 @@ import uuid
 import json
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI ,Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
+from typing import List
 
 from agent import create_agent_graph
 from langgraph.checkpoint.memory import MemorySaver
@@ -46,6 +47,23 @@ def read_root():
 class ChatRequest(BaseModel):
     message: str
     thread_id: str | None = Field(default=None)
+@app.get("/images", response_model=List[str])
+async def get_images(request: Request):
+    """Scans the generated_images directory and returns a list of full URLs."""
+    image_urls = []
+    image_dir = "generated_images"
+    if os.path.exists(image_dir):
+        # Sort files by creation time (newest first)
+        files = sorted(
+            [os.path.join(image_dir, f) for f in os.listdir(image_dir) if f.endswith(".png")],
+            key=os.path.getmtime,
+            reverse=True
+        )
+        base_url = str(request.base_url).rstrip('/')
+        for filepath in files:
+            filename = os.path.basename(filepath)
+            image_urls.append(f"{base_url}/images/{filename}")
+    return image_urls
 
 @app.post("/chat")
 async def chat(req: ChatRequest):

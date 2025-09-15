@@ -28,8 +28,8 @@ public static class MauiProgram
 
 		builder.Services.AddSingleton<MainPage>();
 		builder.Services.AddSingleton<ApiService>();
-
-
+		builder.Services.AddTransient<GalleryPage>();
+		builder.Services.AddTransient<ImageViewerPage>(); 
 
 #if DEBUG
 		builder.Logging.AddDebug();

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App.GalleryPage"
+             Title="Image Gallery"
+             BackgroundColor="#121212">
+    <CollectionView  ItemsSource="{Binding ImageUrls}"
+                Margin="5"
+                SelectionMode="Single"
+                SelectionChanged="OnImageSelected">>
+        <CollectionView.ItemsLayout>
+            <GridItemsLayout Orientation="Vertical" Span="2" 
+                             VerticalItemSpacing="5" HorizontalItemSpacing="5"/>
+        </CollectionView.ItemsLayout>
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <Border StrokeShape="RoundRectangle 10" StrokeThickness="0">
+                    <Image Source="{Binding .}"
+                           Aspect="AspectFill"
+                           HeightRequest="180"/>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentPage>

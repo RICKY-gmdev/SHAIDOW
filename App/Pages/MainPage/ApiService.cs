@@ -40,7 +40,22 @@ namespace App
             };
             _baseAddress = "http://127.0.0.1:8000";
         }
-
+        public async Task<List<string>> GetGeneratedImagesAsync()
+        {
+            var requestUrl = $"{_baseAddress}/images";
+            try
+            {
+                var response = await _httpClient.GetAsync(requestUrl);
+                response.EnsureSuccessStatusCode();
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<string>>(json) ?? new List<string>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[ERROR] Failed to get images: {ex.Message}");
+                return new List<string>();
+            }
+        }
         public async IAsyncEnumerable<StreamedResponse> StreamChatResponseAsync(
             string message,
             string? threadId,
