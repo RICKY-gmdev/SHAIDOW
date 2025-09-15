@@ -8,18 +8,18 @@ package androidx.transition;
 
 public final class R {
 	public static final class id {
-		public static final int ghost_view = 0x7f0800d6;
-		public static final int ghost_view_holder = 0x7f0800d7;
-		public static final int parent_matrix = 0x7f080174;
-		public static final int save_non_transition_alpha = 0x7f08018d;
-		public static final int save_overlay_view = 0x7f08018e;
-		public static final int transition_clip = 0x7f0801f6;
-		public static final int transition_current_scene = 0x7f0801f7;
-		public static final int transition_image_transform = 0x7f0801f8;
-		public static final int transition_layout_save = 0x7f0801f9;
-		public static final int transition_pause_alpha = 0x7f0801fa;
-		public static final int transition_position = 0x7f0801fb;
-		public static final int transition_scene_layoutid_cache = 0x7f0801fc;
-		public static final int transition_transform = 0x7f0801fd;
+		public static final int ghost_view = 0x7f0a010e;
+		public static final int ghost_view_holder = 0x7f0a010f;
+		public static final int parent_matrix = 0x7f0a01af;
+		public static final int save_non_transition_alpha = 0x7f0a01c8;
+		public static final int save_overlay_view = 0x7f0a01c9;
+		public static final int transition_clip = 0x7f0a023a;
+		public static final int transition_current_scene = 0x7f0a023b;
+		public static final int transition_image_transform = 0x7f0a023c;
+		public static final int transition_layout_save = 0x7f0a023d;
+		public static final int transition_pause_alpha = 0x7f0a023e;
+		public static final int transition_position = 0x7f0a023f;
+		public static final int transition_scene_layoutid_cache = 0x7f0a0240;
+		public static final int transition_transform = 0x7f0a0241;
 	}
 }

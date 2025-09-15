@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     print("Application shutting down.")
 
 app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.2", lifespan=lifespan)
-
+app.mount("/images", StaticFiles(directory="generated_images"), name="images")
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Shaidow API"}

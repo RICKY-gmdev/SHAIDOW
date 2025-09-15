@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:deployment="http://schemas.microsoft.com/appx/manifest/deployment/windows10" IgnorableNamespaces="mp deployment" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="Microsoft.WindowsAppRuntime.1.6" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" ProcessorArchitecture="x64" Version="6000.401.2352.0" />
+  <Identity Name="Microsoft.WindowsAppRuntime.1.7" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" ProcessorArchitecture="x64" Version="7000.522.1444.0" />
   <Properties>
     <Framework>true</Framework>
-    <DisplayName>WindowsAppRuntime.1.6</DisplayName>
+    <DisplayName>WindowsAppRuntime.1.7</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
-    <Description>Microsoft Windows App Runtime 1.6 (6000.401.2352.0 x64 )</Description>
+    <Description>Microsoft Windows App Runtime 1.7 (7000.522.1444.0 x64 )</Description>
     <Logo>WindowsAppRuntime.png</Logo>
   </Properties>
   <Resources>
@@ -29,6 +29,13 @@
       <InProcessServer>
         <Path>Microsoft.WindowsAppRuntime.dll</Path>
         <!-- NOTE: Keep ActivationClass elements sorted by absolute ActivatableClassId (namespace.class) -->
+        <!-- Background Task -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Background.BackgroundTaskBuilder" ThreadingModel="both" />
+        <!-- OAuth -->
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.OAuth2Manager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.AuthRequestParams" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.ClientAuthentication" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Security.Authentication.OAuth.TokenRequestParams" ThreadingModel="both" />
         <!-- Dynamic Dependency -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
@@ -50,6 +57,7 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationConferencingConfig" ThreadingModel="both" />
         <!-- AppNotificationBuilder -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties" ThreadingModel="both" />
@@ -87,6 +95,12 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
         <!-- PowerNotifications -->
         <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
+        <!-- CameraCaptureUI -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Media.Capture.CameraCaptureUI" ThreadingModel="both" />
+        <!-- BadgeNotifications -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.BadgeNotifications.BadgeNotificationManager" ThreadingModel="both" />
+        <!-- RuntimeCompatibilityOptions -->
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.proxyStub" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
@@ -942,7 +956,7 @@
     <Extension Category="windows.activatableClass.inProcessServer" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
       <InProcessServer>
         <Path>Microsoft.UI.Input.dll</Path>
-        <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ChildContentLink" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ChildSiteLink" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ContentAppWindowBridge" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ContentCoordinateConverter" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ContentExternalBackdropLink" ThreadingModel="both" />
@@ -954,10 +968,11 @@
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ContentSiteEnvironmentView" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ContentSiteView" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.CoreWindowSiteBridge" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.UI.Content.DesktopAttachedSiteBridge" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.DesktopChildSiteBridge" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.UI.Content.DesktopPopupSiteBridge" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.DesktopSiteBridge" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ProcessStarter" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.UI.Content.ReadOnlyDesktopSiteBridge" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Content.SystemVisualSiteBridge" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Input.DragDrop.DragDropManager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Input.DragDrop.DragOperation" ThreadingModel="both" />
@@ -986,6 +1001,7 @@
       <InProcessServer>
         <Path>Microsoft.UI.Windowing.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.UI.Windowing.AppWindow" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.UI.Windowing.AppWindowPlacementDetails" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Windowing.AppWindowPresenter" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Windowing.CompactOverlayPresenter" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.UI.Windowing.DisplayArea" ThreadingModel="both" />
@@ -1037,16 +1053,60 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.Widgets.Notifications.FeedAnnouncement" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+      <InProcessServer>
+        <Path>Microsoft.Windows.AI.Imaging.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Imaging.TextRecognizer" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Imaging.TextRecognizerOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Imaging.ImageDescriptionGenerator" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Imaging.ImageDescriptionResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Imaging.ImageObjectExtractor" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Imaging.ImageObjectRemover" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Imaging.ImageScaler" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+      <InProcessServer>
+        <Path>Microsoft.Graphics.Imaging.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Graphics.Imaging.ImageBuffer" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+      <InProcessServer>
+        <Path>Microsoft.Windows.Workloads.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.Workloads.WorkloadManager" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+      <InProcessServer>
+        <Path>Microsoft.Windows.AI.Text.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Text.LanguageModel" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Text.LanguageModelResponse" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.Text.TextIntelligence" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+      <InProcessServer>
+        <Path>Microsoft.Windows.AI.ContentSafety.dll</Path>
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AI.ContentSafety.ContentFilterOptions" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.proxyStub" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+      <ProxyStub ClassId="4321F616-6804-40F2-B584-B0D7708A720D">
+        <Path>SessionHandleIPCProxyStub.dll</Path>
+        <Interface InterfaceId="2B54FB34-8041-4505-9F31-7FB3BA0D6255" Name="ISessionHandleIPC" />
+        <Interface InterfaceId="EBF3748D-1EF9-4B89-BA13-65D2B9EC04F0" Name="ISessionEventHandleIPC" />
+        <Interface InterfaceId="F75B465E-A49B-486F-ABBE-33F68E7E80ED" Name="ILanguageModelAdapterHandleIPC" />
+      </ProxyStub>
+    </Extension>
     <deployment:Extension Category="windows.deploymentExtensionHandler">
       <deployment:DeploymentExtensionHandler>
         <deployment:Files>
           <deployment:File>WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll</deployment:File>
-          <!-- Temporarily disabled while an issue is addressed
-            <deployment:File>WindowsAppRuntime.DeploymentExtensions.OneCore.dll</deployment:File>
-            -->
+          <deployment:File>WindowsAppRuntime.DeploymentExtensions.OneCore.dll</deployment:File>
         </deployment:Files>
       </deployment:DeploymentExtensionHandler>
     </deployment:Extension>
   </Extensions>
-  <mp:PhoneIdentity PhoneProductId="b326e1e9-96f6-461b-abbe-d3b6ed5c867a" PhonePublisherId="a8099e80-050d-411d-9b45-4ea107a7be6b" />
+  <mp:PhoneIdentity PhoneProductId="e35da916-d4ec-4b09-84a1-dbfebc9c5083" PhonePublisherId="a8099e80-050d-411d-9b45-4ea107a7be6b" />
 </Package>

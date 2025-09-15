@@ -1,9 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Diagnostics;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Dispatching;
-using App.Models; // <-- IMPORTANT: Use the new Models namespace
+using App.Models;
 
 namespace App
 {
@@ -14,7 +16,9 @@ namespace App
         private CancellationTokenSource? _cts;
         private string? _currentThreadId = null;
         private bool _isResponding = false;
-        
+        private static readonly HttpClient _httpClient = new HttpClient();
+
+
         public MainPage()
         {
             InitializeComponent();
@@ -26,16 +30,31 @@ namespace App
             }
         }
 
+        
+
+        private async Task<ImageSource?> LoadImageFromUrlAsync(string url)
+        {
+            try
+            {
+                using var httpStream = await _httpClient.GetStreamAsync(url);
+                var memoryStream = new MemoryStream();
+                await httpStream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                return ImageSource.FromStream(() => memoryStream);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[ERROR] Failed to load image from stream: {ex.Message}");
+                return null;
+            }
+        }
+
         private void OnSendMessage(object sender, EventArgs e)
         {
             string userMessageText = UserInput.Text?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(userMessageText) || _isResponding) return;
-
-            var userMessage = new ChatMessage
-            {
-                Author = "You",
-                Text = userMessageText,
-            };
+            TitleBorder.IsVisible = false;
+            var userMessage = new ChatMessage { Author = "You", Text = userMessageText };
             AddMessage(userMessage);
             UserInput.Text = string.Empty;
 
@@ -43,76 +62,91 @@ namespace App
             UpdateLoadingIndicatorAnimated();
             _cts = new CancellationTokenSource();
 
-            var aiMessage = new ChatMessage
-            {
-                Author = "SHAIDOW",
-                Text = "",
-            };
-            AddMessage(aiMessage);
+            var aiMessagePlaceholder = new ChatMessage { Author = "SHAIDOW", Text = "..." };
+            AddMessage(aiMessagePlaceholder);
 
             _ = Task.Run(async () =>
             {
                 try
                 {
                     bool firstTextChunkReceived = false;
-                    string? imageUrlFromTool = null;
+                    string? capturedImageUrl = null;
+                    bool imageBubbleWasCreated = false; // Flag to track if we made an image bubble
 
                     await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
                     {
-                        MainThread.BeginInvokeOnMainThread(() =>
+                        await MainThread.InvokeOnMainThreadAsync(async () =>
                         {
                             switch (response.Type)
                             {
                                 case "text_chunk":
                                     if (!firstTextChunkReceived)
                                     {
-                                        aiMessage.Text = response.Content;
+                                        aiMessagePlaceholder.Text = response.Content;
                                         firstTextChunkReceived = true;
                                     }
-                                    else
-                                    {
-                                        aiMessage.Text += response.Content;
-                                    }
-                                    ScrollToBottom();
+                                    else { aiMessagePlaceholder.Text += response.Content; }
                                     break;
 
                                 case "tool_start":
                                     ToolAnimationView.ShowTool(response.Tool ?? "default");
-                                    aiMessage.Text = $"* (Using {response.Tool}...) *";
-                                    ScrollToBottom();
+                                    aiMessagePlaceholder.Text = $"* (Using {response.Tool}...) *";
                                     break;
 
                                 case "tool_end":
                                     ToolAnimationView.HideTool(response.Tool ?? "default");
-                                    if (response.Output != null && (response.Output.StartsWith("IMAGE_URL::") || response.Output.StartsWith("IMAGE_DATA::")))
+                                    if (!string.IsNullOrEmpty(response.Output))
                                     {
-                                        imageUrlFromTool = response.Output.Replace("IMAGE_URL::", "").Replace("IMAGE_DATA::", "");
+                                        string outputStr = response.Output;
+                                        string prefix = "IMAGE_URL::";
+                                        int startIndex = outputStr.IndexOf(prefix);
+                                        if (startIndex != -1)
+                                        {
+                                            int urlStartIndex = startIndex + prefix.Length;
+                                            int urlEndIndex = outputStr.IndexOf('\'', urlStartIndex);
+                                            capturedImageUrl = (urlEndIndex != -1)
+                                                ? outputStr.Substring(urlStartIndex, urlEndIndex - urlStartIndex)
+                                                : outputStr.Substring(urlStartIndex);
+                                        }
                                     }
-                                    ScrollToBottom();
                                     break;
 
                                 case "stream_end":
-                                    if (!string.IsNullOrEmpty(imageUrlFromTool))
+                                    // If we have a captured image, create the image bubble now.
+                                    if (!string.IsNullOrEmpty(capturedImageUrl))
                                     {
-                                        aiMessage.ImageUrl = imageUrlFromTool;
-                                        if (aiMessage.Text != null)
+                                        var imageMessage = new ChatMessage
                                         {
-                                            aiMessage.Text = aiMessage.Text.Replace(imageUrlFromTool, "").Trim();
-                                        }
+                                            Author = "SHAIDOW",
+                                            ImageUrl = capturedImageUrl,
+                                            Image = await LoadImageFromUrlAsync(capturedImageUrl)
+                                        };
+                                        AddMessage(imageMessage);
+                                        imageBubbleWasCreated = true; // Set our flag
                                     }
+
+                                    // If we created an image bubble AND the placeholder was never updated with real text, remove it.
+                                    if (imageBubbleWasCreated && (aiMessagePlaceholder.Text != null && aiMessagePlaceholder.Text.StartsWith("* (Using")))
+                                    {
+                                        ChatMessages.Remove(aiMessagePlaceholder);
+                                    }
+
                                     _currentThreadId = response.ThreadId;
                                     _isResponding = false;
                                     ToolAnimationView.ClearAllTools();
                                     UpdateLoadingIndicatorAnimated();
+                                    
                                     break;
 
                                 case "error":
-                                    aiMessage.Text += $"\n\nSYSTEM ERROR: {response.Content}";
+                                    aiMessagePlaceholder.Text += $"\n\nSYSTEM ERROR: {response.Content}";
                                     _isResponding = false;
                                     ToolAnimationView.ClearAllTools();
                                     UpdateLoadingIndicatorAnimated();
+                                    
                                     break;
                             }
+                            ScrollToBottom();
                         });
                     }
                 }
@@ -120,10 +154,11 @@ namespace App
                 {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        aiMessage.Text = $"CRITICAL ERROR: {ex.Message}";
+                        aiMessagePlaceholder.Text = $"CRITICAL ERROR: {ex.Message}";
                         _isResponding = false;
                         ToolAnimationView.ClearAllTools();
                         UpdateLoadingIndicatorAnimated();
+                        
                     });
                 }
             });
@@ -142,7 +177,7 @@ namespace App
                 ChatList.ScrollTo(ChatMessages.Last(), position: ScrollToPosition.End, animate: true);
             }
         }
-        
+
         public async void UpdateLoadingIndicatorAnimated()
         {
             if (_isResponding)
@@ -157,6 +192,21 @@ namespace App
                 Spinner.IsRunning = false;
                 Spinner.IsVisible = false;
             }
+        }
+        // Make sure your MainPage.xaml contains: <Grid x:Name="PageContentLayout" ...>
+        private void OnUserInputFocused(object sender, FocusEventArgs e)
+        {
+            // Note: Ensure your Input Grid in XAML is named InputContainer
+            double targetWidth = PageContentLayout.Width - PageContentLayout.Padding.HorizontalThickness;
+            var animation = new Animation(v => InputContainer.WidthRequest = v, InputContainer.Width, targetWidth, Easing.CubicOut);
+            animation.Commit(this, "ExpandAnimation", 16, 250);
+        }
+
+        private void OnUserInputUnfocused(object sender, FocusEventArgs e)
+        {
+            double targetWidth = 350;
+            var animation = new Animation(v => InputContainer.WidthRequest = v, InputContainer.Width, targetWidth, Easing.CubicIn);
+            animation.Commit(this, "ContractAnimation", 16, 250);
         }
 
         private void OnLightModeClicked(object sender, EventArgs e)

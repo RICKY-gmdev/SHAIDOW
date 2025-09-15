@@ -11,6 +11,11 @@
         <winrtv1:activatableClass name='Microsoft.Windows.Globalization.ApplicationLanguages' threadingModel='both'/>
     </asmv3:file>
     <asmv3:file name='Microsoft.WindowsAppRuntime.dll'>
+        <winrtv1:activatableClass name='Microsoft.Windows.ApplicationModel.Background.BackgroundTaskBuilder' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Security.Authentication.OAuth.OAuth2Manager' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Security.Authentication.OAuth.AuthRequestParams' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Security.Authentication.OAuth.ClientAuthentication' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Security.Authentication.OAuth.TokenRequestParams' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency' threadingModel='both'/>
@@ -27,6 +32,7 @@
         <winrtv1:activatableClass name='Microsoft.Windows.AppNotifications.AppNotification' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.AppNotifications.AppNotificationProgressData' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.AppNotifications.AppNotificationActivatedEventArgs' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AppNotifications.AppNotificationConferencingConfig' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.AppNotifications.Builder.AppNotificationBuilder' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.AppNotifications.Builder.AppNotificationTextProperties' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.AppNotifications.Builder.AppNotificationButton' threadingModel='both'/>
@@ -57,6 +63,9 @@
         <winrtv1:activatableClass name='Microsoft.Windows.Storage.ApplicationDataContainer' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.System.EnvironmentManager' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.System.Power.PowerManager' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.Media.Capture.CameraCaptureUI' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.BadgeNotifications.BadgeNotificationManager' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.ApplicationModel.WindowsAppRuntime.RuntimeCompatibilityOptions' threadingModel='both'/>
     </asmv3:file>
     <asmv3:file name='Microsoft.UI.Xaml.dll'>
         <winrtv1:activatableClass name='Microsoft.UI.Xaml.AdaptiveTrigger' threadingModel='both'/>
@@ -874,7 +883,7 @@
         <winrtv1:activatableClass name='Microsoft.UI.System.ThemeSettings' threadingModel='both'/>
     </asmv3:file>
     <asmv3:file name='Microsoft.UI.Input.dll'>
-        <winrtv1:activatableClass name='Microsoft.UI.Content.ChildContentLink' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.UI.Content.ChildSiteLink' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.ContentAppWindowBridge' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.ContentCoordinateConverter' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.ContentExternalBackdropLink' threadingModel='both'/>
@@ -886,10 +895,11 @@
         <winrtv1:activatableClass name='Microsoft.UI.Content.ContentSiteEnvironmentView' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.ContentSiteView' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.CoreWindowSiteBridge' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.UI.Content.DesktopAttachedSiteBridge' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.DesktopChildSiteBridge' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.UI.Content.DesktopPopupSiteBridge' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.DesktopSiteBridge' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.ProcessStarter' threadingModel='both'/>
-        <winrtv1:activatableClass name='Microsoft.UI.Content.ReadOnlyDesktopSiteBridge' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Content.SystemVisualSiteBridge' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Input.DragDrop.DragDropManager' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Input.DragDrop.DragOperation' threadingModel='both'/>
@@ -915,6 +925,7 @@
     </asmv3:file>
     <asmv3:file name='Microsoft.UI.Windowing.dll'>
         <winrtv1:activatableClass name='Microsoft.UI.Windowing.AppWindow' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.UI.Windowing.AppWindowPlacementDetails' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Windowing.AppWindowPresenter' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Windowing.CompactOverlayPresenter' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.UI.Windowing.DisplayArea' threadingModel='both'/>
@@ -938,5 +949,33 @@
         <winrtv1:activatableClass name='Microsoft.Windows.Widgets.Feeds.Providers.CustomQueryParametersUpdateOptions' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.Widgets.Feeds.Providers.FeedResourceResponse' threadingModel='both'/>
         <winrtv1:activatableClass name='Microsoft.Windows.Widgets.Notifications.FeedAnnouncement' threadingModel='both'/>
+    </asmv3:file>
+    <asmv3:file name='Microsoft.Windows.AI.Imaging.dll'>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Imaging.TextRecognizer' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Imaging.TextRecognizerOptions' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Imaging.ImageDescriptionGenerator' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Imaging.ImageDescriptionResult' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Imaging.ImageObjectExtractor' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Imaging.ImageObjectRemover' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Imaging.ImageScaler' threadingModel='both'/>
+    </asmv3:file>
+    <asmv3:file name='Microsoft.Graphics.Imaging.dll'>
+        <winrtv1:activatableClass name='Microsoft.Graphics.Imaging.ImageBuffer' threadingModel='both'/>
+    </asmv3:file>
+    <asmv3:file name='Microsoft.Windows.Workloads.dll'>
+        <winrtv1:activatableClass name='Microsoft.Windows.Workloads.WorkloadManager' threadingModel='both'/>
+    </asmv3:file>
+    <asmv3:file name='Microsoft.Windows.AI.Text.dll'>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Text.LanguageModel' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Text.LanguageModelResponse' threadingModel='both'/>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.Text.TextIntelligence' threadingModel='both'/>
+    </asmv3:file>
+    <asmv3:file name='Microsoft.Windows.AI.ContentSafety.dll'>
+        <winrtv1:activatableClass name='Microsoft.Windows.AI.ContentSafety.ContentFilterOptions' threadingModel='both'/>
+    </asmv3:file>
+    <asmv3:file name='SessionHandleIPCProxyStub.dll'>
+        <asmv3:comClass clsid='{4321F616-6804-40F2-B584-B0D7708A720D}'/>        <asmv3:comInterfaceProxyStub name='ISessionHandleIPC' iid='{2B54FB34-8041-4505-9F31-7FB3BA0D6255}'/>
+        <asmv3:comInterfaceProxyStub name='ISessionEventHandleIPC' iid='{EBF3748D-1EF9-4B89-BA13-65D2B9EC04F0}'/>
+        <asmv3:comInterfaceProxyStub name='ILanguageModelAdapterHandleIPC' iid='{F75B465E-A49B-486F-ABBE-33F68E7E80ED}'/>
     </asmv3:file>
 </assembly>

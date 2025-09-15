@@ -134,39 +134,39 @@ def generate_image_tool(prompt: str) -> str:
     if not api_key: return "Error: STABILITY_API_KEY environment variable not set."
     
     headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
-    files = {'prompt': (None, prompt), 'model': (None, 'sd3-medium'), 'output_format': (None, 'png')}
+    
+    # Using the more reliable 'sd3' model
+    files = {'prompt': (None, prompt), 'model': (None, 'sd3'), 'output_format': (None, 'png')}
     
     try:
-        response = requests.post(api_url, headers=headers, files=files)
+        response = requests.post(api_url, headers=headers, files=files, timeout=45)
         response.raise_for_status() # Check for HTTP errors
+        
+        # 1. Create the directory if it doesn't exist
+        if not os.path.exists("generated_images"):
+            os.makedirs("generated_images")
 
-        if response.status_code == 200:
-            # --- THIS IS THE NEW LOGIC ---
-            
-            # 1. Create the directory if it doesn't exist
-            if not os.path.exists("generated_images"):
-                os.makedirs("generated_images")
+        # 2. Generate a unique filename
+        image_filename = f"{uuid.uuid4()}.png"
+        image_filepath = os.path.join("generated_images", image_filename)
 
-            # 2. Generate a unique filename
-            image_filename = f"{uuid.uuid4()}.png"
-            image_filepath = os.path.join("generated_images", image_filename)
+        # 3. Save the image content to the file
+        with open(image_filepath, "wb") as f:
+            f.write(response.content)
+        
+        print(f"--- Image generation success. Saved to {image_filepath} ---")
 
-            # 3. Save the image content to the file
-            with open(image_filepath, "wb") as f:
-                f.write(response.content)
-            
-            print(f"--- Image generation success. Saved to {image_filepath} ---")
+        # 4. Return a URL that the FastAPI server will provide
+        image_url = f"http://127.0.0.1:8000/images/{image_filename}"
+        return f"IMAGE_URL::{image_url}"
 
-            # 4. Return a URL that the FastAPI server will provide
-            # NOTE: Your server must be running on http://127.0.0.1:8000
-            image_url = f"http://127.0.0.1:8000/images/{image_filename}"
-            return f"IMAGE_URL::{image_url}"
-        else:
-            error_details = response.json().get('errors', [str(response.text)])
-            return f"Stability AI API Error: {response.status_code} - {error_details[0]}"
+    except requests.exceptions.HTTPError as http_err:
+        error_details = http_err.response.text
+        print(f"--- Stability AI HTTP Error: {http_err.response.status_code} - {error_details} ---")
+        return f"Stability AI API Error: {http_err.response.status_code} - {error_details}"
     except Exception as e:
+        print(f"--- Stability AI Request Error: {e} ---")
         return f"Stability AI request error: {e}"
-
 
 
 all_tools = [

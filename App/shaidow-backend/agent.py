@@ -13,7 +13,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from tools import all_tools
 
 agent_model = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash", # Use the correct, modern model name
+    model="gemini-2.0-flash", # Using the correct model name
     convert_system_message_to_human=True,
     temperature=0.2,
 )
@@ -31,7 +31,6 @@ def call_model(state: MessagesState, config: dict) -> Dict[str, Any]:
     messages = state["messages"]
     messages_with_system_prompt = _ensure_system_first(messages, system_prompt)
     response = agent_with_tools.invoke(messages_with_system_prompt)
-    # LangGraph state is additive, so we only need to return the NEW message
     return {"messages": [response]}
 
 def should_continue(state: MessagesState) -> str:
@@ -43,7 +42,7 @@ def should_continue(state: MessagesState) -> str:
 def sanitize_tool_output(state: MessagesState) -> Dict[str, Any]:
     last_message = state['messages'][-1]
     if isinstance(last_message, ToolMessage):
-        if isinstance(last_message.content, str) and last_message.content.startswith("IMAGE_DATA::data:image"):
+        if isinstance(last_message.content, str) and last_message.content.startswith("IMAGE_DATA::"):
             last_message.content = "[Image was generated successfully and displayed to the user.]"
     return {"messages": [last_message]}
 

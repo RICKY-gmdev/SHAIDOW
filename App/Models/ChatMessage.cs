@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using Microsoft.Maui.Controls; // Make sure this using statement is present
+
 namespace App.Models
 {
     public class ChatMessage : INotifyPropertyChanged
@@ -9,15 +11,27 @@ namespace App.Models
             get => _text;
             set { _text = value; OnPropertyChanged(nameof(Text)); OnPropertyChanged(nameof(IsText)); }
         }
+
         private string? _imageUrl;
         public string? ImageUrl
         {
             get => _imageUrl;
             set { _imageUrl = value; OnPropertyChanged(nameof(ImageUrl)); OnPropertyChanged(nameof(IsImage)); }
         }
+
+        // --- THIS IS THE MISSING PROPERTY ---
+        private ImageSource? _image;
+        public ImageSource? Image
+        {
+            get => _image;
+            set { _image = value; OnPropertyChanged(nameof(Image)); }
+        }
+        // ------------------------------------
+
         public bool IsText => !string.IsNullOrEmpty(Text);
         public bool IsImage => !string.IsNullOrEmpty(ImageUrl);
         public string Author { get; set; } = string.Empty;
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

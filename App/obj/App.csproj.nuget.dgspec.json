@@ -61,6 +61,10 @@
         "net9.0-android35.0": {
           "targetAlias": "net9.0-android",
           "dependencies": {
+            "CommunityToolkit.Maui.MediaElement": {
+              "target": "Package",
+              "version": "[6.1.2, )"
+            },
             "Markdig": {
               "target": "Package",
               "version": "[0.42.0, )"
@@ -71,7 +75,11 @@
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.51, )"
+              "version": "[9.0.90, )"
+            },
+            "Microsoft.Maui.Controls.Compatibility": {
+              "target": "Package",
+              "version": "[9.0.90, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
@@ -126,6 +134,10 @@
         "net9.0-ios18.5": {
           "targetAlias": "net9.0-ios",
           "dependencies": {
+            "CommunityToolkit.Maui.MediaElement": {
+              "target": "Package",
+              "version": "[6.1.2, )"
+            },
             "Markdig": {
               "target": "Package",
               "version": "[0.42.0, )"
@@ -136,7 +148,11 @@
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.51, )"
+              "version": "[9.0.90, )"
+            },
+            "Microsoft.Maui.Controls.Compatibility": {
+              "target": "Package",
+              "version": "[9.0.90, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
@@ -191,6 +207,10 @@
         "net9.0-maccatalyst18.5": {
           "targetAlias": "net9.0-maccatalyst",
           "dependencies": {
+            "CommunityToolkit.Maui.MediaElement": {
+              "target": "Package",
+              "version": "[6.1.2, )"
+            },
             "Markdig": {
               "target": "Package",
               "version": "[0.42.0, )"
@@ -201,7 +221,11 @@
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.51, )"
+              "version": "[9.0.90, )"
+            },
+            "Microsoft.Maui.Controls.Compatibility": {
+              "target": "Package",
+              "version": "[9.0.90, )"
             },
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
@@ -257,6 +281,10 @@
         "net9.0-windows10.0.19041": {
           "targetAlias": "net9.0-windows10.0.19041.0",
           "dependencies": {
+            "CommunityToolkit.Maui.MediaElement": {
+              "target": "Package",
+              "version": "[6.1.2, )"
+            },
             "Markdig": {
               "target": "Package",
               "version": "[0.42.0, )"
@@ -267,7 +295,11 @@
             },
             "Microsoft.Maui.Controls": {
               "target": "Package",
-              "version": "[9.0.51, )"
+              "version": "[9.0.90, )"
+            },
+            "Microsoft.Maui.Controls.Compatibility": {
+              "target": "Package",
+              "version": "[9.0.90, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",

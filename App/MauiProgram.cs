@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using MauiPopup;
@@ -12,6 +13,8 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+			.UseMauiCommunityToolkitMediaElement() // <-- You might have this already
+
 
 			.ConfigureFonts(fonts =>
 			{
@@ -20,13 +23,13 @@ public static class MauiProgram
 			});
 
 		string dbPath = Path.Combine(FileSystem.AppDataDirectory, "ChatHistory.db3");
-		
 
-            
-        builder.Services.AddSingleton<MainPage>();
-        builder.Services.AddSingleton<ApiService>();
 
-			
+
+		builder.Services.AddSingleton<MainPage>();
+		builder.Services.AddSingleton<ApiService>();
+
+
 
 #if DEBUG
 		builder.Logging.AddDebug();
