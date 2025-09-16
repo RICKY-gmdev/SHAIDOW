@@ -5,6 +5,7 @@ namespace App.Models
 {
     public class ChatMessage : INotifyPropertyChanged
     {
+        public Color? GlowColor { get; set; }
         private string? _text;
         public string? Text
         {

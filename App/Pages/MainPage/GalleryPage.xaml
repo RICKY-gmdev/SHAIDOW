@@ -2,24 +2,127 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.GalleryPage"
-             Title="Image Gallery"
-             BackgroundColor="#121212">
-    <CollectionView  ItemsSource="{Binding ImageUrls}"
-                Margin="5"
-                SelectionMode="Single"
-                SelectionChanged="OnImageSelected">
-        <CollectionView.ItemsLayout>
-            <GridItemsLayout Orientation="Vertical" Span="2" 
-                             VerticalItemSpacing="5" HorizontalItemSpacing="5"/>
-        </CollectionView.ItemsLayout>
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Border StrokeShape="RoundRectangle 10" StrokeThickness="0">
-                    <Image Source="{Binding .}"
-                           Aspect="AspectFill"
-                           HeightRequest="180"/>
-                </Border>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+             Title="Gallery"
+             NavigationPage.HasNavigationBar="False">
+    
+    <!-- Animated Gradient Background -->
+    <Grid>
+        <BoxView>
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#0F0817" Offset="0"/>
+                    <GradientStop Color="#1A0B3D" Offset="0.3"/>
+                    <GradientStop Color="#2D1B69" Offset="0.7"/>
+                    <GradientStop Color="#4A00E0" Offset="1"/>
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+        
+        <!-- Floating Particles Effect -->
+        <Grid>
+            <Ellipse Fill="#20FF6B9D" WidthRequest="100" HeightRequest="100" 
+                    HorizontalOptions="Start" VerticalOptions="Start" 
+                    TranslationX="-50" TranslationY="-30" Opacity="0.4"/>
+            <Ellipse Fill="#2000D9FF" WidthRequest="60" HeightRequest="60" 
+                    HorizontalOptions="End" VerticalOptions="Start" 
+                    TranslationX="30" TranslationY="100" Opacity="0.5"/>
+            <Ellipse Fill="#20FF0080" WidthRequest="80" HeightRequest="80" 
+                    HorizontalOptions="Center" VerticalOptions="End" 
+                    TranslationY="40" Opacity="0.3"/>
+        </Grid>
+        
+        <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="20">
+            <!-- Glassmorphism Header -->
+            <Border Grid.Row="0" 
+                   BackgroundColor="#40FFFFFF"
+                   StrokeShape="RoundRectangle 25"
+                   HeightRequest="120"
+                   Padding="20">
+                <Border.Shadow>
+                    <Shadow Brush="#80000000" Offset="0,10" Radius="30" Opacity="0.5"/>
+                </Border.Shadow>
+                <Grid RowDefinitions="Auto, Auto" RowSpacing="8">
+                    <Label Grid.Row="0" 
+                          Text="✨ AI GALLERY ✨" 
+                          FontSize="28" 
+                          FontAttributes="Bold"
+                          TextColor="#FFFFFF"
+                          HorizontalTextAlignment="Center"/>
+                    <Label Grid.Row="1" 
+                          Text="Your generated masterpieces await" 
+                          FontSize="16" 
+                          TextColor="#E0FFFFFF"
+                          HorizontalTextAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Ultra-Modern Gallery Grid -->
+            <RefreshView Grid.Row="1" 
+                        RefreshColor="#FF6B9D">
+                <CollectionView ItemsSource="{Binding ImageUrls}"
+                               SelectionMode="Single"
+                               SelectionChanged="OnImageSelected"
+                               BackgroundColor="Transparent">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" 
+                                       Span="2" 
+                                       VerticalItemSpacing="15" 
+                                       HorizontalItemSpacing="15"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Neumorphism Card with Holographic Effect -->
+                            <Border BackgroundColor="#20FFFFFF"
+                                   StrokeShape="RoundRectangle 20"
+                                   HeightRequest="220">
+                                <Border.Shadow>
+                                    <Shadow Brush="#80FF6B9D" Offset="0,8" Radius="20" Opacity="0.6"/>
+                                </Border.Shadow>
+                                
+                                <Grid>
+                                    <!-- Holographic Border -->
+                                    <Border StrokeShape="RoundRectangle 20" 
+                                           StrokeThickness="2"
+                                           BackgroundColor="Transparent">
+                                        <Border.Stroke>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#FF6B9D" Offset="0"/>
+                                                <GradientStop Color="#00D9FF" Offset="0.5"/>
+                                                <GradientStop Color="#FF0080" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Stroke>
+                                    </Border>
+                                    
+                                    <!-- Image with Overlay Effects -->
+                                    <Border StrokeShape="RoundRectangle 18" Margin="2">
+                                        <Image Source="{Binding .}"
+                                              Aspect="AspectFill"/>
+                                    </Border>
+                                    
+                                    <!-- Animated Shimmer Overlay -->
+                                    <BoxView Opacity="0.1">
+                                        <BoxView.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                <GradientStop Color="Transparent" Offset="0"/>
+                                                <GradientStop Color="#FFFFFF" Offset="0.5"/>
+                                                <GradientStop Color="Transparent" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </BoxView.Background>
+                                    </BoxView>
+                                    
+                                    <!-- Magic Sparkle Icon -->
+                                    <Label Text="✨" 
+                                          FontSize="20"
+                                          HorizontalOptions="End" 
+                                          VerticalOptions="Start"
+                                          Margin="10"
+                                          Opacity="0.8"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+        </Grid>
+    </Grid>
 </ContentPage>

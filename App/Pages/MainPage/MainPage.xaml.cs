@@ -49,6 +49,14 @@ namespace App
             }
         }
 
+
+            private async void OnGalleryClicked(object sender, EventArgs e)
+        {
+            // Navigate to the GalleryPage (ensure route is registered in AppShell)
+            await Shell.Current.GoToAsync(nameof(GalleryPage));
+        }
+
+
         private void OnSendMessage(object sender, EventArgs e)
         {
             string userMessageText = UserInput.Text?.Trim() ?? string.Empty;
@@ -72,6 +80,7 @@ namespace App
                     bool firstTextChunkReceived = false;
                     string? capturedImageUrl = null;
                     bool imageBubbleWasCreated = false;
+                    var toolsUsed = new List<string>();
 
                     await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
                     {
@@ -91,6 +100,10 @@ namespace App
                                 case "tool_start":
                                     ToolAnimationView.ShowTool(response.Tool ?? "default");
                                     aiMessagePlaceholder.Text = $"* (Using {response.Tool}...) *";
+                                     if (response.Tool != null && !toolsUsed.Contains(response.Tool))
+                                    {
+                                        toolsUsed.Add(response.Tool);
+                                    }
                                     break;
 
                                 case "tool_end":
@@ -112,7 +125,11 @@ namespace App
                                     break;
 
                                 case "stream_end":
-                                    
+                                     string final_text = aiMessagePlaceholder.Text ?? "";
+                            if (final_text.StartsWith("* (Using"))
+                            {
+                                final_text = "";
+                            }
                                     if (!string.IsNullOrEmpty(capturedImageUrl))
                                     {
                                         var imageMessage = new ChatMessage
@@ -124,8 +141,13 @@ namespace App
                                         AddMessage(imageMessage);
                                         imageBubbleWasCreated = true;
                                     }
+                                    if (toolsUsed.Any())
+                                            {
+                                                string toolsListString = "\n\n---\n*Tools Used: " + string.Join(", ", toolsUsed) + "*";
+                                                final_text += toolsListString;
+                                            }
 
-                                    
+
                                     if (imageBubbleWasCreated && (aiMessagePlaceholder.Text != null && aiMessagePlaceholder.Text.StartsWith("* (Using")))
                                     {
                                         ChatMessages.Remove(aiMessagePlaceholder);
@@ -135,7 +157,7 @@ namespace App
                                     _isResponding = false;
                                     ToolAnimationView.ClearAllTools();
                                     UpdateLoadingIndicatorAnimated();
-                                    
+
                                     break;
 
                                 case "error":
@@ -143,7 +165,7 @@ namespace App
                                     _isResponding = false;
                                     ToolAnimationView.ClearAllTools();
                                     UpdateLoadingIndicatorAnimated();
-                                    
+
                                     break;
                             }
                             ScrollToBottom();
@@ -158,7 +180,7 @@ namespace App
                         _isResponding = false;
                         ToolAnimationView.ClearAllTools();
                         UpdateLoadingIndicatorAnimated();
-                        
+
                     });
                 }
             });

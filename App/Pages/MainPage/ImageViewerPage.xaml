@@ -2,12 +2,178 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App.ImageViewerPage"
-             Title="Image Viewer"
-             BackgroundColor="Black">
-    
-    <Image x:Name="FullScreenImage"
-           Aspect="AspectFit"
-           HorizontalOptions="Center"
-           VerticalOptions="Center" />
-    
+             Title="AI Masterpiece"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <BoxView>
+            <BoxView.Background>
+                <RadialGradientBrush Center="0.5,0.5"
+                        Radius="1.5">
+                    <GradientStop Color="#000000"
+                            Offset="0"/>
+                    <GradientStop Color="#0D0221"
+                            Offset="0.6"/>
+                    <GradientStop Color="#1A0B3D"
+                            Offset="1"/>
+                </RadialGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <Grid>
+            <Ellipse Fill="White"
+                    WidthRequest="2"
+                    HeightRequest="2"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Start"
+                    TranslationX="50"
+                    TranslationY="100"
+                    Opacity="0.8"/>
+            <Ellipse Fill="White"
+                    WidthRequest="1"
+                    HeightRequest="1"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    TranslationX="-80"
+                    TranslationY="150"
+                    Opacity="0.6"/>
+            <Ellipse Fill="White"
+                    WidthRequest="3"
+                    HeightRequest="3"
+                    HorizontalOptions="Center"
+                    VerticalOptions="End"
+                    TranslationX="100"
+                    TranslationY="-200"
+                    Opacity="0.9"/>
+            <Ellipse Fill="White"
+                    WidthRequest="2"
+                    HeightRequest="2"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    TranslationX="-150"
+                    TranslationY="50"
+                    Opacity="0.7"/>
+        </Grid>
+
+        <ScrollView>
+            <Image x:Name="FullScreenImage"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+        </ScrollView>
+
+        <Grid VerticalOptions="Start"
+                HeightRequest="100"
+                Padding="25,40,25,20">
+            <Border BackgroundColor="#40000000"
+                    StrokeShape="RoundRectangle 25"
+                    Padding="20,15">
+                <Grid ColumnDefinitions="Auto, *, Auto"
+                        ColumnSpacing="20">
+                    <Border Grid.Column="0"
+                            BackgroundColor="#60FF0040"
+                            StrokeShape="RoundRectangle 20"
+                            WidthRequest="40"
+                            HeightRequest="40">
+                        <Border.Shadow>
+                            <Shadow Brush="#80FF0040"
+                                    Offset="0,5"
+                                    Radius="15"
+                                    Opacity="0.8"/>
+                        </Border.Shadow>
+                        <Button Text="✕"
+                                FontSize="18"
+                                TextColor="White"
+                                BackgroundColor="Transparent"
+                                Clicked="OnCloseClicked"/>
+                    </Border>
+
+                    <Label Grid.Column="1"
+                            Text="🖼️ AI Masterpiece"
+                            TextColor="White"
+                            FontSize="18"
+                            FontAttributes="Bold"
+                            VerticalTextAlignment="Center"
+                            HorizontalTextAlignment="Center"/>
+
+                    <Border Grid.Column="2"
+                            BackgroundColor="#6000D9FF"
+                            StrokeShape="RoundRectangle 20"
+                            WidthRequest="40"
+                            HeightRequest="40">
+                        <Border.Shadow>
+                            <Shadow Brush="#8000D9FF"
+                                    Offset="0,5"
+                                    Radius="15"
+                                    Opacity="0.8"/>
+                        </Border.Shadow>
+                        <Button Text="📤"
+                                FontSize="16"
+                                TextColor="White"
+                                BackgroundColor="Transparent"
+                                Clicked="OnShareClicked"/>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid VerticalOptions="End"
+                HeightRequest="80"
+                Padding="25,15,25,30">
+            <Border BackgroundColor="#40FFFFFF"
+                    StrokeShape="RoundRectangle 25"
+                    Padding="20,15">
+                <Border.Stroke>
+                    <LinearGradientBrush>
+                        <GradientStop Color="#60FF6B9D"
+                                Offset="0"/>
+                        <GradientStop Color="#6000D9FF"
+                                Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Stroke>
+                <Border.StrokeThickness>1</Border.StrokeThickness>
+                <Label Text="📱 Pinch to zoom • 🖱️ Drag to explore • ✨ AI Generated"
+                        TextColor="White"
+                        FontSize="14"
+                        FontAttributes="Bold"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"/>
+            </Border>
+        </Grid>
+
+        <Grid x:Name="LoadingOverlay"
+                BackgroundColor="#E0000000"
+                IsVisible="True">
+            <VerticalStackLayout Spacing="25"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                <Border BackgroundColor="Transparent"
+                        StrokeShape="RoundRectangle 50"
+                        WidthRequest="100"
+                        HeightRequest="100">
+                    <Border.Stroke>
+                        <LinearGradientBrush StartPoint="0,0"
+                                EndPoint="1,1">
+                            <GradientStop Color="#FF6B9D"
+                                    Offset="0"/>
+                            <GradientStop Color="#00D9FF"
+                                    Offset="0.5"/>
+                            <GradientStop Color="#FF0080"
+                                    Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+                    <Border.StrokeThickness>4</Border.StrokeThickness>
+                    <ActivityIndicator IsRunning="True"
+                            Color="White"
+                            WidthRequest="50"
+                            HeightRequest="50"/>
+                </Border>
+                <Label Text="✨ Loading your masterpiece..."
+                        TextColor="White"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
 </ContentPage>

@@ -13,6 +13,7 @@ public partial class GalleryPage : ContentPage
         _apiService = new ApiService(); // Or use Dependency Injection if you set it up
         BindingContext = this;
     }
+    
 
     protected override async void OnAppearing()
     {

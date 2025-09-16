@@ -6,22 +6,104 @@
              HorizontalOptions="Center"
              IsVisible="False">
     
+    <ContentView.Resources>
+        <!-- Epic Orbit Frame Style -->
+        <Style x:Key="OrbitFrameStyle" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="#40FFFFFF"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 40"/>
+            <Setter Property="WidthRequest" Value="80"/>
+            <Setter Property="HeightRequest" Value="80"/>
+            <Setter Property="HorizontalOptions" Value="Center"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+        </Style>
+        
+        <!-- Holographic Icon Style -->
+        <Style x:Key="OrbitIconStyle" TargetType="Image">
+            <Setter Property="WidthRequest" Value="50"/>
+            <Setter Property="HeightRequest" Value="50"/>
+            <Setter Property="Aspect" Value="AspectFit"/>
+            <Setter Property="HorizontalOptions" Value="Center"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+        </Style>
+    </ContentView.Resources>
+    
     <Grid>
+        <!-- Epic Energy Field -->
+        <Ellipse Fill="#40FF6B9D" WidthRequest="400" HeightRequest="400"
+                HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.3"/>
+        <Ellipse Fill="#4000D9FF" WidthRequest="300" HeightRequest="300"
+                HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.4"/>
+        <Ellipse Fill="#40FF0080" WidthRequest="200" HeightRequest="200"
+                HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.5"/>
+                
         <Grid x:Name="ToolContainerGrid" Opacity="0">
-            <Image x:Name="SingleToolIcon"
-                   WidthRequest="60" HeightRequest="60"
-                   Aspect="AspectFit" Opacity="0"
-                   VerticalOptions="End" HorizontalOptions="Center"
-                   TranslationY="40"/>
-
+            <!-- Enhanced Single Tool Display -->
+            <Border BackgroundColor="#40FFFFFF"
+                   StrokeShape="RoundRectangle 50"
+                   WidthRequest="100" HeightRequest="100"
+                   HorizontalOptions="Center"
+                   VerticalOptions="End"
+                   TranslationY="40">
+                <Border.Stroke>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FF6B9D" Offset="0"/>
+                        <GradientStop Color="#00D9FF" Offset="0.5"/>
+                        <GradientStop Color="#FF0080" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Stroke>
+                <Border.StrokeThickness>4</Border.StrokeThickness>
+                <Border.Shadow>
+                    <Shadow Brush="#C0FF6B9D" Offset="0,0" Radius="30" Opacity="1"/>
+                </Border.Shadow>
+                
+                <Image x:Name="SingleToolIcon"
+                       WidthRequest="60" 
+                       HeightRequest="60"
+                       Aspect="AspectFit" 
+                       Opacity="0"/>
+            </Border>
+            
+            <!-- Epic Multiple Tools Orbit System -->
             <Grid x:Name="MultipleToolsOrbitContainer" IsVisible="False">
                 <Border x:Name="OrbitFrame1" Style="{StaticResource OrbitFrameStyle}">
+                    <Border.Stroke>
+                        <LinearGradientBrush>
+                            <GradientStop Color="#FF6B9D" Offset="0"/>
+                            <GradientStop Color="#8A2BE2" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+                    <Border.StrokeThickness>3</Border.StrokeThickness>
+                    <Border.Shadow>
+                        <Shadow Brush="#80FF6B9D" Offset="0,8" Radius="20" Opacity="0.8"/>
+                    </Border.Shadow>
                     <Image x:Name="OrbitIcon1" Style="{StaticResource OrbitIconStyle}"/>
                 </Border>
+                
                 <Border x:Name="OrbitFrame2" Style="{StaticResource OrbitFrameStyle}">
+                    <Border.Stroke>
+                        <LinearGradientBrush>
+                            <GradientStop Color="#00D9FF" Offset="0"/>
+                            <GradientStop Color="#0080FF" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+                    <Border.StrokeThickness>3</Border.StrokeThickness>
+                    <Border.Shadow>
+                        <Shadow Brush="#8000D9FF" Offset="0,8" Radius="20" Opacity="0.8"/>
+                    </Border.Shadow>
                     <Image x:Name="OrbitIcon2" Style="{StaticResource OrbitIconStyle}"/>
                 </Border>
+                
                 <Border x:Name="OrbitFrame3" Style="{StaticResource OrbitFrameStyle}">
+                    <Border.Stroke>
+                        <LinearGradientBrush>
+                            <GradientStop Color="#FF0080" Offset="0"/>
+                            <GradientStop Color="#FF6B9D" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+                    <Border.StrokeThickness>3</Border.StrokeThickness>
+                    <Border.Shadow>
+                        <Shadow Brush="#80FF0080" Offset="0,8" Radius="20" Opacity="0.8"/>
+                    </Border.Shadow>
                     <Image x:Name="OrbitIcon3" Style="{StaticResource OrbitIconStyle}"/>
                 </Border>
             </Grid>

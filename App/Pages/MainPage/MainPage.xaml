@@ -1,68 +1,98 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:local="clr-namespace:App"
              xmlns:models="clr-namespace:App.Models"
              xmlns:data="clr-namespace:App.Data"
              xmlns:converters="clr-namespace:App.Converters"
              x:Class="App.MainPage"
-             Title="SHAIDOW">
+             Title="SHAIDOW"
+             Shell.NavBarIsVisible="False">
 
     <ContentPage.Resources>
         <converters:MarkdownToHtmlConverter x:Key="MarkdownToHtml"/>
+        <DataTemplate x:Key="UserMessageTemplate" x:DataType="models:ChatMessage">
+            <Grid  Padding="20,10" HorizontalOptions="End">
+                <Border MaximumWidthRequest="720">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#40FF6B9D" Offset="0"/>
+                            <GradientStop Color="#408A2BE2" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.StrokeShape><RoundRectangle CornerRadius="20"/></Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{Binding GlowColor}" Offset="0,8" Radius="25" Opacity="0.9"/>
+                    </Border.Shadow>
 
-        <DataTemplate x:Key="UserMessageTemplate"
-                x:DataType="models:ChatMessage">
-            <Grid Padding="5,10">
-                <Border BackgroundColor="MediumBlue"
-                        StrokeShape="RoundRectangle 10"
-                        Padding="10"
-                        HorizontalOptions="End"
-                        MaximumWidthRequest="320">
-                    <Label Text="{Binding Text}"
-                            TextColor="White"/>
+                    <StackLayout Padding="20,15" Spacing="5">
+                        <Label Text="{Binding Text}" TextColor="White" FontSize="16" LineHeight="1.3"/>
+                        <Label Text="You" TextColor="#E0FFFFFF" FontSize="12" HorizontalTextAlignment="End"/>
+                    </StackLayout>
                 </Border>
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="AiMessageTemplate"
-                x:DataType="models:ChatMessage">
-            <Grid Padding="5,10">
-                <Border BackgroundColor="#FF0F0C1A"
-                        Stroke="#333333"
-                        StrokeThickness="1"
-                        StrokeShape="RoundRectangle 10"
-                        Padding="10"
-                        HorizontalOptions="Start"
-                        MaximumWidthRequest="1080">
-                    <Label TextType="Html"
-                            Text="{Binding Text, Converter={StaticResource MarkdownToHtml}}"
-                            TextColor="White"/>
+        <DataTemplate x:Key="AiMessageTemplate" x:DataType="models:ChatMessage">
+            <Grid Padding="20,10" HorizontalOptions="Start">
+                <Border MaximumWidthRequest="1440">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#30FFFFFF" Offset="0"/>
+                            <GradientStop Color="#10000000" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Stroke>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00D9FF" Offset="0"/>
+                            <GradientStop Color="#FF0080" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+                    <Border.StrokeThickness>2</Border.StrokeThickness>
+                    <Border.StrokeShape><RoundRectangle CornerRadius="20"/></Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{Binding GlowColor}" Offset="0,8" Radius="25" Opacity="0.8"/>
+                    </Border.Shadow>
+
+                    <StackLayout Padding="20,15" Spacing="8">
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10">
+                            <Border Grid.Column="0" BackgroundColor="#00D9FF" WidthRequest="30" HeightRequest="30" StrokeShape="RoundRectangle 15">
+                                <Label Text="🤖" FontSize="16" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                            </Border>
+                            <Label Grid.Column="1" Text="SHAIDOW" TextColor="#00D9FF" FontSize="14" FontAttributes="Bold" VerticalTextAlignment="Center"/>
+                        </Grid>
+                        <Label TextType="Html" Text="{Binding Text,Converter={StaticResource MarkdownToHtml}}" TextColor="#FFFFFF" FontSize="15" LineHeight="1.4"/>
+                    </StackLayout>
                 </Border>
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="ImageMessageTemplate"
-                x:DataType="models:ChatMessage">
-            <Grid Padding="5,10">
-                <Border BackgroundColor="#202C33"
-                        StrokeShape="RoundRectangle 10"
-                        Padding="10"
-                        HorizontalOptions="Start"
-                        MaximumWidthRequest="500">
-                    <VerticalStackLayout Spacing="5">
-                        <Label TextType="Html"
-                                IsVisible="{Binding IsText}"
-                                Text="{Binding Text, Converter={StaticResource MarkdownToHtml}}"
-                                TextColor="White"/>
+        <DataTemplate x:Key="ImageMessageTemplate" x:DataType="models:ChatMessage">
+            <Grid Padding="20,10" HorizontalOptions="Start">
+                <Border MaximumWidthRequest="480">
+                    <Border.Background>
+                        <RadialGradientBrush Center="0.5,0.5" Radius="1">
+                            <GradientStop Color="#4000D9FF" Offset="0"/>
+                            <GradientStop Color="#10000000" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Border.Background>
+                    <Border.StrokeShape><RoundRectangle CornerRadius="20"/></Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{Binding GlowColor}" Offset="0,12" Radius="30" Opacity="0.9"/>
+                    </Border.Shadow>
 
-                        <Image Source="{Binding Image}"
-                                Aspect="AspectFit"
-                                HeightRequest="256"
-                                HorizontalOptions="Start"/>
-
-                    </VerticalStackLayout>
+                    <StackLayout Padding="15" Spacing="12">
+                        <Label Text="{Binding Text}" TextColor="#FFFFFF" FontSize="14" IsVisible="{Binding IsText}"/>
+                        <Border StrokeShape="RoundRectangle 15" StrokeThickness="3">
+                            <Border.Stroke>
+                                <LinearGradientBrush>
+                                    <GradientStop Color="#FF6B9D" Offset="0"/>
+                                    <GradientStop Color="#00D9FF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Stroke>
+                            <Image Source="{Binding Image}" Aspect="AspectFill" HeightRequest="200"/>
+                        </Border>
+                    </StackLayout>
                 </Border>
             </Grid>
         </DataTemplate>
@@ -73,56 +103,59 @@
                                    ImageTemplate="{StaticResource ImageMessageTemplate}"/>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, *, Auto"
-            Padding="10"
-            RowSpacing="10">
-        <VerticalStackLayout x:Name="PageContentLayout" Grid.Row="0">
-             <Grid>
-                    <Border BackgroundColor="Transparent"
-                            Stroke="LightGray"
-                            Padding="0"
-                            HorizontalOptions="End"
-                            VerticalOptions="Start">
-                        <Button ImageSource="themeswitch.png"
-                                HorizontalOptions="End"
-                                VerticalOptions="Start"
-                                WidthRequest="30"
-                                HeightRequest="30"
-                                BackgroundColor="Transparent"
-                                Clicked="OnLightModeClicked"/>
+    <Grid>
+        <BoxView>
+            <BoxView.Background>
+                <RadialGradientBrush Center="0.5,0.3" Radius="1.2">
+                    <GradientStop Color="#0A0A0A" Offset="0"/>
+                    <GradientStop Color="#1A0F2E" Offset="0.4"/>
+                    <GradientStop Color="#2D1B69" Offset="0.7"/>
+                    <GradientStop Color="#4A00E0" Offset="1"/>
+                </RadialGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <Grid RowDefinitions="Auto, *, Auto" RowSpacing="15">
+
+            <VerticalStackLayout x:Name="PageContentLayout" Grid.Row="0" Padding="25,20">
+                <Grid Margin="0,10,0,20" HeightRequest="40">
+                    <Border HorizontalOptions="Start" BackgroundColor="#30FFFFFF" StrokeShape="RoundRectangle 22" WidthRequest="44" HeightRequest="44">
+                        <Border.Shadow><Shadow Brush="#8000D9FF" Offset="0,5" Radius="15" Opacity="0.8"/></Border.Shadow>
+                        <Button Text="🖼️" BackgroundColor="Transparent" TextColor="#00D9FF" FontSize="20" Clicked="OnGalleryClicked"/>
+                    </Border>
+                    <Border HorizontalOptions="End" BackgroundColor="#30FFFFFF" StrokeShape="RoundRectangle 22" WidthRequest="44" HeightRequest="44">
+                        <Border.Shadow><Shadow Brush="#80FF6B9D" Offset="0,5" Radius="15" Opacity="0.8"/></Border.Shadow>
+                        <Button Text="🌙" BackgroundColor="Transparent" TextColor="#FF6B9D" FontSize="20" Clicked="OnLightModeClicked"/>
                     </Border>
                 </Grid>
-            <Grid HeightRequest="300">
-                <Image x:Name="ShaidowImage" 
-                        Source="shaidow.png"
-                        Aspect="AspectFit"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        HeightRequest="250"/>
-                <local:ToolAnimationView x:Name="ToolAnimationView"/>     
-            </Grid>
-            <Border x:Name="TitleBorder" Stroke="#FF3F3D3D" StrokeShape="RoundRectangle 20" Padding="5" BackgroundColor="Black" WidthRequest="280" HeightRequest="80" HorizontalOptions="Center">
-                <Label Text="SHAIDOW" TextColor="Cyan" BackgroundColor="Black" FontSize="40" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
-            </Border>
-            <Label x:Name="Welcome" Text="An CROSS-PLATFORM AI SERVICE !&#x0d; PRESENTED BY TEAM SENTINELS." TextColor="Cyan" FontSize="32" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Margin="0,10,0,0"/>
-            
-        </VerticalStackLayout>
 
-        <CollectionView x:Name="ChatList"
-                        Grid.Row="1"
-                        ItemsSource="{Binding ChatMessages}"
-                        SelectionMode="None"
-                        ItemTemplate="{StaticResource MessageTemplateSelector}"/>
+                <Grid HeightRequest="250" Margin="0,10">
+                    <Image x:Name="ShaidowImage" Source="shaidow.png" Aspect="AspectFit" HeightRequest="320"/>
+                    <local:ToolAnimationView x:Name="ToolAnimationView"/>
+                </Grid>
 
-              <Grid x:Name="InputContainer"
-              Grid.Row="2"
-              ColumnDefinitions="*, Auto, Auto"
-              ColumnSpacing="10"
-              HorizontalOptions="Center"
-              WidthRequest="350">
-            <Entry x:Name="UserInput" Grid.Column="0" Placeholder="Ask SHAIDOW ..." VerticalOptions="Center" TextColor="Cyan" Completed="OnSendMessage" Focused="OnUserInputFocused" Unfocused="OnUserInputUnfocused"/>
-            <Button x:Name="SendButton" Grid.Column="1" Text="Send" Clicked="OnSendMessage" WidthRequest="80" VerticalOptions="Center"/>
-            <ActivityIndicator x:Name="Spinner" Grid.Column="2" IsVisible="False" IsRunning="False" WidthRequest="30" HeightRequest="30" VerticalOptions="Center" Color="Cyan"/>
+                <Label x:Name="Welcome" Text=" NEXT-GEN AI ASSISTANT &#x0d;Ready to create magic together!" TextColor="#B0FFFFFF" FontSize="17" LineHeight="1.5" FontAttributes="Bold" HorizontalTextAlignment="Center" Margin="20,15,20,0"/>
+            </VerticalStackLayout>
+
+            <CollectionView x:Name="ChatList" Grid.Row="1" ItemsSource="{Binding ChatMessages}" SelectionMode="None" ItemTemplate="{StaticResource MessageTemplateSelector}" BackgroundColor="Transparent"/>
+
+            <Grid x:Name="InputContainer" Grid.Row="2" Margin="20,15,20,30" HorizontalOptions="Fill">
+                <Border x:Name="InputContainerBorder" BackgroundColor="#40FFFFFF" StrokeShape="RoundRectangle 35" Padding="5">
+                    <Border.Stroke><LinearGradientBrush><GradientStop Color="#60FF6B9D" Offset="0"/><GradientStop Color="#6000D9FF" Offset="1"/></LinearGradientBrush></Border.Stroke>
+                    <Border.StrokeThickness>2</Border.StrokeThickness>
+                    <Border.Shadow><Shadow Brush="#A0FF6B9D" Offset="0,15" Radius="40" Opacity="0.8"/></Border.Shadow>
+                    
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <Entry x:Name="UserInput" Grid.Column="0" Placeholder="Ask SHAIDOW anything..." PlaceholderColor="#80FFFFFF" TextColor="White" BackgroundColor="Transparent" FontSize="16" VerticalOptions="Center" Margin="15,0" Completed="OnSendMessage"/>
+                        <Border Grid.Column="1" WidthRequest="55" HeightRequest="55" StrokeShape="RoundRectangle 27.5">
+                            <Border.Background><LinearGradientBrush><GradientStop Color="#FF6B9D" Offset="0"/><GradientStop Color="#8A2BE2" Offset="1"/></LinearGradientBrush></Border.Background>
+                            <Border.Shadow><Shadow Brush="#80FF6B9D" Offset="0,8" Radius="20" Opacity="0.9"/></Border.Shadow>
+                            <Button x:Name="SendButton" Text="🚀" TextColor="White" BackgroundColor="Transparent" FontSize="20" Clicked="OnSendMessage"/>
+                        </Border>
+                        <ActivityIndicator x:Name="Spinner" Grid.Column="1" IsVisible="False" IsRunning="False" Color="#00D9FF" WidthRequest="25" HeightRequest="25" VerticalOptions="Center" HorizontalOptions="Center"/>
+                    </Grid>
+                </Border>
             </Grid>
+        </Grid>
     </Grid>
 </ContentPage>
