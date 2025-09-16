@@ -53,7 +53,7 @@ namespace App
         {
             string userMessageText = UserInput.Text?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(userMessageText) || _isResponding) return;
-            TitleBorder.IsVisible = false;
+            Welcome.IsVisible = false;
             var userMessage = new ChatMessage { Author = "You", Text = userMessageText };
             AddMessage(userMessage);
             UserInput.Text = string.Empty;
@@ -71,7 +71,7 @@ namespace App
                 {
                     bool firstTextChunkReceived = false;
                     string? capturedImageUrl = null;
-                    bool imageBubbleWasCreated = false; // Flag to track if we made an image bubble
+                    bool imageBubbleWasCreated = false;
 
                     await foreach (var response in _apiService.StreamChatResponseAsync(userMessageText, _currentThreadId, _cts.Token))
                     {
@@ -112,7 +112,7 @@ namespace App
                                     break;
 
                                 case "stream_end":
-                                    // If we have a captured image, create the image bubble now.
+                                    
                                     if (!string.IsNullOrEmpty(capturedImageUrl))
                                     {
                                         var imageMessage = new ChatMessage
@@ -122,10 +122,10 @@ namespace App
                                             Image = await LoadImageFromUrlAsync(capturedImageUrl)
                                         };
                                         AddMessage(imageMessage);
-                                        imageBubbleWasCreated = true; // Set our flag
+                                        imageBubbleWasCreated = true;
                                     }
 
-                                    // If we created an image bubble AND the placeholder was never updated with real text, remove it.
+                                    
                                     if (imageBubbleWasCreated && (aiMessagePlaceholder.Text != null && aiMessagePlaceholder.Text.StartsWith("* (Using")))
                                     {
                                         ChatMessages.Remove(aiMessagePlaceholder);

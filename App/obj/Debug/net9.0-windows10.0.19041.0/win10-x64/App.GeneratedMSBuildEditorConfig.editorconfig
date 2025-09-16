@@ -34,17 +34,17 @@ build_metadata.AdditionalFiles.ManifestResourceName = App.AppShell.xaml
 build_metadata.AdditionalFiles.TargetPath = AppShell.xaml
 build_metadata.AdditionalFiles.RelativePath = AppShell.xaml
 
-[D:/programs/CSprograms/App/App/Pages/GalleryPage.xaml]
-build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = App.Pages.GalleryPage.xaml
-build_metadata.AdditionalFiles.TargetPath = Pages\GalleryPage.xaml
-build_metadata.AdditionalFiles.RelativePath = Pages\GalleryPage.xaml
-
 [D:/programs/CSprograms/App/App/Pages/Loginpage/Login.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
 build_metadata.AdditionalFiles.ManifestResourceName = App.Pages.Loginpage.Login.xaml
 build_metadata.AdditionalFiles.TargetPath = Pages\Loginpage\Login.xaml
 build_metadata.AdditionalFiles.RelativePath = Pages\Loginpage\Login.xaml
+
+[D:/programs/CSprograms/App/App/Pages/MainPage/GalleryPage.xaml]
+build_metadata.AdditionalFiles.GenKind = Xaml
+build_metadata.AdditionalFiles.ManifestResourceName = App.Pages.MainPage.GalleryPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Pages\MainPage\GalleryPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Pages\MainPage\GalleryPage.xaml
 
 [D:/programs/CSprograms/App/App/Pages/MainPage/ImageViewerPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml

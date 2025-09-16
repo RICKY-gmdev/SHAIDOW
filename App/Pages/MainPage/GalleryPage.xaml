@@ -7,7 +7,7 @@
     <CollectionView  ItemsSource="{Binding ImageUrls}"
                 Margin="5"
                 SelectionMode="Single"
-                SelectionChanged="OnImageSelected">>
+                SelectionChanged="OnImageSelected">
         <CollectionView.ItemsLayout>
             <GridItemsLayout Orientation="Vertical" Span="2" 
                              VerticalItemSpacing="5" HorizontalItemSpacing="5"/>

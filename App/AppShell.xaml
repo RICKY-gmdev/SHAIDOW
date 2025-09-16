@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:App"
     Shell.FlyoutBehavior="Flyout"
     Shell.BackgroundColor="#121212"
-    Shell.TitleColor="#FF8814A8"
+    Shell.TitleColor="Cyan"
     Shell.ForegroundColor="White">
 
     <FlyoutItem Title="SHAIDOW" Icon="chat_icon.png">
