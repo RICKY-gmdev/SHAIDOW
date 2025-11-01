@@ -1,5 +1,3 @@
-# tools.py
-
 import os
 import requests
 import base64
@@ -41,7 +39,6 @@ def _extract_content(resp: Any) -> str:
     return str(resp)[:4000] or "No content."
 
 def _groq_chat(model: str, query: str, system_prompt: str = "You are a helpful assistant.") -> str:
-    """Helper to call Groq chat completions API."""
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         return "Error: GROQ_API_KEY not set."
@@ -54,7 +51,7 @@ def _groq_chat(model: str, query: str, system_prompt: str = "You are a helpful a
             {"role": "user", "content": query},
         ],
         "temperature": 0.3,
-        "max_tokens": 2048,   # bumped up for longer answers
+        "max_tokens": 2048,
     }
 
     try:
@@ -66,26 +63,19 @@ def _groq_chat(model: str, query: str, system_prompt: str = "You are a helpful a
         return f"Groq error: {e}"
 
 
-# ------------------- TOOLS -------------------
-
 @tool
 def reasoning_tool(query: str) -> str:
-    """General reasoning and versatile Q&A (Claude replacement)."""
+    """General reasoning and versatile Q&A."""
+    
     return _groq_chat(
-        model="qwen/qwen3-32b",
+        model="qwen/qwen3-32b", # or "llama-3.3-70b-versatile"
         query=query,
-        reasoning_effort="default",
-        temperature=0.6,
-        stream=True
+        system_prompt="You are a helpful assistant with strong reasoning abilities."
     )
-
-
-
-
 
 @tool
 def coding_tool(query: str) -> str:
-    """Use DeepSeek for coding, debugging, and clean code generation."""
+    """Use for coding, debugging, and clean code generation."""
     return _groq_chat("llama-3.1-8b-instant", query, "You are an expert coding assistant. Generate clean, working code.")
 
 @tool
@@ -134,30 +124,25 @@ def generate_image_tool(prompt: str) -> str:
     if not api_key: return "Error: STABILITY_API_KEY environment variable not set."
     
     headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
-    
-    # Using the more reliable 'sd3' model
     files = {'prompt': (None, prompt), 'model': (None, 'sd3'), 'output_format': (None, 'png')}
     
     try:
         response = requests.post(api_url, headers=headers, files=files, timeout=45)
-        response.raise_for_status() # Check for HTTP errors
+        response.raise_for_status()
         
-        # 1. Create the directory if it doesn't exist
         if not os.path.exists("generated_images"):
             os.makedirs("generated_images")
 
-        # 2. Generate a unique filename
         image_filename = f"{uuid.uuid4()}.png"
         image_filepath = os.path.join("generated_images", image_filename)
 
-        # 3. Save the image content to the file
         with open(image_filepath, "wb") as f:
             f.write(response.content)
         
         print(f"--- Image generation success. Saved to {image_filepath} ---")
 
-        # 4. Return a URL that the FastAPI server will provide
-        image_url = f"http://127.0.0.1:8000/images/{image_filename}"
+        # Return relative path that works for all clients
+        image_url = f"/images/{image_filename}"
         return f"IMAGE_URL::{image_url}"
 
     except requests.exceptions.HTTPError as http_err:

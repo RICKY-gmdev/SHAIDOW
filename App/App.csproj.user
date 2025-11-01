@@ -1,6 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
+  <PropertyGroup Condition="'$(UnoForceSingleTFM)'=='true'">
+    <TargetFramework>net9.0-android</TargetFramework>
+    <Configuration>Debug</Configuration>
+  </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugFramework>net9.0-windows10.0.19041.0</ActiveDebugFramework>
+    <UnoPlatformIDE>vscode</UnoPlatformIDE>
+    <UnoPlatformIDEVersion>1.105.1</UnoPlatformIDEVersion>
+    <UnoPlatformExtension>unoplatform.vscode 0.22.1</UnoPlatformExtension>
+    <UnoRemoteControlPort>0</UnoRemoteControlPort>
+    <UnoVSCodeCSharpExtension>ms-dotnettools.csharp 2.93.22</UnoVSCodeCSharpExtension>
+    <UnoVSCodeCSharpDevKitExtension>ms-dotnettools.csdevkit 1.70.3</UnoVSCodeCSharpDevKitExtension>
+    <ActiveDebugFramework>net9.0-android</ActiveDebugFramework>
   </PropertyGroup>
 </Project>

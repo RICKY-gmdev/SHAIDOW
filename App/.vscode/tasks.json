@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "maui",
+			"targetFramework": "net9.0-android",
+			"configuration": "Debug",
+			"project": "D:\\programs\\CSprograms\\App\\App\\App.csproj",
+			"problemMatcher": [
+				"$msCompile",
+				"maui-problem-matcher-location",
+				"maui-problem-matcher",
+				"maui-problem-matcher-location-multiline",
+				"maui-problem-matcher-multiline"
+			],
+			"label": "maui: Build"
+		}
+	]
+}

@@ -3,16 +3,20 @@ import uuid
 import json
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
-from fastapi import FastAPI ,Request
+from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 from typing import List
 
-from agent import create_agent_graph
+from agent import create_agent_graph, initialize_agent
 from langgraph.checkpoint.memory import MemorySaver
 
 load_dotenv()
+
+if not os.path.exists("generated_images"):
+    os.makedirs("generated_images")
 
 SYSTEM_PROMPT = ""
 memory = MemorySaver()
@@ -29,31 +33,47 @@ async def lifespan(app: FastAPI):
             print("System prompt loaded successfully.")
     except FileNotFoundError:
         print("WARNING: system_prompt.txt not found.")
-        SYSTEM_PROMPT = "You are a helpful AI assistant."
-    
-    agent_executor = create_agent_graph(SYSTEM_PROMPT).with_config(checkpointer=memory)
-    print("Agent executor created successfully.")
+        
+    try:
+        initialize_agent()
+        print("Agent model initialized successfully.")
+        agent_executor = create_agent_graph(SYSTEM_PROMPT).with_config(checkpointer=memory)
+        print("Agent executor created successfully.")
+    except ValueError as e:
+        print(f"ERROR: Failed to initialize agent - {e}")
+        print("The server will start but chat functionality will not work without GOOGLE_API_KEY.")
+        agent_executor = None
     
     yield
     
     print("Application shutting down.")
 
 app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.2", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/images", StaticFiles(directory="generated_images"), name="images")
+
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the Shaidow API"}
+    return {"message": "Welcome to the SHAIDOW API", "version": "4.0.2"}
 
 class ChatRequest(BaseModel):
     message: str
     thread_id: str | None = Field(default=None)
+
 @app.get("/images", response_model=List[str])
 async def get_images(request: Request):
     """Scans the generated_images directory and returns a list of full URLs."""
     image_urls = []
     image_dir = "generated_images"
     if os.path.exists(image_dir):
-        # Sort files by creation time (newest first)
         files = sorted(
             [os.path.join(image_dir, f) for f in os.listdir(image_dir) if f.endswith(".png")],
             key=os.path.getmtime,
