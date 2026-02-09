@@ -4,7 +4,8 @@ The project was built with a strong focus on problem-solving, modular design, an
 
 Team Members:
 
-Ayman Iqbal (Ricky) – Team Lead
+Team Lead - Ayman Iqbal (Ricky) 
+
 Ankit Sharma
 Sk Wasef Mostafa
 Vedant Jain
