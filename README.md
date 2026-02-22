@@ -10,7 +10,7 @@
 
 **Cross-Platform Intelligent AI Chatbot with Dynamic Model Routing**
 
-
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cross--Platform-brightgreen.svg)]()
 [![LangChain](https://img.shields.io/badge/powered%20by-LangChain-orange.svg)]()
 [![C#](https://img.shields.io/badge/C%23-41%25-purple.svg)]()
