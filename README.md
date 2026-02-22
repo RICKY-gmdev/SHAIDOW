@@ -6,9 +6,9 @@
 
 # 🤖 SHAIDOW
 
-### *The AI That Thinks Before It Answers*
+### *The AI That Thinks twice Before It Answers*
 
-**Cross-Platform Intelligent AI Chatbot with Dynamic Model Routing**
+**Cross-Platform Intelligent AI platform with Dynamic Model Routing**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cross--Platform-brightgreen.svg)]()
