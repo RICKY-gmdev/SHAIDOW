@@ -51,33 +51,15 @@ Whether you're asking a factual question, debugging code, brainstorming ideas, o
 ## 🖼️ Screenshots
 
 ### Chat Interface
-
-<img width="1416" height="747" alt="image" src="https://github.com/user-attachments/assets/61053620-4256-40d4-b590-01b57e0a47bd" />
-
-
-<!-- SCREENSHOT PLACEHOLDER 3: Main chat UI -->
-<!-- Suggested: A screenshot of the main chatbot window — clean dark or light themed UI with a conversation visible -->
-```
-[ Add screenshot: Main chat interface with an example conversation ]
-```
-
-### Model Routing in Action
-
-<!-- SCREENSHOT PLACEHOLDER 4: Show routing logic / model selection visualization if any -->
-<!-- Suggested: A screenshot or diagram showing how a query gets routed to a specific model -->
-```
-[ Add screenshot: Routing decision visualization or logs showing which model was selected ]
-```
-
 ### Multi-Platform View
 
-<!-- SCREENSHOT PLACEHOLDER 5: Side-by-side or separate screenshots on different platforms -->
-<!-- Suggested: App running on Windows + Android or Web side by side -->
-```
-[ Add screenshot: SHAIDOW running on multiple platforms (desktop / mobile / web) ]
-```
+<img width="1416" height="747" alt="image" src="https://github.com/user-attachments/assets/61053620-4256-40d4-b590-01b57e0a47bd" /> <img width="350" height="700" alt="Screenshot_1773764776" src="https://github.com/user-attachments/assets/d7676607-9983-4ba0-8384-b84545a32895" />
 
----
+
+
+
+
+### Model Routing in Action
 
 ## 🏗️ Architecture Overview
 
