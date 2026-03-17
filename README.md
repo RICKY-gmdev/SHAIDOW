@@ -52,6 +52,9 @@ Whether you're asking a factual question, debugging code, brainstorming ideas, o
 
 ### Chat Interface
 
+<img width="1416" height="747" alt="image" src="https://github.com/user-attachments/assets/61053620-4256-40d4-b590-01b57e0a47bd" />
+
+
 <!-- SCREENSHOT PLACEHOLDER 3: Main chat UI -->
 <!-- Suggested: A screenshot of the main chatbot window — clean dark or light themed UI with a conversation visible -->
 ```
