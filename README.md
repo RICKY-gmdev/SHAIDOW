@@ -105,7 +105,7 @@ Whether you're asking a factual question, debugging code, brainstorming ideas, o
 | **Orchestration** | Python + LangChain | Prompt routing, model selection logic |
 | **Desktop Client** | C# (.NET) | Windows/cross-platform desktop application |
 | **Mobile / Backend** | Java | Android or backend service layer |
-| **Web Interface** | HTML/CSS | Browser-based frontend |
+| **Web Interface** | Angular | Browser-based frontend |
 | **AI Models** | Multiple LLMs | Dynamically selected based on query type |
 | **CI/CD** | GitHub Actions | Automated builds and deployment |
 
