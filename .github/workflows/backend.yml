@@ -14,7 +14,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: App/App/shaidow-backend
+        working-directory: App/shaidow-backend
 
     steps:
       - uses: actions/checkout@v4
@@ -32,4 +32,4 @@ jobs:
         with:
           app-name: shaidow-backend-ml
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_BACKEND }}
-          package: App/App/shaidow-backend
+          package: App/shaidow-backend
