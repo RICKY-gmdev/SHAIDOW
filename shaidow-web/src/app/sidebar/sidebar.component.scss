@@ -1,0 +1,124 @@
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px;
+  border-radius: 0;
+  border-right: 1px solid var(--glass-border);
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: width 0.25s ease, padding 0.25s ease;
+
+  &.collapsed {
+    width: 0;
+    padding: 20px 0;
+    border-right: none;
+  }
+}
+
+.new-chat-btn {
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--accent-pink), #8a2be2);
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 16px;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.thread-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.thread-item {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--glass-fill);
+  }
+
+  &.active {
+    background: var(--glass-fill-strong);
+    border: 1px solid var(--accent-cyan);
+  }
+}
+
+.thread-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.thread-title {
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thread-time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+
+  .thread-item:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    color: var(--accent-pink);
+  }
+}
+
+.empty {
+  color: var(--text-tertiary);
+  font-size: 13px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.logout-btn {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--glass-fill);
+  }
+}

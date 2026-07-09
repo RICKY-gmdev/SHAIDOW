@@ -1,0 +1,22 @@
+<div class="tool-stage" *ngIf="isVisible()">
+  <!-- Energy field rings, matches the layered Ellipse glow from the MAUI version -->
+  <div class="energy-ring ring-1"></div>
+  <div class="energy-ring ring-2"></div>
+  <div class="energy-ring ring-3"></div>
+
+  <div class="single-tool" *ngIf="isSingle()">
+    <div class="icon-frame pulse">
+      <span class="icon">{{ iconFor(tools()[0]) }}</span>
+    </div>
+  </div>
+
+  <div class="orbit-container" *ngIf="!isSingle()">
+    <div
+      class="icon-frame orbit-item"
+      *ngFor="let tool of tools(); let i = index"
+      [style.animation-delay.s]="i * -2.67"
+    >
+      <span class="icon">{{ iconFor(tool) }}</span>
+    </div>
+  </div>
+</div>

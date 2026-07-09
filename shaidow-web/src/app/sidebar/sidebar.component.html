@@ -1,0 +1,22 @@
+<aside class="sidebar glass" [class.collapsed]="collapsed">
+  <button class="new-chat-btn" (click)="onNewChat()">+ New chat</button>
+
+  <div class="thread-list">
+    <div
+      *ngFor="let thread of threads()"
+      class="thread-item"
+      [class.active]="thread.id === activeThreadId()"
+      (click)="selectThread(thread.id)"
+    >
+      <div class="thread-info">
+        <span class="thread-title">{{ thread.title }}</span>
+        <span class="thread-time">{{ thread.lastMessageAt | date: 'short' }}</span>
+      </div>
+      <button class="delete-btn" (click)="deleteThread($event, thread.id)" title="Delete">🗑</button>
+    </div>
+
+    <p class="empty" *ngIf="threads().length === 0">No conversations yet.</p>
+  </div>
+
+  <button class="logout-btn" (click)="logout()">Log out</button>
+</aside>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\programs\\CSprograms\\App\\App\\App.csproj": {}
+    "D:\\programs\\CSprograms\\Shaidow\\App\\App\\App.csproj": {}
   },
   "projects": {
-    "D:\\programs\\CSprograms\\App\\App\\App.csproj": {
+    "D:\\programs\\CSprograms\\Shaidow\\App\\App\\App.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\programs\\CSprograms\\App\\App\\App.csproj",
+        "projectUniqueName": "D:\\programs\\CSprograms\\Shaidow\\App\\App\\App.csproj",
         "projectName": "App",
-        "projectPath": "D:\\programs\\CSprograms\\App\\App\\App.csproj",
+        "projectPath": "D:\\programs\\CSprograms\\Shaidow\\App\\App\\App.csproj",
         "packagesPath": "C:\\Users\\ricky\\.nuget\\packages\\",
-        "outputPath": "D:\\programs\\CSprograms\\App\\App\\obj\\",
+        "outputPath": "D:\\programs\\CSprograms\\Shaidow\\App\\App\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "configFilePaths": [
@@ -32,11 +32,11 @@
             "targetAlias": "net9.0-android",
             "projectReferences": {}
           },
-          "net9.0-ios26.0": {
+          "net9.0-ios26.5": {
             "targetAlias": "net9.0-ios",
             "projectReferences": {}
           },
-          "net9.0-maccatalyst26.0": {
+          "net9.0-maccatalyst26.5": {
             "targetAlias": "net9.0-maccatalyst",
             "projectReferences": {}
           },
@@ -118,7 +118,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.10, 9.0.10]"
+              "version": "[9.0.16, 9.0.16]"
             }
           ],
           "frameworkReferences": {
@@ -131,7 +131,7 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         },
-        "net9.0-ios26.0": {
+        "net9.0-ios26.5": {
           "targetAlias": "net9.0-ios",
           "dependencies": {
             "CommunityToolkit.Maui.MediaElement": {
@@ -191,7 +191,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.10, 9.0.10]"
+              "version": "[9.0.16, 9.0.16]"
             }
           ],
           "frameworkReferences": {
@@ -204,7 +204,7 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         },
-        "net9.0-maccatalyst26.0": {
+        "net9.0-maccatalyst26.5": {
           "targetAlias": "net9.0-maccatalyst",
           "dependencies": {
             "CommunityToolkit.Maui.MediaElement": {
@@ -265,7 +265,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Ref",
-              "version": "[9.0.10, 9.0.10]"
+              "version": "[9.0.16, 9.0.16]"
             }
           ],
           "frameworkReferences": {

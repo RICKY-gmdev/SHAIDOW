@@ -1,0 +1,58 @@
+<div class="app-shell">
+  <app-sidebar #sidebar (threadSelected)="onThreadSelected($event)" (newChat)="onNewChat()"></app-sidebar>
+
+  <div class="chat-page">
+    <header class="top-bar">
+      <button class="icon-btn" (click)="openGallery()" title="Gallery">🖼️</button>
+      <div class="spacer"></div>
+    </header>
+
+    <div class="hero" *ngIf="showWelcome()">
+      <div class="mascot-stage">
+        <img src="shaidow.png" alt="SHAIDOW" class="mascot-image" />
+        <app-tool-animation #toolAnim class="mascot-overlay"></app-tool-animation>
+      </div>
+      <p class="tagline">NEXT-GEN AI ASSISTANT<br />Ready to create magic together!</p>
+    </div>
+
+    <app-tool-animation #toolAnimInline *ngIf="!showWelcome()" class="inline-tool-anim"></app-tool-animation>
+
+    <div class="chat-list" #chatList>
+      <div
+        *ngFor="let msg of messages()"
+        class="bubble-row"
+        [class.from-user]="msg.author === 'You'"
+      >
+        <!-- Image message -->
+        <div class="bubble image-bubble" *ngIf="msg.imageUrl">
+          <img [src]="msg.imageUrl" alt="Generated" />
+        </div>
+
+        <!-- Text message (user or AI) -->
+        <div class="bubble" [class.user-bubble]="msg.author === 'You'" [class.ai-bubble]="msg.author === 'SHAIDOW'" *ngIf="!msg.imageUrl">
+          <div class="bubble-header" *ngIf="msg.author === 'SHAIDOW'">
+            <img src="shaidow.png" alt="SHAIDOW" class="brand-logo" />
+            <span class="name">SHAIDOW</span>
+          </div>
+          <div class="bubble-text" [class.pulse-text]="msg.isStreaming" [innerHTML]="renderMarkdown(msg.text)"></div>
+        <div class="status-line" *ngIf="msg.status">{{ msg.status }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-bar">
+      <div class="input-shell glass">
+        <input
+          type="text"
+          placeholder="Ask SHAIDOW anything..."
+          [(ngModel)]="userInput"
+          (keyup.enter)="onSend()"
+        />
+        <button class="send-btn" (click)="isResponding() ? stopResponse() : onSend()">
+          <span *ngIf="!isResponding()">🚀</span>
+          <span *ngIf="isResponding()" class="stop-icon">⏹</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

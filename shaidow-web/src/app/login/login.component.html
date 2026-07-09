@@ -1,0 +1,20 @@
+<div class="login-page">
+  <div class="login-card glass">
+    <img src="shaidow.png" alt="SHAIDOW" class="brand-logo" />
+    <p class="subtitle">{{ isRegisterMode() ? 'Create your account' : 'Welcome back' }}</p>
+
+    <input type="email" placeholder="Email" [(ngModel)]="email" (keyup.enter)="submit()" />
+    <input type="password" placeholder="Password" [(ngModel)]="password" (keyup.enter)="submit()" />
+
+    <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+    <button class="submit-btn" (click)="submit()" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Please wait...' : (isRegisterMode() ? 'Sign up' : 'Log in') }}
+    </button>
+
+    <p class="toggle">
+      {{ isRegisterMode() ? 'Already have an account?' : 'New here?' }}
+      <a (click)="toggleMode()">{{ isRegisterMode() ? 'Log in' : 'Sign up' }}</a>
+    </p>
+  </div>
+</div>>

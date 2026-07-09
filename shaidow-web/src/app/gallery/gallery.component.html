@@ -1,0 +1,16 @@
+<div class="gallery-page">
+  <div class="header glass">
+    <button class="back-btn" (click)="goBack()">← Back</button>
+    <h1>✨ AI GALLERY ✨</h1>
+    <p>Your generated masterpieces await</p>
+  </div>
+
+  <div class="grid">
+    <div class="tile" *ngFor="let url of imageUrls()" (click)="openImage(url)">
+      <img [src]="url" alt="Generated image" />
+      <span class="sparkle">✨</span>
+    </div>
+  </div>
+
+  <p class="empty" *ngIf="imageUrls().length === 0">No images generated yet.</p>
+</div>

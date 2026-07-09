@@ -17593,7 +17593,7 @@
         }
       }
     },
-    "net9.0-ios26.0": {
+    "net9.0-ios26.5": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -18271,7 +18271,7 @@
         }
       }
     },
-    "net9.0-ios26.0/android-arm64": {
+    "net9.0-ios26.5/android-arm64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -18943,7 +18943,7 @@
         }
       }
     },
-    "net9.0-ios26.0/android-x64": {
+    "net9.0-ios26.5/android-x64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -19615,7 +19615,7 @@
         }
       }
     },
-    "net9.0-ios26.0/iossimulator-x64": {
+    "net9.0-ios26.5/iossimulator-x64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -20287,7 +20287,7 @@
         }
       }
     },
-    "net9.0-ios26.0/maccatalyst-x64": {
+    "net9.0-ios26.5/maccatalyst-x64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -20959,7 +20959,7 @@
         }
       }
     },
-    "net9.0-ios26.0/win10-x64": {
+    "net9.0-ios26.5/win10-x64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -21631,7 +21631,7 @@
         }
       }
     },
-    "net9.0-maccatalyst26.0": {
+    "net9.0-maccatalyst26.5": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -22411,7 +22411,7 @@
         }
       }
     },
-    "net9.0-maccatalyst26.0/android-arm64": {
+    "net9.0-maccatalyst26.5/android-arm64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -23098,7 +23098,7 @@
         }
       }
     },
-    "net9.0-maccatalyst26.0/android-x64": {
+    "net9.0-maccatalyst26.5/android-x64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -23785,7 +23785,7 @@
         }
       }
     },
-    "net9.0-maccatalyst26.0/iossimulator-x64": {
+    "net9.0-maccatalyst26.5/iossimulator-x64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -24469,7 +24469,7 @@
         }
       }
     },
-    "net9.0-maccatalyst26.0/maccatalyst-x64": {
+    "net9.0-maccatalyst26.5/maccatalyst-x64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -25156,7 +25156,7 @@
         }
       }
     },
-    "net9.0-maccatalyst26.0/win10-x64": {
+    "net9.0-maccatalyst26.5/win10-x64": {
       "CommunityToolkit.Maui.MediaElement/6.1.2": {
         "type": "package",
         "dependencies": {
@@ -36016,7 +36016,7 @@
       "Plugin.Maui.Popup >= 1.0.5",
       "sqlite-net-pcl >= 1.9.172"
     ],
-    "net9.0-ios26.0": [
+    "net9.0-ios26.5": [
       "CommunityToolkit.Maui.MediaElement >= 6.1.2",
       "Markdig >= 0.42.0",
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
@@ -36028,7 +36028,7 @@
       "Plugin.Maui.Popup >= 1.0.5",
       "sqlite-net-pcl >= 1.9.172"
     ],
-    "net9.0-maccatalyst26.0": [
+    "net9.0-maccatalyst26.5": [
       "CommunityToolkit.Maui.MediaElement >= 6.1.2",
       "Markdig >= 0.42.0",
       "Microsoft.Extensions.Logging.Debug >= 9.0.0",
@@ -36058,11 +36058,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\programs\\CSprograms\\App\\App\\App.csproj",
+      "projectUniqueName": "D:\\programs\\CSprograms\\Shaidow\\App\\App\\App.csproj",
       "projectName": "App",
-      "projectPath": "D:\\programs\\CSprograms\\App\\App\\App.csproj",
+      "projectPath": "D:\\programs\\CSprograms\\Shaidow\\App\\App\\App.csproj",
       "packagesPath": "C:\\Users\\ricky\\.nuget\\packages\\",
-      "outputPath": "D:\\programs\\CSprograms\\App\\App\\obj\\",
+      "outputPath": "D:\\programs\\CSprograms\\Shaidow\\App\\App\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "configFilePaths": [
@@ -36083,11 +36083,11 @@
           "targetAlias": "net9.0-android",
           "projectReferences": {}
         },
-        "net9.0-ios26.0": {
+        "net9.0-ios26.5": {
           "targetAlias": "net9.0-ios",
           "projectReferences": {}
         },
-        "net9.0-maccatalyst26.0": {
+        "net9.0-maccatalyst26.5": {
           "targetAlias": "net9.0-maccatalyst",
           "projectReferences": {}
         },
@@ -36169,7 +36169,7 @@
         "downloadDependencies": [
           {
             "name": "Microsoft.NETCore.App.Ref",
-            "version": "[9.0.10, 9.0.10]"
+            "version": "[9.0.16, 9.0.16]"
           }
         ],
         "frameworkReferences": {
@@ -36182,7 +36182,7 @@
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
       },
-      "net9.0-ios26.0": {
+      "net9.0-ios26.5": {
         "targetAlias": "net9.0-ios",
         "dependencies": {
           "CommunityToolkit.Maui.MediaElement": {
@@ -36242,7 +36242,7 @@
         "downloadDependencies": [
           {
             "name": "Microsoft.NETCore.App.Ref",
-            "version": "[9.0.10, 9.0.10]"
+            "version": "[9.0.16, 9.0.16]"
           }
         ],
         "frameworkReferences": {
@@ -36255,7 +36255,7 @@
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
       },
-      "net9.0-maccatalyst26.0": {
+      "net9.0-maccatalyst26.5": {
         "targetAlias": "net9.0-maccatalyst",
         "dependencies": {
           "CommunityToolkit.Maui.MediaElement": {
@@ -36316,7 +36316,7 @@
         "downloadDependencies": [
           {
             "name": "Microsoft.NETCore.App.Ref",
-            "version": "[9.0.10, 9.0.10]"
+            "version": "[9.0.16, 9.0.16]"
           }
         ],
         "frameworkReferences": {

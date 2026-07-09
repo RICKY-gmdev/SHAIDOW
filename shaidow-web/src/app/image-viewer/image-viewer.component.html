@@ -1,0 +1,13 @@
+<div class="viewer">
+  <div class="topbar glass">
+    <button class="icon-btn close" (click)="close()">✕</button>
+    <span class="title">🖼️ AI Masterpiece</span>
+    <button class="icon-btn share" (click)="share()">📤</button>
+  </div>
+
+  <div class="stage">
+    <img [src]="imageUrl()" alt="Full view" />
+  </div>
+
+  <div class="hint glass">📱 Pinch to zoom • ✨ AI Generated</div>
+</div>

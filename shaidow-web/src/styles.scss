@@ -1,0 +1,75 @@
+/* ============================================
+   SHAIDOW design tokens
+   Carried over from the MAUI app's cosmic/glass identity,
+   rebuilt with real CSS (backdrop-filter, proper gradients)
+   instead of stacked BoxView/Border workarounds.
+   ============================================ */
+:root {
+  --bg-void: #0a0a0a;
+  --bg-deep: #1a0f2e;
+  --bg-mid: #2d1b69;
+  --bg-glow: #4a00e0;
+
+  --accent-pink: #ff6b9d;
+  --accent-cyan: #00d9ff;
+  --accent-magenta: #ff0080;
+
+  --glass-fill: rgba(255, 255, 255, 0.08);
+  --glass-fill-strong: rgba(255, 255, 255, 0.14);
+  --glass-border: rgba(255, 255, 255, 0.18);
+
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.72);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+
+  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background:
+    radial-gradient(ellipse at 50% 25%, var(--bg-mid) 0%, var(--bg-deep) 45%, var(--bg-void) 100%);
+  overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Reusable glass surface - the backbone of every card/bubble/panel */
+.glass {
+  background: var(--glass-fill);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.glow-border {
+  border-image: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan), var(--accent-magenta)) 1;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}

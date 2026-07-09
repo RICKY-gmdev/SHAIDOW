@@ -1,0 +1,73 @@
+.login-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 340px;
+  padding: 40px 32px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.brand-logo {
+  height: 64px;
+  margin: 0 auto 4px;
+  display: block;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font-size: 15px;
+  outline: none;
+
+  &::placeholder { color: var(--text-tertiary); }
+  &:focus { border-color: var(--accent-cyan); }
+}
+
+.error {
+  color: var(--accent-pink);
+  font-size: 13px;
+  margin: 4px 0 12px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--accent-pink), #8a2be2);
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 8px;
+
+  &:disabled { opacity: 0.6; cursor: default; }
+}
+
+.toggle {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+
+  a {
+    color: var(--accent-cyan);
+    cursor: pointer;
+    font-weight: 600;
+  }
+}

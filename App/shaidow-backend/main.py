@@ -1,3 +1,4 @@
+#main.py
 import os
 import uuid
 import json
@@ -9,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 from typing import List
+from langchain_core.runnables import RunnableConfig
 
 from agent import create_agent_graph, initialize_agent
 from langgraph.checkpoint.memory import MemorySaver
@@ -90,32 +92,50 @@ async def chat(req: ChatRequest):
     if agent_executor is None:
         return {"error": "Agent not initialized"}
 
+    executor = agent_executor  # type assertion for type checker
     thread_id = req.thread_id or str(uuid.uuid4())
-    config = {"configurable": {"thread_id": thread_id}}
+    config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
 
     user_input = {"messages": [("user", req.message)]}
 
     async def event_stream():
         print("\n--- NEW REQUEST RECEIVED ---")
         try:
-            async for event in agent_executor.astream_events(user_input, config, version="v1"):
-                kind = event["event"]
+            async for event in executor.astream_events(user_input, config, version="v2"):
+                kind = event.get("event")
                 
                 if kind == "on_chat_model_stream":
-                    chunk = event["data"]["chunk"]
-                    if chunk.content:
+                    # Only forward chunks from the router node - direct answers
+                    # stream token-by-token from here.
+                    node = event.get("metadata", {}).get("langgraph_node")
+                    if node != "router":
+                        continue
+                    event_data = event.get("data", {})
+                    chunk = event_data.get("chunk")
+                    if chunk and hasattr(chunk, "content") and chunk.content:
                         data = json.dumps({"type": "text_chunk", "content": chunk.content})
                         yield f"data: {data}\n\n"
+
+                elif kind == "on_chain_end" and event.get("name") == "finalize":
+                    output = event.get("data", {}).get("output", {})
+                    finalized_messages = output.get("messages", []) if isinstance(output, dict) else []
+                    if finalized_messages:
+                        content = finalized_messages[-1].content
+                        if content:
+                            data = json.dumps({"type": "text_chunk", "content": content})
+                            yield f"data: {data}\n\n"
                 
                 elif kind == "on_tool_start":
-                    tool_name = event["name"]
+                    tool_name = event.get("name")
                     data = json.dumps({"type": "tool_start", "tool": tool_name})
                     yield f"data: {data}\n\n"
                 
                 elif kind == "on_tool_end":
-                    tool_output = event["data"].get("output")
+                    event_data = event.get("data", {})
+                    tool_output = event_data.get("output")
                     clean_output = str(tool_output) if tool_output else ""
-                    data = json.dumps({"type": "tool_end", "tool": event["name"], "output": clean_output.strip()})
+                    tool_name = event.get("name")
+                    data = json.dumps({"type": "tool_end", "tool": tool_name, "output": clean_output.strip()})
                     yield f"data: {data}\n\n"
             
             data = json.dumps({"type": "stream_end", "thread_id": thread_id})
