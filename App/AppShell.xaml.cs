@@ -9,3 +9,4 @@ public partial class AppShell : Shell
 		Routing.RegisterRoute(nameof(GalleryPage), typeof(GalleryPage));
 	}
 }
+// force rebuild
