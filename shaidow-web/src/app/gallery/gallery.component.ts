@@ -15,7 +15,7 @@ export class GalleryComponent implements OnInit {
   constructor(private router: Router) {}
 
   async ngOnInit(): Promise<void> {
-    const res = await fetch('http://127.0.0.1:8000/images');
+    const res = await fetch('https://shaidow-backend-ml.azurewebsites.net/images');
     this.imageUrls.set(res.ok ? await res.json() : []);
   }
 

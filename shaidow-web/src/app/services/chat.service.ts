@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { StreamedEvent, ThreadSummary, ChatMessage } from '../models/chat.models';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://shaidow-api.azurewebsites.net/api';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {

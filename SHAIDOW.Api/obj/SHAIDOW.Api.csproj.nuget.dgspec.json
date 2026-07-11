@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\programs\\CSprograms\\Shaidow\\App\\SHAIDOW.Api\\SHAIDOW.Api.csproj": {}
+    "D:\\programs\\CSprograms\\Shaidow\\App\\shaidow.api\\SHAIDOW.Api.csproj": {}
   },
   "projects": {
-    "D:\\programs\\CSprograms\\Shaidow\\App\\SHAIDOW.Api\\SHAIDOW.Api.csproj": {
+    "D:\\programs\\CSprograms\\Shaidow\\App\\shaidow.api\\SHAIDOW.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\programs\\CSprograms\\Shaidow\\App\\SHAIDOW.Api\\SHAIDOW.Api.csproj",
+        "projectUniqueName": "D:\\programs\\CSprograms\\Shaidow\\App\\shaidow.api\\SHAIDOW.Api.csproj",
         "projectName": "SHAIDOW.Api",
-        "projectPath": "D:\\programs\\CSprograms\\Shaidow\\App\\SHAIDOW.Api\\SHAIDOW.Api.csproj",
+        "projectPath": "D:\\programs\\CSprograms\\Shaidow\\App\\shaidow.api\\SHAIDOW.Api.csproj",
         "packagesPath": "C:\\Users\\ricky\\.nuget\\packages\\",
-        "outputPath": "D:\\programs\\CSprograms\\Shaidow\\App\\SHAIDOW.Api\\obj\\",
+        "outputPath": "D:\\programs\\CSprograms\\Shaidow\\App\\shaidow.api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ricky\\AppData\\Roaming\\NuGet\\NuGet.Config"
