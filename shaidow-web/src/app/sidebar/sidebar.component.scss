@@ -1,19 +1,55 @@
 .sidebar {
   width: 260px;
   height: 100vh;
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden; // <-- add this: clips sidebar-inner's fixed 260px width as the parent collapses to 0
+  border-right: 1px solid var(--glass-border);
+  transition: width 0.25s ease;
+
+  &.collapsed { width: 0; border-right: none; }
+}
+
+.sidebar-inner {
+  width: 260px; // fixed, so content doesn't reflow while the parent width animates
+  height: 100%;
+  padding: 20px 14px;
   display: flex;
   flex-direction: column;
-  padding: 20px 14px;
-  border-radius: 0;
-  border-right: 1px solid var(--glass-border);
-  flex-shrink: 0;
   overflow: hidden;
-  transition: width 0.25s ease, padding 0.25s ease;
+}
+
+.collapse-handle {
+  position: fixed;
+  top: 16px;
+  left: 246px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-fill-strong);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  z-index: 70;
+  transition: left 0.25s ease, top 0.25s ease;
 
   &.collapsed {
-    width: 0;
-    padding: 20px 0;
-    border-right: none;
+    left: 12px;
+    top: 74px; // drop below the gallery icon-btn's row instead of overlapping it
+  }
+
+  &:hover { background: var(--accent-cyan); color: #000; }
+}
+
+@media (max-width: 768px) {
+  .collapse-handle {
+    left: 266px;
+
+    &.collapsed {
+      left: 12px;
+      top: 74px;
+    }
   }
 }
 
