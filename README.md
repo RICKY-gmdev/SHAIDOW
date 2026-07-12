@@ -74,10 +74,10 @@ Whether you're asking a factual question, debugging code, brainstorming ideas, o
 │           SHAIDOW Orchestration Layer               │
 │         (LangChain-Powered Prompt Router)           │
 │                                                     │
-│   ┌──────────┐  ┌──────────┐  ┌─────────────────┐  │
-│   │ Intent   │  │ Complexity│  │ Context         │  │
-│   │ Analysis │  │ Scoring  │  │ Classification  │  │
-│   └────┬─────┘  └────┬─────┘  └────────┬────────┘  │
+│   ┌──────────┐  ┌──────────┐  ┌─────────────────┐   │
+│   │ Intent   │  │Complexity│  │ Context         │   │
+│   │ Analysis │  │ Scoring  │  │ Classification  │   │
+│   └────┬─────┘  └────┬─────┘  └────────┬────────┘   │
 └────────┼─────────────┼─────────────────┼────────────┘
          └─────────────┼─────────────────┘
                        │ Route Decision
