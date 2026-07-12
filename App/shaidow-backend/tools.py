@@ -108,7 +108,7 @@ def _stability_generate_sync(prompt: str) -> str:
         return "Error: STABILITY_API_KEY environment variable not set."
 
     headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
-    files = {'prompt': (None, prompt), 'model': (None, 'sd3'), 'output_format': (None, 'png')}
+    files = {'prompt': (None, prompt), 'model': (None, 'sd3.5-flash'), 'output_format': (None, 'png')}
 
     try:
         response = requests.post(api_url, headers=headers, files=files, timeout=45)
