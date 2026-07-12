@@ -67,13 +67,32 @@ public class ChatController : ControllerBase
             if (string.IsNullOrWhiteSpace(line) || !line.StartsWith("data:")) continue;
 
             // Forward every line to the client immediately - Angular sees the same stream MAUI used to.
-            await Response.WriteAsync(line + "\n\n", ct);
+            var json = line["data:".Length..].Trim();
+            using var doc  = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+            var type = root.GetProperty("type").GetString();
+
+            object outboundPayload = type switch
+            {
+                "text_chunk" => new {type, content = root.GetProperty("content").GetString()},
+                "tool_start" => new { type, tool = root.GetProperty("tool").GetString()},
+                "tool_end" => new
+                {
+                    type,
+                    tool = root.GetProperty("tool").GetString(),
+                    output = root.TryGetProperty("output", out var o) ? o.GetString() : null
+                },
+                "stream_end" => new {type, threadId = root.GetProperty("thread_id").GetString()},
+                "error" => new {type, content = root.GetProperty("content").GetString()},
+                _ =>new {type}
+            };
+
+            var outboundJson = System.Text.Json.JsonSerializer.Serialize(outboundPayload);
+
+            await Response.WriteAsync($"data: {outboundJson}\n\n", ct);
             await Response.Body.FlushAsync(ct);
 
-            var json = line["data:".Length..].Trim();
-            using var doc = JsonDocument.Parse(json);
-            var type = doc.RootElement.GetProperty("type").GetString();
-
+            
             if (type == "text_chunk")
             {
                 assistantText.Append(doc.RootElement.GetProperty("content").GetString());
