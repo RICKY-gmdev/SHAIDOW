@@ -29,7 +29,7 @@ export class ChatComponent implements AfterViewChecked {
   private abortController: AbortController | null = null;
   private shouldScroll = false;
 
-  constructor(private chatService: ChatService, private router: Router) {}
+  constructor(private chatService: ChatService, private router: Router) { }
 
   ngAfterViewChecked(): void {
     if (this.shouldScroll) {
@@ -89,25 +89,22 @@ export class ChatComponent implements AfterViewChecked {
             this.toolAnim?.hideTool(event.tool ?? 'default');
             if (event.tool) pendingTools.delete(event.tool);
 
-            // Each tool's result gets appended to the answer the moment IT finishes,
-            // rather than waiting for every parallel tool to complete - so a fast
-            // tool (e.g. mistral_tool) shows up immediately while a slower one
-            // (e.g. Pexels image search) is still working.
             const output = event.output ?? '';
-            const imgIdx = output.indexOf('IMAGE_URL::');
-            const dataIdx = output.indexOf('IMAGE_DATA::');
 
-            let piece: string;
-            if (imgIdx !== -1) {
-              capturedImageUrl = output.slice(imgIdx + 'IMAGE_URL::'.length).replace(/['"]/g, '').trim();
-              piece = '*Image found — see below.*';
-            } else if (dataIdx !== -1) {
-              piece = '*Image generated successfully — see below.*';
-            } else {
-              piece = output;
+            // 1. Check for Image markers first
+            if (output.startsWith('IMAGE_URL::')) {
+              const rawUrl = output.replace('IMAGE_URL::', '').trim();
+              // Normalize URL if needed
+              capturedImageUrl = rawUrl.startsWith('http') ? rawUrl : `https://shaidow-backend-ml.azurewebsites.net${rawUrl}`;
+
+              // Display a placeholder message in the chat
+              aiMessage.text = (aiMessage.text ?? '') + '\n\n*Image retrieved successfully.*';
+            }
+            // 2. Handle standard text tool outputs
+            else if (output.length > 0) {
+              aiMessage.text = aiMessage.text ? `${aiMessage.text}\n\n${output}` : output;
             }
 
-            aiMessage.text = aiMessage.text ? `${aiMessage.text}\n\n${piece}` : piece;
             aiMessage.status = pendingTools.size > 0 ? 'Finding more relevant details...' : undefined;
             this.messages.update((msgs) => [...msgs]);
             break;
