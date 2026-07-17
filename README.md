@@ -1,26 +1,27 @@
 <div align="center">
 
-<!-- SCREENSHOT PLACEHOLDER 1: Add a banner/logo image here -->
-<!-- Suggested: A sleek banner image with "SHAIDOW" text on a dark background with AI/neural network aesthetics -->
+<!-- SCREENSHOT PLACEHOLDER: Add a banner/logo image here -->
+<!-- Suggested: The SHAIDOW mascot on the dark cosmic gradient background -->
 <!-- ![SHAIDOW Banner](assets/banner.png) -->
+<img width="300" height="300" alt="shaidow" src="https://github.com/user-attachments/assets/6352c507-6f27-4f04-8981-fcf9b965c0aa" />
 
-# 🤖 SHAIDOW
+### **SHAIDOW**
+### *The AI That Thinks Twice Before It Answers*
 
-### *The AI That Thinks twice Before It Answers*
-
-**Cross-Platform Intelligent AI platform with Dynamic Model Routing**
+**A full-stack AI assistant with intelligent specialist routing, persistent memory, and cloud-native deployment**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Cross--Platform-brightgreen.svg)]()
-[![LangChain](https://img.shields.io/badge/powered%20by-LangChain-orange.svg)]()
-[![C#](https://img.shields.io/badge/C%23-41%25-purple.svg)]()
-[![Java](https://img.shields.io/badge/Java-39%25-red.svg)]()
-[![Python](https://img.shields.io/badge/Python-LangChain%20Core-yellow.svg)]()
+[![Live Demo](https://img.shields.io/badge/demo-web.shaidow.me-brightgreen.svg)](https://web.shaidow.me)
+[![.NET](https://img.shields.io/badge/.NET-9-512BD4.svg)]()
+[![Angular](https://img.shields.io/badge/Angular-18%2B-DD0031.svg)]()
+[![LangGraph](https://img.shields.io/badge/powered%20by-LangGraph-orange.svg)]()
+[![Azure](https://img.shields.io/badge/deployed%20on-Azure-0078D4.svg)]()
 
 <br/>
 
-<!-- SCREENSHOT PLACEHOLDER 2: Add a demo GIF or screenshot of the chatbot interface here -->
-<!-- Suggested: A short GIF showing the chatbot in action — user sending a query and SHAIDOW routing it -->
+**🔗 Live: [web.shaidow.me](https://web.shaidow.me)**
+
+<!-- SCREENSHOT PLACEHOLDER: Add a demo GIF or screenshot of the chat interface -->
 <!-- ![SHAIDOW Demo](assets/demo.gif) -->
 
 </div>
@@ -29,71 +30,56 @@
 
 ## 📌 What is SHAIDOW?
 
-**SHAIDOW** is a cross-platform AI chatbot platform built to do more than just chat — it *thinks* about which AI model should answer your question before it even responds.
+**SHAIDOW** is a full-stack AI assistant that doesn't just forward every message to one generic model. A lightweight router model looks at each query first and delegates it to whichever specialist is actually best suited to answer it — a fast factual model for quick lookups, a reasoning-tuned model for deep questions, a coding-tuned model for programming help, or an image search/generation tool when that's what's actually being asked for.
 
-Unlike conventional chatbots that blindly send every prompt to a single model, SHAIDOW uses **intelligent prompt orchestration** powered by LangChain to analyze each query and dynamically route it to the most suitable AI model. The result? Smarter, faster, and more relevant responses across any kind of task.
-
-Whether you're asking a factual question, debugging code, brainstorming ideas, or analyzing data — SHAIDOW picks the right brain for the job.
+Unlike the single-service prototype this started as, SHAIDOW is now a genuine three-tier cloud application: a persistent Angular frontend, a .NET/C# API layer handling authentication and conversation history, and a Python agent service doing the actual LLM orchestration — all independently deployed on Azure behind a custom domain.
 
 ---
 
 ## ✨ Key Features
 
-- **🔁 Dynamic Model Routing** — LangChain-powered orchestration automatically selects the best AI model based on the nature of your query
-- **🌐 Cross-Platform Support** — Works seamlessly across platforms thanks to a modular multi-language architecture (C#, Java, Python)
-- **🧠 Intelligent Prompt Analysis** — Queries are analyzed for intent and complexity before being routed, not after
-- **📦 Modular & Scalable Design** — Clean separation of concerns makes it easy to plug in new models or extend capabilities
-- **⚡ Optimized Performance** — Routing reduces latency by matching query type to model strength, avoiding overloaded generalist pipelines
-- **🛠️ Built for Real-World Usability** — Designed with practical deployment and future integrations in mind
+- **🔁 Specialist Routing** — A Groq-hosted router model classifies each query and delegates to the right specialist (information, reasoning, coding, image search, or image generation) rather than treating every prompt the same way
+- **🔐 Real Authentication** — JWT-based auth with BCrypt password hashing; every conversation is scoped to the signed-in user
+- **💾 Persistent Conversations** — Full thread history stored in PostgreSQL; pick up any past conversation with its complete context intact, not just a fresh session each time
+- **⚡ Live Streaming Responses** — Direct answers stream token-by-token in real time; multi-tool answers append progressively as each specialist finishes, with a live status indicator while others are still working
+- **🖼️ Multi-Model Image Pipeline** — Real photo search via Pexels, original image generation via Stable Diffusion, each user's gallery scoped privately to their own account
+- **🛡️ Graceful Degradation** — If a specialist's tool-call generation fails or returns malformed output, SHAIDOW automatically falls back to a direct answer instead of surfacing a broken response
+- **📱 Responsive UI** — Collapsible sidebar becomes a slide-in drawer on mobile; chat, gallery, and image viewer all adapt to small screens
+- **☁️ Fully Cloud-Deployed** — Three independently deployed Azure services behind a custom domain, with CI/CD via GitHub Actions on every push
 
 ---
-
-## 🖼️ Screenshots
-
-### Chat Interface
-### Multi-Platform View
-
-<img width="1416" height="747" alt="image" src="https://github.com/user-attachments/assets/61053620-4256-40d4-b590-01b57e0a47bd" /> <img width="350" height="700" alt="Screenshot_1773764776" src="https://github.com/user-attachments/assets/d7676607-9983-4ba0-8384-b84545a32895" />
-
-
-
-
-
-### Model Routing in Action
 
 ## 🏗️ Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                   User Interface                    │
-│          (Cross-Platform: Desktop / Web / Mobile)   │
-└───────────────────────┬─────────────────────────────┘
-                        │ User Prompt
-                        ▼
-┌─────────────────────────────────────────────────────┐
-│           SHAIDOW Orchestration Layer               │
-│         (LangChain-Powered Prompt Router)           │
-│                                                     │
-│   ┌──────────┐  ┌──────────┐  ┌─────────────────┐   │
-│   │ Intent   │  │Complexity│  │ Context         │   │
-│   │ Analysis │  │ Scoring  │  │ Classification  │   │
-│   └────┬─────┘  └────┬─────┘  └────────┬────────┘   │
-└────────┼─────────────┼─────────────────┼────────────┘
-         └─────────────┼─────────────────┘
-                       │ Route Decision
-          ┌────────────┼────────────────┐
-          ▼            ▼                ▼
-    ┌──────────┐  ┌──────────┐   ┌──────────┐
-    │ Model A  │  │ Model B  │   │ Model C  │
-    │(Factual) │  │ (Code)   │   │(Creative)│
-    └──────────┘  └──────────┘   └──────────┘
-          │            │                │
-          └────────────┼────────────────┘
-                       ▼
-              ┌─────────────────┐
-              │  Final Response │
-              │   to the User   │
-              └─────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│                      Angular Frontend                    │
+│         (Azure Static Web Apps · web.shaidow.me)         │
+│   Chat UI · Thread Sidebar · Gallery · Auth Screens      │
+└───────────────────────────┬──────────────────────────────┘
+                            │ HTTPS / JWT
+                            ▼
+┌──────────────────────────────────────────────────────────┐
+│                   SHAIDOW.Api (.NET 9)                   │
+│                    (Azure App Service)                   │
+│   Auth (JWT + BCrypt) · Thread/Message Persistence       │
+│   Streaming Proxy to Agent Service                       │
+└──────────────┬─────────────────────────────┬─────────────┘
+               │                             │
+               ▼                             ▼
+   ┌───────────────────────┐     ┌─────────────────────────┐
+   │  Azure PostgreSQL     │     │   Python Agent Service   │
+   │  Flexible Server      │     │   (FastAPI + LangGraph)  │
+   │  Users · Threads ·    │     │   (Azure App Service)    │
+   │  Messages             │     └────────────┬─────────────┘
+   └───────────────────────┘                  │
+                                    Router decides, then:
+                     ┌──────────────┬──────────┼──────────────┬─────────────────┐
+                     ▼              ▼          ▼              ▼                 ▼
+               ┌──────────┐  ┌──────────┐ ┌──────────┐  ┌──────────────┐ ┌──────────────┐
+               │ Mistral  │  │  Groq    │ │  Groq    │  │   Pexels     │ │ Stability AI │
+               │(Info)    │  │(Reason)  │ │(Coding)  │  │(Image Search)│ │(Image Gen)   │
+               └──────────┘  └──────────┘ └──────────┘  └──────────────┘ └──────────────┘
 ```
 
 ---
@@ -102,105 +88,59 @@ Whether you're asking a factual question, debugging code, brainstorming ideas, o
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| **Orchestration** | Python + LangChain | Prompt routing, model selection logic |
-| **Desktop Client** | C# (.NET) | Windows/cross-platform desktop application |
-| **Mobile / Backend** | Java | Android or backend service layer |
-| **Web Interface** | Angular | Browser-based frontend |
-| **AI Models** | Multiple LLMs | Dynamically selected based on query type |
-| **CI/CD** | GitHub Actions | Automated builds and deployment |
+| **Frontend** | Angular (standalone components, signals) | Chat UI, auth, thread sidebar, gallery |
+| **API Layer** | ASP.NET Core (.NET 9), EF Core | Auth, JWT issuance, thread/message persistence, SSE proxy |
+| **Database** | Azure Database for PostgreSQL (Flexible Server) | Users, threads, messages |
+| **Agent Service** | Python, FastAPI, LangGraph, LangChain | Query routing, specialist orchestration, tool execution |
+| **LLM Providers** | Groq (router, reasoning, coding), Mistral (information) | Specialist model inference |
+| **Image Providers** | Pexels API, Stability AI | Real photo search, AI image generation |
+| **Hosting** | Azure App Service ×2, Azure Static Web Apps | Independent deployment of each tier |
+| **CI/CD** | GitHub Actions | Auto-deploy on push per service |
 
 ---
 
-## 🚀 Getting Started
+## 🧩 How Routing Works
 
-### Prerequisites
+Unlike a single always-on agent loop, SHAIDOW's router makes **one decision per turn**:
 
-Make sure you have the following installed:
-
-- **Python 3.9+** (for the LangChain orchestration layer)
-- **.NET SDK** (for the C# desktop client)
-- **Java JDK 11+** (for the Java module)
-- **Git**
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/RICKY-gmdev/SHAIDOW.git
-   cd SHAIDOW
-   ```
-
-2. **Set up the Python environment**
-
-   ```bash
-   cd App
-   pip install -r requirements.txt
-   ```
-
-3. **Configure your API keys**
-
-   Create a `.env` file in the root directory:
-
-   ```env
-   OPENAI_API_KEY=your_key_here
-   # Add other model API keys as needed
-   ```
-
-4. **Build the C# client**
-
-   ```bash
-   cd App
-   dotnet build
-   ```
-
-5. **Run SHAIDOW**
-
-   ```bash
-   # Start the orchestration layer
-   python main.py
-   
-   # Then launch the client application
-   dotnet run
-   ```
-
-<!-- SCREENSHOT PLACEHOLDER 6: Terminal showing successful startup / installation -->
-<!-- Suggested: A clean terminal screenshot showing SHAIDOW starting up successfully -->
-```
-[ Add screenshot: Successful startup screen / terminal output ]
-```
+1. **Receive the message** along with conversation history
+2. **Router model** (Groq) either answers directly for simple conversation, or selects exactly one specialist — sometimes more than one in parallel when the query calls for it (e.g. "tell me about X" → information summary *and* a real photo)
+3. **Selected specialist(s) execute** — each one's result streams back to the user the moment *it* finishes, not after every parallel call completes
+4. **No re-interpretation loop** — the specialist's result *is* the final answer; the router doesn't second-guess or rewrite it, which keeps latency low and avoids the compounding errors that come from chaining model calls unnecessarily
+5. **Automatic fallback** — if the router's tool-call generation fails or comes back malformed, the same turn retries as a plain direct answer instead of surfacing an error to the user
 
 ---
+
+## 🚀 TECH STACK
+
+- **.NET 9 SDK**
+- **Node.js + Angular CLI**
+- **Python 3.12+**
+- **PostgreSQL** (local instance for development)
+- **LLM Included**: Groq, Mistral, Pexels, Stability AI
 
 ## 📂 Project Structure
 
 ```
 SHAIDOW/
 ├── .github/
-│   └── workflows/          # GitHub Actions CI/CD pipelines
-├── .vscode/                # VSCode workspace settings
-├── App/
-│   ├── orchestration/      # LangChain routing logic (Python)
-│   ├── desktop/            # C# desktop client
-│   ├── mobile/             # Java mobile/backend module
-│   └── web/                # HTML web interface
-└── README.md
+│   └── workflows/          # Per-service GitHub Actions CI/CD pipelines
+├── shaidow-web/             # Angular frontend
+│   └── src/app/
+│       ├── chat/            # Main chat interface
+│       ├── sidebar/         # Thread history, collapsible/mobile drawer
+│       ├── gallery/         # Per-user generated image gallery
+│       ├── login/           # Auth screens
+│       └── services/        # Auth + chat streaming services
+├── SHAIDOW.Api/              # .NET 9 Web API
+│   ├── Controllers/          # Auth, Chat (SSE proxy), Threads
+│   ├── Data/                 # EF Core DbContext + entities
+│   └── Services/             # JWT service, agent backend client
+└── shaidow-backend/          # Python agent service
+    ├── main.py               # FastAPI app, SSE streaming endpoint
+    ├── agent.py               # LangGraph router + specialist graph
+    └── tools.py               # Specialist tool implementations
 ```
-
----
-
-## 🧩 How the Routing Works
-
-SHAIDOW's core innovation is its **LangChain-based routing pipeline**. Here's the flow:
-
-1. **Receive Prompt** — The user sends a query through any platform interface
-2. **Analyze Intent** — The orchestration layer classifies the query (e.g., factual, creative, technical, conversational)
-3. **Score Complexity** — A complexity score is assigned based on depth, domain, and context
-4. **Select Model** — The router picks the optimal AI model based on intent + complexity
-5. **Generate Response** — The selected model processes the prompt
-6. **Return Answer** — The response is delivered back to the user's interface
-
-This approach means SHAIDOW doesn't guess — it **decides deliberately**.
 
 ---
 
@@ -220,27 +160,15 @@ Built with dedication by a team of five:
 
 ## 🔮 Roadmap
 
-- [ ] Plugin system for adding custom AI models
+- [ ] True token-by-token streaming for tool-routed answers (currently token-streamed only for direct/no-tool responses)
+- [ ] Persistent LangGraph checkpointing so agent memory survives service restarts, not just conversation history
+- [ ] RAG / document knowledge layer
 - [ ] Voice input and output support
-- [ ] Chat history and session persistence
-- [ ] User preference learning over time
-- [ ] REST API for third-party integrations
-- [ ] Mobile app release (Android / iOS)
-- [ ] Real-time streaming responses
+- [ ] Confidence scoring and telemetry on routing decisions
+- [ ] Native mobile app
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Here's how to get started:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
 
 ## 📄 License
 
@@ -252,7 +180,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 Made with ❤️ by **Team SHAIDOW**
 
-*"The right model for the right question."*
+*"The right specialist for the right question."*
 
 ⭐ **Star this repo if SHAIDOW impressed you!** ⭐
 
