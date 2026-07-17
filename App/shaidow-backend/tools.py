@@ -113,7 +113,7 @@ async def generate_image_tool(prompt: str) -> str:
         return "Error: STABILITY_API_KEY environment variable not set."
 
     headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
-    files = {
+files = {
         'prompt': (None, prompt),
         'model': (None, 'sd3.5-flash'),
         'output_format': (None, 'png')
@@ -136,4 +136,75 @@ async def generate_image_tool(prompt: str) -> str:
         except Exception as e:
             return f"Stability AI error: {e}"
 
-all_tools = [reasoning_tool, coding_tool, mistral_tool, search_for_image_tool, generate_image_tool]
+        print(f"--- Image generation success. Saved to {image_filepath} ---")
+        image_url = f"/images/{image_filename}"
+        return f"IMAGE_URL::{image_url}"
+
+    except requests.exceptions.HTTPError as http_err:
+        error_details = http_err.response.text
+        print(f"--- Stability AI HTTP Error: {http_err.response.status_code} - {error_details} ---")
+        return f"Stability AI API Error: {http_err.response.status_code} - {error_details}"
+    except Exception as e:
+        print(f"--- Stability AI Request Error: {e} ---")
+        return f"Stability AI request error: {e}"
+
+
+# Every tool below is defined as `async def` and offloads its actual blocking
+# network call to a background thread via asyncio.to_thread. This matters:
+# `requests` is synchronous, OS-blocking I/O. If these ran as plain sync
+# functions, each call would freeze Python's single asyncio event loop -
+# which is also responsible for flushing bytes to the SSE connection. That's
+# exactly what was causing the "frozen, then dumps everything at once"
+# behavior: the loop couldn't write any queued stream data while a tool's
+# network call was in progress.
+
+@tool
+async def reasoning_tool(query: str) -> str:
+    """General reasoning and versatile Q&A."""
+    return await asyncio.to_thread(
+        _groq_chat_sync,
+        "qwen/qwen3-32b",
+        query,
+        "You are a helpful assistant with strong reasoning abilities.",
+    )
+
+
+@tool
+async def coding_tool(query: str) -> str:
+    """Use for coding, debugging, and clean code generation."""
+    return await asyncio.to_thread(
+        _groq_chat_sync,
+        "llama-3.1-8b-instant",
+        query,
+        "You are an expert coding assistant. Generate clean, working code.",
+    )
+
+
+@tool
+async def mistral_tool(query: str) -> str:
+    """Quick, factual answers, summaries, and general knowledge lookup."""
+    return await asyncio.to_thread(_mistral_invoke_sync, query)
+
+
+@tool
+async def search_for_image_tool(query: str) -> str:
+    """Search for a real image using the Pexels API and return a URL."""
+    return await asyncio.to_thread(_pexels_search_sync, query)
+
+
+@tool
+async def generate_image_tool(prompt: str) -> str:
+    """
+    Use this tool to create or generate a completely new image from a text description.
+    Saves the image to a file and returns a URL to it.
+    """
+    return await asyncio.to_thread(_stability_generate_sync, prompt)
+
+
+all_tools = [
+    reasoning_tool,
+    coding_tool,
+    mistral_tool,
+    search_for_image_tool,
+    generate_image_tool,
+]
