@@ -19,11 +19,13 @@ public class ChatController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly AgentBackendClient _agent;
+    private readonly IConfiguration _configuration;
 
-    public ChatController(AppDbContext db, AgentBackendClient agent)
+    public ChatController(AppDbContext db, AgentBackendClient agent, IConfiguration configuration)
     {
         _db = db;
         _agent = agent;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -102,7 +104,22 @@ public class ChatController : ControllerBase
                 var outputStr = output.GetString() ?? "";
                 const string prefix = "IMAGE_URL::";
                 var idx = outputStr.IndexOf(prefix, StringComparison.Ordinal);
-                if (idx != -1) capturedImageUrl = outputStr[(idx + prefix.Length)..].Trim('\'', '"');
+                if (idx != -1)
+                {
+                    var rawImageUrl = outputStr[(idx + prefix.Length)..].Trim('\'', '"');
+                    if (Uri.TryCreate(rawImageUrl, UriKind.Absolute, out var absoluteImageUrl))
+                    {
+                        capturedImageUrl = absoluteImageUrl.ToString();
+                    }
+                    else if (Uri.TryCreate(_configuration["AgentBackend:BaseUrl"], UriKind.Absolute, out var baseImageUrl))
+                    {
+                        capturedImageUrl = new Uri(baseImageUrl, rawImageUrl).ToString();
+                    }
+                    else
+                    {
+                        capturedImageUrl = rawImageUrl;
+                    }
+                }
             }
         }
 
