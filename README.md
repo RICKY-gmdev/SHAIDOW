@@ -111,14 +111,6 @@ Unlike a single always-on agent loop, SHAIDOW's router makes **one decision per 
 
 ---
 
-## 🚀 TECH STACK
-
-- **.NET 9 SDK**
-- **Node.js + Angular CLI**
-- **Python 3.12+**
-- **PostgreSQL** (local instance for development)
-- **LLM Included**: Groq, Mistral, Pexels, Stability AI
-
 ## 📂 Project Structure
 
 ```
