@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SHAIDOW.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c585661e5909f383219b043d690b66168564562d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae3a01561a3e24248a280f82355104b45b65a800")]
 [assembly: System.Reflection.AssemblyProductAttribute("SHAIDOW.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SHAIDOW.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -46,6 +46,18 @@ public class ThreadsController : ControllerBase
 
         return Ok(messages);
     }
+
+    [HttpGet("/api/images")]
+    public async Task<ActionResult<List<String>>> GetMyImages()
+    {
+        var urls = await _db.Messages
+            .Where(m => m.ImageUrl != null && m.Thread!.UserId == CurrentUserId)
+            .OrderByDescending(m => m.CreatedAt)
+            .Select(m => m.ImageUrl)
+                .ToListAsync();
+        return Ok(urls);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteThread(Guid id)
     {
