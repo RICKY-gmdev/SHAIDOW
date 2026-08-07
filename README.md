@@ -30,7 +30,7 @@
 
 ## 📌 What is SHAIDOW?
 
-**SHAIDOW** is a full-stack AI assistant that doesn't just forward every message to one generic model. A lightweight router model looks at each query first and delegates it to whichever specialist is actually best suited to answer it — a fast factual model for quick lookups, a reasoning-tuned model for deep questions, a coding-tuned model for programming help, or an image search/generation tool when that's what's actually being asked for.
+**SHAIDOW** is a Cloud-native full-stack application with intelligent multi-agent AI routing that doesn't just forward every message to one generic model. A lightweight router model looks at each query first and delegates it to whichever specialist is actually best suited to answer it — a fast factual model for quick lookups, a reasoning-tuned model for deep questions, a coding-tuned model for programming help, or an image search/generation tool when that's what's actually being asked for.
 
 Unlike the single-service prototype this started as, SHAIDOW is now a genuine three-tier cloud application: a persistent Angular frontend, a .NET/C# API layer handling authentication and conversation history, and a Python agent service doing the actual LLM orchestration — all independently deployed on Azure behind a custom domain.
 
