@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-const API_BASE = 'https://shaidow-api.azurewebsites.net/api';
+const API_BASE = 'https://shaidow-api-new-bjgeh2e4axe3dxhc.centralindia-01.azurewebsites.net';
 const TOKEN_KEY = 'shaidow_token';
 
 @Injectable({ providedIn: 'root' })
