@@ -67,7 +67,8 @@ builder.Services.AddCors(opts =>
     opts.AddPolicy("AllowAngular", policy =>
         policy.WithOrigins(
             "https://web.shaidow.me",
-            "https://victorious-water-049961200-7.azurestaticapps.net")
+            "https://victorious-water-049961200-7.azurestaticapps.net",
+            "https://orange-smoke-05f6fd200.7.azurestaticapps.net")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
