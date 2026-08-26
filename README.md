@@ -19,7 +19,7 @@
 
 <br/>
 
-**🔗 Live: [web.shaidow.me](https://web.shaidow.me)**
+**🔗 Live: [SHAIDOW](https://orange-smoke-05f6fd200.7.azurestaticapps.net/)**
 
 <!-- SCREENSHOT PLACEHOLDER: Add a demo GIF or screenshot of the chat interface -->
 <!-- ![SHAIDOW Demo](assets/demo.gif) -->
