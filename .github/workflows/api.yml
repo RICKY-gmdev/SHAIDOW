@@ -38,6 +38,6 @@ jobs:
       - name: Deploy
         uses: azure/webapps-deploy@v3
         with:
-          app-name: shaidow-api-new
+          app-name: shaidow-api-n
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_API }}
           package: SHAIDOW.Api/publish
