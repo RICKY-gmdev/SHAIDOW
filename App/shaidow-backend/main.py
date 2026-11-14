@@ -1,6 +1,7 @@
 import os
 import uuid
 import json
+import traceback
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -19,11 +20,12 @@ os.makedirs("generated_images", exist_ok=True)
 SYSTEM_PROMPT = ""
 memory = MemorySaver()
 agent_executor = None
+STARTUP_ERROR = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global SYSTEM_PROMPT, agent_executor
+    global SYSTEM_PROMPT, agent_executor, STARTUP_ERROR
 
     try:
         with open("system_prompt.txt", "r", encoding="utf-8") as f:
@@ -33,15 +35,19 @@ async def lifespan(app: FastAPI):
 
     try:
         initialize_agent()
-        agent_executor = create_agent_graph(SYSTEM_PROMPT, checkpointer=memory)
+        graph = create_agent_graph(SYSTEM_PROMPT)
+        agent_executor = graph.with_config(checkpointer=memory)
+        STARTUP_ERROR = None
         print("Agent Engine Status: Online.")
     except Exception as e:
-        print(f"ERROR: Failed to initialize agent - {e}")
+        STARTUP_ERROR = f"{type(e).__name__}: {str(e)}"
+        print(f"ERROR: Failed to initialize agent - {STARTUP_ERROR}")
+        traceback.print_exc()
         agent_executor = None
     yield
 
 
-app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.2", lifespan=lifespan)
+app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.3", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,31 +67,33 @@ class ChatRequest(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"status": "healthy", "version": "4.0.2"}
+    return {
+        "status": "healthy",
+        "version": "4.0.3",
+        "agent_ready": agent_executor is not None,
+        "startup_error": STARTUP_ERROR,
+    }
 
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
-    if agent_executor is None:
-        return {"error": "Agent not initialized or missing configuration API keys."}
-
     thread_id = req.thread_id or str(uuid.uuid4())
     config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
     user_input = {"messages": [("user", req.message)]}
 
     async def event_stream():
         try:
-            executor = agent_executor
-            if executor is None:
-                yield f"data: {json.dumps({'type': 'error', 'content': 'Agent executor unavailable'})}\n\n"
+            if agent_executor is None:
+                err_msg = STARTUP_ERROR or "Agent not initialized or missing API keys."
+                yield f"data: {json.dumps({'type': 'error', 'content': f'ML Startup Error: {err_msg}'})}\n\n"
+                yield f"data: {json.dumps({'type': 'stream_end', 'thread_id': thread_id})}\n\n"
                 return
 
             streamed_any_text = False
 
-            async for event in executor.astream_events(user_input, config, version="v2"):
+            async for event in agent_executor.astream_events(user_input, config, version="v2"):
                 kind = event.get("event")
 
-                # Stream tokens from BOTH direct router replies AND synthesized finalize replies
                 if kind == "on_chat_model_stream":
                     node = event.get("metadata", {}).get("langgraph_node")
                     if node not in ("router", "finalize"):
@@ -102,7 +110,6 @@ async def chat(req: ChatRequest):
                             data = json.dumps({"type": "text_chunk", "content": chunk.content})
                             yield f"data: {data}\n\n"
 
-                # Catch static or fallback AIMessages from finalize if LLM streaming didn't run
                 elif kind == "on_chain_end" and event.get("name") == "finalize" and not streamed_any_text:
                     output_data = event.get("data", {}).get("output")
                     if isinstance(output_data, dict):
@@ -115,12 +122,10 @@ async def chat(req: ChatRequest):
                                 data = json.dumps({"type": "text_chunk", "content": str(content)})
                                 yield f"data: {data}\n\n"
 
-                # Stream status notifications when a specialist tool starts
                 elif kind == "on_tool_start":
                     data = json.dumps({"type": "tool_start", "tool": event.get("name")})
                     yield f"data: {data}\n\n"
 
-                # Stream tool completion (used by frontend to render IMAGE_URL:: bubbles, etc.)
                 elif kind == "on_tool_end":
                     tool_output = event.get("data", {}).get("output")
                     if tool_output is None:
@@ -137,10 +142,10 @@ async def chat(req: ChatRequest):
                     })
                     yield f"data: {data}\n\n"
 
-            # Finalize Stream cleanly
             yield f"data: {json.dumps({'type': 'stream_end', 'thread_id': thread_id})}\n\n"
 
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'content': f'Stream crashed: {str(e)}'})}\n\n"
+            yield f"data: {json.dumps({'type': 'stream_end', 'thread_id': thread_id})}\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
