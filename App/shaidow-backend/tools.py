@@ -1,37 +1,47 @@
+# tools.py
 import os
+import re
 import uuid
-from typing import Any, List
+from typing import Any
 import httpx
 from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage
 from langchain_mistralai import ChatMistralAI
-from langchain_groq import ChatGroq
 from pydantic import SecretStr
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+
 
 def _mistral() -> ChatMistralAI:
     mistral_key = os.getenv("MISTRAL_API_KEY")
     return ChatMistralAI(
         model_name="mistral-large-latest",
-        temperature=0,
+        temperature=0.1,
         api_key=SecretStr(mistral_key) if mistral_key else None,
     )
 
+
+def _clean_llm_text(text: str) -> str:
+    """Strips <think>...</think> blocks from reasoning models like Qwen/DeepSeek."""
+    cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
+    return cleaned.strip() or "No content."
+
+
 def _extract_content(resp: Any) -> str:
-    if resp is None: 
+    if resp is None:
         return "No content."
-    if isinstance(resp, str): 
-        return resp.strip() or "No content."
+    if isinstance(resp, str):
+        return _clean_llm_text(resp)
     if isinstance(resp, BaseMessage):
         c = resp.content
         if isinstance(c, list):
             parts = [str(p.get("text")) for p in c if isinstance(p, dict) and p.get("text")]
             c = "\n".join(parts)
-        return str(c).strip() or "No content."
-    return str(resp)[:4000] or "No content."
+        return _clean_llm_text(str(c))
+    return _clean_llm_text(str(resp)[:4000])
 
-async def _groq_chat_async(model: str, query: str, system_prompt: str) -> str:
+
+async def _groq_chat_async(model: str, query: str, system_prompt: str, temperature: float = 0.2) -> str:
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         return "Error: GROQ_API_KEY not set."
@@ -43,70 +53,78 @@ async def _groq_chat_async(model: str, query: str, system_prompt: str) -> str:
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": query},
         ],
-        "temperature": 0.3,
-        "max_tokens": 2048,
+        "temperature": temperature,
+        "max_tokens": 3072,
     }
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with httpx.AsyncClient(timeout=45.0) as client:
         try:
             resp = await client.post(GROQ_URL, json=payload, headers=headers)
             resp.raise_for_status()
             data = resp.json()
-            return data["choices"][0]["message"]["content"].strip()
+            raw_content = data["choices"][0]["message"]["content"]
+            return _clean_llm_text(raw_content)
         except Exception as e:
-            return f"Groq error: {e}"
+            return f"Groq specialist error ({model}): {e}"
+
 
 @tool
 async def reasoning_tool(query: str) -> str:
-    """General reasoning and versatile Q&A."""
+    """Delegate complex reasoning, system architecture, math, analysis, creative planning, or multi-step problem solving."""
     return await _groq_chat_async(
-        "qwen/qwen3-32b", 
-        query, 
-        "You are a helpful assistant with strong reasoning abilities."
+        "qwen/qwen3-32b",
+        query,
+        "You are a deep reasoning specialist. Provide a thorough, logically structured analysis and solution.",
+        temperature=0.3,
     )
+
 
 @tool
 async def coding_tool(query: str) -> str:
-    """Use for coding, debugging, and clean code generation."""
+    """Delegate ALL programming, software engineering, code generation, debugging, SQL, C#, .NET, Python, or algorithm tasks."""
     return await _groq_chat_async(
-        "llama-3.1-8b-instant", 
-        query, 
-        "You are an expert coding assistant. Generate clean, working code."
+        "llama-3.3-70b-versatile",
+        query,
+        "You are a principal software engineer. Write production-ready, well-structured code with concise technical explanations.",
+        temperature=0.1,
     )
+
 
 @tool
 async def mistral_tool(query: str) -> str:
-    """Quick, factual answers, summaries, and general knowledge lookup."""
+    """Delegate factual lookups, general knowledge, historical/geographical summaries, definitions, and quick explanations."""
     try:
         response = await _mistral().ainvoke(query)
         return _extract_content(response)
     except Exception as e:
-        return f"Error invoking Mistral tool: {e}"
+        return f"Error invoking Mistral specialist: {e}"
+
 
 @tool
 async def search_for_image_tool(query: str) -> str:
-    """Search for a real image using the Pexels API and return a URL."""
+    """Search for a real-world photograph using Pexels and return its IMAGE_URL."""
     api_key = os.getenv("PEXELS_API_KEY")
     if not api_key:
         return "Error: PEXELS_API_KEY environment variable not set."
 
     headers = {"Authorization": api_key}
-    url = f"https://api.pexels.com/v1/search?query={query}&per_page=1"
+    url = "https://api.pexels.com/v1/search"
 
     async with httpx.AsyncClient(timeout=15.0) as client:
         try:
-            resp = await client.get(url, headers=headers)
+            resp = await client.get(url, params={"query": query, "per_page": 1}, headers=headers)
             resp.raise_for_status()
             data = resp.json()
             if data.get("photos"):
                 return f"IMAGE_URL::{data['photos'][0]['src']['large']}"
-            return "No images found."
+            return "No matching real-world images found."
         except Exception as e:
             return f"Pexels search error: {e}"
 
+
 @tool
 async def generate_image_tool(prompt: str) -> str:
-    """Create or generate a completely new image from a text description."""
+    """Generate a brand-new AI artwork or illustration from a detailed text prompt using Stability AI."""
     api_url = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
     api_key = os.getenv("STABILITY_API_KEY")
     if not api_key:
@@ -114,14 +132,13 @@ async def generate_image_tool(prompt: str) -> str:
 
     headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
     files = {
-        'prompt': (None, prompt),
-        'model': (None, 'sd3.5-flash'),
-        'output_format': (None, 'png')
+        "prompt": (None, prompt),
+        "model": (None, "sd3.5-flash"),
+        "output_format": (None, "png"),
     }
 
-    async with httpx.AsyncClient(timeout=45.0) as client:
+    async with httpx.AsyncClient(timeout=60.0) as client:
         try:
-            # httpx format for multipart file/form uploads
             resp = await client.post(api_url, headers=headers, files=files)
             resp.raise_for_status()
 
@@ -136,4 +153,11 @@ async def generate_image_tool(prompt: str) -> str:
         except Exception as e:
             return f"Stability AI error: {e}"
 
-all_tools = [reasoning_tool, coding_tool, mistral_tool, search_for_image_tool, generate_image_tool]
+
+all_tools = [
+    reasoning_tool,
+    coding_tool,
+    mistral_tool,
+    search_for_image_tool,
+    generate_image_tool,
+]
