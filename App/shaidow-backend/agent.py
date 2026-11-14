@@ -84,7 +84,7 @@ def create_agent_graph(system_prompt: str, checkpointer=None):
 
         return {"messages": [response]}
 
-    async def finalize(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
+async def finalize(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
         if agent_model is None:
             raise RuntimeError("Agent not initialized.")
 
@@ -98,14 +98,20 @@ def create_agent_graph(system_prompt: str, checkpointer=None):
         tool_messages.reverse()
 
         specialist_outputs = []
+        raw_clean_outputs = []
         image_notices = []
 
         for tm in tool_messages:
             content = tm.content if isinstance(tm.content, str) else str(tm.content)
             if content.startswith("IMAGE_DATA::") or content.startswith("IMAGE_URL::"):
-                image_notices.append("[Visual asset successfully retrieved/generated and displayed to the user.]")
+                image_notices.append("[Visual asset successfully retrieved/generated and displayed below.]")
             else:
-                specialist_outputs.append(f"### Specialist Output ({tm.name}):\n{content}")
+                specialist_outputs.append(f"### Reference Data:\n{content}")
+                raw_clean_outputs.append(content)
+
+        # If only an image was returned, no need to invoke the LLM
+        if image_notices and not specialist_outputs:
+            return {"messages": [AIMessage(content="Here is the visual you requested.")]}
 
         history_without_tools = [
             m for m in messages
@@ -114,22 +120,29 @@ def create_agent_graph(system_prompt: str, checkpointer=None):
 
         joined_specialist_data = "\n\n".join(specialist_outputs + image_notices)
 
+        # IMPORTANT: Do NOT include tool descriptions here, or gpt-oss-20b will try to call a tool
+        # when tool_choice is none!
         synthesis_instruction = (
-            f"{system_prompt}\n\n"
-            "---\n"
-            "### ORCHESTRATION SYNTHESIS TASK\n"
-            "Your specialist sub-agents returned the following output for the user's latest request:\n\n"
+            "You are SHAIDOW, a loyal, sharp, pragmatic, and slightly futuristic AI assistant created by Ricky (Md Ayman Iqbal).\n"
+            "IMPORTANT RULE: Do NOT call any tools or functions. Tool execution is completely finished.\n\n"
+            "Use the following reference data gathered by your sub-engines to answer the user's latest message:\n\n"
             f"{joined_specialist_data}\n\n"
             "Instructions:\n"
-            "- Present a polished, well-structured final response as SHAIDOW using the specialist output above.\n"
-            "- If only an image was generated/found, briefly confirm it in SHAIDOW's voice without repeating raw URLs.\n"
-            "- Preserve all code blocks and technical details in full.\n"
+            "- Write a clear, well-structured markdown response in SHAIDOW's voice.\n"
+            "- Keep all code blocks, complexity analysis, and technical explanations intact.\n"
             "- End with 1-2 concise, proactive next steps."
         )
 
         synth_messages = [SystemMessage(content=synthesis_instruction)] + history_without_tools
-        final_ai_message = await agent_model.ainvoke(synth_messages, config=config)
-        return {"messages": [final_ai_message]}
+
+        try:
+            final_ai_message = await agent_model.ainvoke(synth_messages, config=config)
+            return {"messages": [final_ai_message]}
+        except Exception as e:
+            # Safety net if gpt-oss-20b still attempts a native tool call when tool_choice is none
+            print(f"--- Finalize synthesis fallback triggered: {e} ---")
+            fallback_text = "\n\n".join(raw_clean_outputs + image_notices) or "Here is the result."
+            return {"messages": [AIMessage(content=fallback_text)]}
 
     workflow = StateGraph(AgentState)
     workflow.add_node("router", router)
