@@ -1,4 +1,3 @@
-# agent.py
 import os
 from typing import Dict, Any, Optional, Sequence, Annotated
 from typing_extensions import TypedDict
@@ -84,7 +83,7 @@ def create_agent_graph(system_prompt: str, checkpointer=None):
 
         return {"messages": [response]}
 
-async def finalize(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
+    async def finalize(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
         if agent_model is None:
             raise RuntimeError("Agent not initialized.")
 
@@ -120,8 +119,6 @@ async def finalize(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
 
         joined_specialist_data = "\n\n".join(specialist_outputs + image_notices)
 
-        # IMPORTANT: Do NOT include tool descriptions here, or gpt-oss-20b will try to call a tool
-        # when tool_choice is none!
         synthesis_instruction = (
             "You are SHAIDOW, a loyal, sharp, pragmatic, and slightly futuristic AI assistant created by Ricky (Md Ayman Iqbal).\n"
             "IMPORTANT RULE: Do NOT call any tools or functions. Tool execution is completely finished.\n\n"
@@ -129,6 +126,7 @@ async def finalize(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
             f"{joined_specialist_data}\n\n"
             "Instructions:\n"
             "- Write a clear, well-structured markdown response in SHAIDOW's voice.\n"
+            "- Always wrap code snippets inside fenced markdown code blocks with the language specified (e.g., ```python or ```csharp).\n"
             "- Keep all code blocks, complexity analysis, and technical explanations intact.\n"
             "- End with 1-2 concise, proactive next steps."
         )
@@ -139,7 +137,6 @@ async def finalize(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
             final_ai_message = await agent_model.ainvoke(synth_messages, config=config)
             return {"messages": [final_ai_message]}
         except Exception as e:
-            # Safety net if gpt-oss-20b still attempts a native tool call when tool_choice is none
             print(f"--- Finalize synthesis fallback triggered: {e} ---")
             fallback_text = "\n\n".join(raw_clean_outputs + image_notices) or "Here is the result."
             return {"messages": [AIMessage(content=fallback_text)]}
