@@ -1,4 +1,3 @@
-# tools.py
 import os
 import re
 import uuid
@@ -22,7 +21,7 @@ def _mistral() -> ChatMistralAI:
 
 
 def _clean_llm_text(text: str) -> str:
-    """Strips <think>...</think> blocks from reasoning models like Qwen/DeepSeek."""
+    """Strips <think>...</think> blocks from reasoning models."""
     cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
     return cleaned.strip() or "No content."
 
@@ -66,7 +65,7 @@ async def _groq_chat_async(
                 resp = await client.post(GROQ_URL, json=payload, headers=headers)
                 if resp.status_code in (400, 404):
                     last_error = f"{model} returned {resp.status_code}: {resp.text}"
-                    continue  # Automatically try the next model in the list
+                    continue
                 resp.raise_for_status()
                 data = resp.json()
                 raw_content = data["choices"][0]["message"]["content"]
@@ -100,7 +99,7 @@ async def coding_tool(query: str) -> str:
     return await _groq_chat_async(
         ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "llama-3.1-8b-instant"],
         query,
-        "You are a principal software engineer. Write production-ready, well-structured code with clear step-by-step explanations.",
+        "You are a principal software engineer. Write production-ready, well-structured code inside fenced markdown code blocks (e.g., ```python or ```csharp) with clear step-by-step explanations.",
         temperature=0.1,
     )
 
