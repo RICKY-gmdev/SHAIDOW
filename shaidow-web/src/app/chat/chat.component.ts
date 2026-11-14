@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild, AfterViewChecked, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import { ChatService } from '../services/chat.service';
 import { ChatMessage } from '../models/chat.models';
@@ -28,8 +29,13 @@ export class ChatComponent implements AfterViewChecked {
   private currentThreadId: string | null = null;
   private abortController: AbortController | null = null;
   private shouldScroll = false;
+  private readonly mlBaseUrl = 'https://shaidow-ml-n-ekb9aqdebfgresga.centralindia-01.azurewebsites.net';
 
-  constructor(private chatService: ChatService, private router: Router) { }
+  constructor(
+    private chatService: ChatService,
+    private router: Router,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngAfterViewChecked(): void {
     if (this.shouldScroll) {
@@ -38,9 +44,32 @@ export class ChatComponent implements AfterViewChecked {
     }
   }
 
-  renderMarkdown(text: string | undefined): string {
+  renderMarkdown(text: string | undefined): SafeHtml {
     if (!text) return '';
-    return marked.parse(text, { async: false }) as string;
+    const rawHtml = marked.parse(text, { async: false, breaks: true, gfm: true }) as string;
+
+    const enhancedHtml = rawHtml.replace(
+      /<pre><code(?: class="language-([a-zA-Z0-9_+-]+)")?>([\s\S]*?)<\/code><\/pre>/g,
+      (_match, lang, codeContent) => {
+        const label = (lang || 'code').toUpperCase();
+        return `
+          <div class="code-box">
+            <div class="code-box-header">
+              <span class="code-lang">${label}</span>
+              <button type="button" class="code-copy-btn" onclick="
+                const codeEl = this.closest('.code-box').querySelector('code');
+                navigator.clipboard.writeText(codeEl ? codeEl.innerText : '');
+                this.textContent = 'Copied!';
+                setTimeout(() => (this.textContent = 'Copy'), 1500);
+              ">Copy</button>
+            </div>
+            <pre><code class="language-${lang || 'plaintext'}">${codeContent}</code></pre>
+          </div>
+        `;
+      }
+    );
+
+    return this.sanitizer.bypassSecurityTrustHtml(enhancedHtml);
   }
 
   async onSend(): Promise<void> {
@@ -51,7 +80,12 @@ export class ChatComponent implements AfterViewChecked {
     this.userInput = '';
     this.addMessage({ id: crypto.randomUUID(), author: 'You', text });
 
-    const aiMessage: ChatMessage = { id: crypto.randomUUID(), author: 'SHAIDOW', text: '...', isStreaming: true };
+    const aiMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      author: 'SHAIDOW',
+      text: '...',
+      isStreaming: true,
+    };
     this.addMessage(aiMessage);
 
     this.isResponding.set(true);
@@ -63,10 +97,13 @@ export class ChatComponent implements AfterViewChecked {
     const pendingTools = new Set<string>();
 
     try {
-      for await (const event of this.chatService.streamChat(text, this.currentThreadId, this.abortController.signal)) {
+      for await (const event of this.chatService.streamChat(
+        text,
+        this.currentThreadId,
+        this.abortController.signal
+      )) {
         switch (event.type) {
           case 'text_chunk':
-            // Only used for direct (no-tool) answers, which still stream token-by-token.
             if (!firstChunkReceived) {
               aiMessage.text = event.content ?? '';
               firstChunkReceived = true;
@@ -82,42 +119,45 @@ export class ChatComponent implements AfterViewChecked {
               pendingTools.add(event.tool);
               if (!toolsUsed.includes(event.tool)) toolsUsed.push(event.tool);
             }
-            aiMessage.status = 'Finding more relevant details...';
+            aiMessage.status = 'Orchestrating specialist sub-agent...';
             break;
 
           case 'tool_end': {
             this.toolAnim?.hideTool(event.tool ?? 'default');
             if (event.tool) pendingTools.delete(event.tool);
 
-            const output = event.output ?? '';
+            const output = (event.output ?? '').trim();
 
-            // 1. Check for Image markers first
             if (output.startsWith('IMAGE_URL::')) {
               const rawUrl = output.replace('IMAGE_URL::', '').trim();
-              // Normalize URL if needed
-              capturedImageUrl = rawUrl.startsWith('http') ? rawUrl : `https://shaidow-backend-ml.azurewebsites.net${rawUrl}`;
-
-              // Display a placeholder message in the chat
-              aiMessage.text = (aiMessage.text ?? '') + '\n\n*Image retrieved successfully.*';
-            }
-            // 2. Handle standard text tool outputs
-            else if (output.length > 0) {
-              aiMessage.text = aiMessage.text ? `${aiMessage.text}\n\n${output}` : output;
+              capturedImageUrl = rawUrl.startsWith('http')
+                ? rawUrl
+                : `${this.mlBaseUrl}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
             }
 
-            aiMessage.status = pendingTools.size > 0 ? 'Finding more relevant details...' : undefined;
+            aiMessage.status =
+              pendingTools.size > 0
+                ? 'Orchestrating specialist sub-agent...'
+                : 'Synthesizing final response...';
             this.messages.update((msgs) => [...msgs]);
             break;
           }
 
           case 'stream_end':
             aiMessage.status = undefined;
-            if (aiMessage.text?.startsWith('* (Using')) aiMessage.text = '';
+            if (aiMessage.text === '...') {
+              aiMessage.text = capturedImageUrl ? 'Here is the visual you requested.' : '';
+            }
             if (capturedImageUrl) {
-              this.addMessage({ id: crypto.randomUUID(), author: 'SHAIDOW', imageUrl: capturedImageUrl });
+              this.addMessage({
+                id: crypto.randomUUID(),
+                author: 'SHAIDOW',
+                imageUrl: capturedImageUrl,
+              });
             }
             if (toolsUsed.length) {
-              aiMessage.text = (aiMessage.text ?? '') + `\n\n---\n*Tools used: ${toolsUsed.join(', ')}*`;
+              aiMessage.text =
+                (aiMessage.text ?? '') + `\n\n---\n*Tools used: ${toolsUsed.join(', ')}*`;
             }
             aiMessage.isStreaming = false;
             this.currentThreadId = event.threadId ?? this.currentThreadId;
@@ -126,7 +166,9 @@ export class ChatComponent implements AfterViewChecked {
 
           case 'error':
             aiMessage.status = undefined;
-            aiMessage.text = (aiMessage.text ?? '') + `\n\nSYSTEM ERROR: ${event.content}`;
+            if (aiMessage.text === '...') aiMessage.text = '';
+            aiMessage.text =
+              (aiMessage.text ?? '') + `\n\n**SYSTEM ERROR:** ${event.content}`;
             aiMessage.isStreaming = false;
             this.finishResponding();
             break;
@@ -155,8 +197,6 @@ export class ChatComponent implements AfterViewChecked {
 
   stopResponse(): void {
     this.abortController?.abort();
-    // finishResponding() will also run from inside the try/catch's AbortError path,
-    // but calling it here too makes the UI feel instant rather than waiting on the throw.
     this.finishResponding();
   }
 
@@ -175,7 +215,7 @@ export class ChatComponent implements AfterViewChecked {
   }
 
   async onThreadSelected(threadId: string): Promise<void> {
-    this.abortController?.abort(); // stop any in-flight response before switching threads
+    this.abortController?.abort();
     this.currentThreadId = threadId;
     this.showWelcome.set(false);
     try {
@@ -183,7 +223,13 @@ export class ChatComponent implements AfterViewChecked {
       this.messages.set(history);
       this.shouldScroll = true;
     } catch {
-      this.messages.set([{ id: crypto.randomUUID(), author: 'SHAIDOW', text: 'Could not load this conversation.' }]);
+      this.messages.set([
+        {
+          id: crypto.randomUUID(),
+          author: 'SHAIDOW',
+          text: 'Could not load this conversation.',
+        },
+      ]);
     }
   }
 
