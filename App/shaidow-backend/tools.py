@@ -41,38 +41,53 @@ def _extract_content(resp: Any) -> str:
     return _clean_llm_text(str(resp)[:4000])
 
 
-async def _groq_chat_async(model: str, query: str, system_prompt: str, temperature: float = 0.2) -> str:
+async def _groq_chat_async(
+    models: list[str], query: str, system_prompt: str, temperature: float = 0.2
+) -> str:
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         return "Error: GROQ_API_KEY not set."
 
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": query},
-        ],
-        "temperature": temperature,
-        "max_tokens": 3072,
-    }
+    last_error = ""
 
     async with httpx.AsyncClient(timeout=45.0) as client:
-        try:
-            resp = await client.post(GROQ_URL, json=payload, headers=headers)
-            resp.raise_for_status()
-            data = resp.json()
-            raw_content = data["choices"][0]["message"]["content"]
-            return _clean_llm_text(raw_content)
-        except Exception as e:
-            return f"Groq specialist error ({model}): {e}"
+        for model in models:
+            payload = {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": query},
+                ],
+                "temperature": temperature,
+                "max_tokens": 3072,
+            }
+            try:
+                resp = await client.post(GROQ_URL, json=payload, headers=headers)
+                if resp.status_code in (400, 404):
+                    last_error = f"{model} returned {resp.status_code}: {resp.text}"
+                    continue  # Automatically try the next model in the list
+                resp.raise_for_status()
+                data = resp.json()
+                raw_content = data["choices"][0]["message"]["content"]
+                return _clean_llm_text(raw_content)
+            except Exception as e:
+                last_error = str(e)
+                continue
+
+    # Final fallback to Mistral if all Groq model IDs fail
+    try:
+        fallback_resp = await _mistral().ainvoke(f"{system_prompt}\n\nUser request: {query}")
+        return _extract_content(fallback_resp)
+    except Exception as e:
+        return f"Specialist error: {last_error} | Fallback error: {e}"
 
 
 @tool
 async def reasoning_tool(query: str) -> str:
     """Delegate complex reasoning, system architecture, math, analysis, creative planning, or multi-step problem solving."""
     return await _groq_chat_async(
-        "qwen/qwen3-32b",
+        ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "llama-3.1-8b-instant"],
         query,
         "You are a deep reasoning specialist. Provide a thorough, logically structured analysis and solution.",
         temperature=0.3,
@@ -83,9 +98,9 @@ async def reasoning_tool(query: str) -> str:
 async def coding_tool(query: str) -> str:
     """Delegate ALL programming, software engineering, code generation, debugging, SQL, C#, .NET, Python, or algorithm tasks."""
     return await _groq_chat_async(
-        "llama-3.3-70b-versatile",
+        ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "llama-3.1-8b-instant"],
         query,
-        "You are a principal software engineer. Write production-ready, well-structured code with concise technical explanations.",
+        "You are a principal software engineer. Write production-ready, well-structured code with clear step-by-step explanations.",
         temperature=0.1,
     )
 
