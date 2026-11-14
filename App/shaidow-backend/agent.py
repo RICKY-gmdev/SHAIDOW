@@ -1,4 +1,4 @@
-#agent.py
+# agent.py
 import os
 from typing import Dict, Any, Optional, Sequence, Annotated
 from typing_extensions import TypedDict
@@ -6,6 +6,7 @@ from functools import partial
 from langchain_core.messages import (
     ToolMessage,
     SystemMessage,
+    HumanMessage,
     BaseMessage,
     AIMessage,
     AnyMessage,
@@ -21,6 +22,17 @@ agent_model: Optional[ChatGroq] = None
 agent_with_tools = None
 tool_node = ToolNode(all_tools)
 
+ROUTER_INSTRUCTION = """You are SHAIDOW's Orchestrator Core, created by Ricky (Md Ayman Iqbal).
+Your job is to inspect the conversation and route the user's request to the right specialist tool(s):
+1. Call `coding_tool` for ANY code, debugging, software architecture, .NET/C#, Python, SQL, or algorithm request.
+2. Call `reasoning_tool` for complex analysis, logic puzzles, math, strategy, or deep multi-step questions.
+3. Call `mistral_tool` for quick facts, summaries, definitions, or real-world topics.
+4. Call `search_for_image_tool` when the user asks to see a real photo OR when a real photo enriches a factual topic.
+5. Call `generate_image_tool` when the user asks to create, draw, or generate custom AI art/illustrations.
+   - You MAY call multiple tools in parallel (e.g., `mistral_tool` + `search_for_image_tool`).
+   - Always pass a self-contained, detailed `query` (include relevant context from earlier messages so the specialist tool has everything it needs).
+   - ONLY reply directly without tools if the user is just greeting you, chatting casually, or asking about your identity as SHAIDOW."""
+
 
 class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
@@ -33,8 +45,9 @@ def initialize_agent():
     if not groq_api_key:
         raise ValueError("GROQ_API_KEY environment variable is required.")
 
+    # llama-3.3-70b-versatile or openai/gpt-oss-20b
     agent_model = ChatGroq(
-        model="openai/gpt-oss-20b",
+        model="llama-3.3-70b-versatile",
         temperature=0.2,
         api_key=SecretStr(groq_api_key),
     )
@@ -42,31 +55,24 @@ def initialize_agent():
     return agent_model
 
 
-def _ensure_system_first(messages: Sequence[AnyMessage], system_prompt: str) -> Sequence[BaseMessage]:
-    if not messages or not isinstance(messages[0], SystemMessage):
-        return [SystemMessage(content=system_prompt.strip())] + list(messages)  # type: ignore
-    return messages  # type: ignore
+def _replace_system_prompt(messages: Sequence[AnyMessage], prompt: str) -> list[BaseMessage]:
+    filtered = [m for m in messages if not isinstance(m, SystemMessage)]
+    return [SystemMessage(content=prompt.strip())] + list(filtered)
 
 
-def router(state: AgentState, config: dict) -> Dict[str, Any]:
-    """
-    The router makes exactly ONE decision: answer directly, or delegate to
-    exactly one specialist tool. It never runs a second time for the same
-    turn - the tool's result (once sanitized) IS the final answer. This is
-    the core fix: no reinterpretation loop, no risk of the graph looping
-    forever if a tool errors or the model gets indecisive.
-    """
+async def router(state: AgentState, config: dict) -> Dict[str, Any]:
     if agent_with_tools is None or agent_model is None:
         raise RuntimeError("Agent not initialized. Call initialize_agent() first.")
 
-    system_prompt = config["configurable"].get("system_prompt", "You are a helpful assistant.")
-    messages = _ensure_system_first(state["messages"], system_prompt)
+    persona_prompt = config["configurable"].get("system_prompt", "")
+    combined_router_prompt = f"{ROUTER_INSTRUCTION}\n\n---\n{persona_prompt}"
+    messages = _replace_system_prompt(state["messages"], combined_router_prompt)
 
     try:
-        response = agent_with_tools.invoke(messages)
+        response = await agent_with_tools.ainvoke(messages)
     except Exception as e:
-        print(f"--- Router tool-call generation failed, answering directly: {e} ---")
-        response = agent_model.invoke(messages)
+        print(f"--- Router tool-call failed, falling back to direct model: {e} ---")
+        response = await agent_model.ainvoke(messages)
 
     return {"messages": [response]}
 
@@ -79,52 +85,74 @@ def route_decision(state: AgentState) -> str:
     return END
 
 
-def finalize(state: AgentState) -> Dict[str, Any]:
+async def finalize(state: AgentState, config: dict) -> Dict[str, Any]:
     """
-    Combines every tool result from this turn into the final answer. The
-    router can legitimately call more than one tool in parallel (e.g. a
-    summary + an image, per the system prompt's own worked example), so we
-    walk backward collecting every consecutive ToolMessage - not just the
-    last one - or a multi-tool turn would silently lose all but one result.
+    Synthesizes specialist tool outputs into SHAIDOW's persona using `agent_model`
+    (with NO tools bound, guaranteeing zero possibility of an infinite loop).
     """
-    messages = state["messages"]
+    if agent_model is None:
+        raise RuntimeError("Agent not initialized.")
 
-    tool_messages = []
+    messages = state["messages"]
+    tool_messages: list[ToolMessage] = []
     for msg in reversed(messages):
         if isinstance(msg, ToolMessage):
             tool_messages.append(msg)
         else:
             break
-    tool_messages.reverse()  # restore original call order
+    tool_messages.reverse()
 
-    cleaned_parts = []
+    specialist_outputs = []
+    image_notices = []
+
     for tm in tool_messages:
         content = tm.content if isinstance(tm.content, str) else str(tm.content)
-        if content.startswith("IMAGE_DATA::"):
-            cleaned_parts.append("[Image was generated successfully and displayed below.]")
-        elif content.startswith("IMAGE_URL::"):
-            # The raw URL is already captured separately by the frontend's
-            # tool_end handler and rendered as an image bubble - showing it
-            # again as plain text here would just be noise.
-            cleaned_parts.append("[Image found and displayed below.]")
+        if content.startswith("IMAGE_DATA::") or content.startswith("IMAGE_URL::"):
+            image_notices.append("[Visual asset successfully retrieved/generated and attached below.]")
         else:
-            cleaned_parts.append(content)
+            specialist_outputs.append(f"### Specialist Output ({tm.name}):\n{content}")
 
-    final_text = "\n\n".join(cleaned_parts) if cleaned_parts else "Sorry, I couldn't get a proper answer from that tool."
-    return {"messages": [AIMessage(content=final_text)]}
+    # If the user ONLY asked for an image and nothing else, return a clean confirmation
+    if image_notices and not specialist_outputs:
+        return {"messages": [AIMessage(content="Here is the visual you requested.")]}
+
+    persona_prompt = config["configurable"].get("system_prompt", "You are SHAIDOW.")
+    joined_specialist_data = "\n\n".join(specialist_outputs + image_notices)
+
+    # Build a clean synthesis prompt so SHAIDOW formats and polishes the specialist output
+    history_without_tools = [
+        m for m in messages
+        if isinstance(m, (HumanMessage, AIMessage)) and not getattr(m, "tool_calls", None)
+    ]
+
+    synthesis_instruction = (
+        f"{persona_prompt}\n\n"
+        "---\n"
+        "### ORCHESTRATION SYNTHESIS TASK\n"
+        "Your specialist sub-agents returned the following raw output for the user's latest message:\n\n"
+        f"{joined_specialist_data}\n\n"
+        "Present a polished, well-structured final response as SHAIDOW using the specialist output above. "
+        "Preserve all code blocks and technical accuracy in full, maintain your loyal/futuristic SHAIDOW persona, "
+        "and end with 1-2 proactive next steps."
+    )
+
+    synth_messages = [SystemMessage(content=synthesis_instruction)] + history_without_tools
+    final_ai_message = await agent_model.ainvoke(synth_messages)
+    return {"messages": [final_ai_message]}
 
 
 def create_agent_graph(system_prompt: str):
     workflow = StateGraph(AgentState)
     router_node = partial(router, config={"configurable": {"system_prompt": system_prompt}})
+    finalize_node = partial(finalize, config={"configurable": {"system_prompt": system_prompt}})
 
     workflow.add_node("router", router_node)
     workflow.add_node("tools", tool_node)
-    workflow.add_node("finalize", finalize)
+    workflow.add_node("finalize", finalize_node)
 
     workflow.set_entry_point("router")
     workflow.add_conditional_edges("router", route_decision, {"tools": "tools", END: END})
     workflow.add_edge("tools", "finalize")
-    workflow.add_edge("finalize", END)  # <- no loop back. This is the whole fix.
+    workflow.add_edge("finalize", END)
 
     return workflow.compile()
