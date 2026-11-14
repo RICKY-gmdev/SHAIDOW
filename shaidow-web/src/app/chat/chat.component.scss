@@ -9,7 +9,7 @@
   flex: 1;
   height: 100vh;
   padding: 0 20px;
-  min-width: 0; // prevents flex child from overflowing on long content
+  min-width: 0;
 }
 
 .top-bar {
@@ -36,7 +36,9 @@
   display: block;
 }
 
-.spacer { width: 44px; }
+.spacer {
+  width: 44px;
+}
 
 .mascot-stage {
   position: relative;
@@ -71,7 +73,10 @@
   font-size: 20px;
   cursor: pointer;
   transition: transform 0.15s ease;
-  &:hover { transform: scale(1.08); }
+
+  &:hover {
+    transform: scale(1.08);
+  }
 }
 
 .hero {
@@ -108,15 +113,20 @@
   display: flex;
   padding: 8px 0;
 
-  &.from-user { justify-content: flex-end; }
-  &:not(.from-user) { justify-content: flex-start; }
+  &.from-user {
+    justify-content: flex-end;
+  }
+  &:not(.from-user) {
+    justify-content: flex-start;
+  }
 }
 
 .bubble {
-  max-width: 70%;
+  max-width: 75%;
   padding: 16px 20px;
   border-radius: var(--radius-lg);
   backdrop-filter: blur(16px);
+  overflow-x: hidden;
 }
 
 .user-bubble {
@@ -126,13 +136,13 @@
 }
 
 .ai-bubble {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.05));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(10, 8, 22, 0.75));
   border: 1px solid;
   border-image: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta)) 1;
 }
 
 .image-bubble {
-  max-width: 320px;
+  max-width: 360px;
   padding: 10px;
   border-radius: var(--radius-md);
   background: radial-gradient(circle, rgba(0, 217, 255, 0.15), rgba(0, 0, 0, 0.1));
@@ -148,7 +158,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 
   .avatar {
     width: 26px;
@@ -160,6 +170,7 @@
     justify-content: center;
     font-size: 14px;
   }
+
   .name {
     font-size: 13px;
     font-weight: 700;
@@ -176,24 +187,151 @@
 }
 
 @keyframes status-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .bubble-text {
   font-size: 15px;
-  line-height: 1.5;
-  white-space: pre-wrap;
+  line-height: 1.65;
+  word-break: break-word;
 
-  &.pulse-text { opacity: 0.85; }
+  &.pulse-text {
+    opacity: 0.85;
+  }
 
-  ::ng-deep p { margin: 0 0 8px; }
-  ::ng-deep p:last-child { margin-bottom: 0; }
-  ::ng-deep code {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 13px;
+  ::ng-deep {
+    p {
+      margin: 0 0 10px;
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 16px 0 8px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    ul, ol {
+      margin: 6px 0 12px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      margin: 14px 0 8px;
+    }
+
+    /* Inline `code` pills */
+    :not(pre) > code {
+      background: rgba(168, 85, 247, 0.18);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #f3e8ff;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+      font-size: 13px;
+    }
+
+    /* Sleek Dark Code Box */
+    .code-box {
+      margin: 14px 0;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      background: #090712;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+    }
+
+    .code-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(0, 217, 255, 0.18);
+    }
+
+    .code-lang {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent-cyan, #00d9ff);
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .code-copy-btn {
+      background: rgba(0, 217, 255, 0.12);
+      border: 1px solid rgba(0, 217, 255, 0.35);
+      color: var(--accent-cyan, #00d9ff);
+      border-radius: 5px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: rgba(0, 217, 255, 0.28);
+        box-shadow: 0 0 10px rgba(0, 217, 255, 0.35);
+      }
+    }
+
+    .code-box pre {
+      margin: 0;
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: #e2e8f0;
+      background: transparent;
+    }
+
+    .code-box pre code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      white-space: pre;
+    }
+
+    /* Clean Markdown Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13.5px;
+      background: rgba(9, 7, 18, 0.65);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    th {
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--accent-cyan, #00d9ff);
+      font-weight: 600;
+    }
   }
 }
 
@@ -216,7 +354,9 @@
     color: var(--text-primary);
     font-size: 16px;
 
-    &::placeholder { color: var(--text-tertiary); }
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
   }
 }
 
@@ -234,8 +374,13 @@
   box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
   transition: transform 0.15s ease;
 
-  &:hover:not(:disabled) { transform: scale(1.05); }
-  &:disabled { opacity: 0.7; cursor: default; }
+  &:hover:not(:disabled) {
+    transform: scale(1.05);
+  }
+  &:disabled {
+    opacity: 0.7;
+    cursor: default;
+  }
 }
 
 .stop-icon {
@@ -252,5 +397,7 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
