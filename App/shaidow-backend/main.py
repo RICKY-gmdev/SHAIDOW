@@ -1,4 +1,3 @@
-# main.py
 import os
 import uuid
 import json
@@ -81,6 +80,8 @@ async def chat(req: ChatRequest):
                 yield f"data: {json.dumps({'type': 'error', 'content': 'Agent executor unavailable'})}\n\n"
                 return
 
+            streamed_any_text = False
+
             async for event in executor.astream_events(user_input, config, version="v2"):
                 kind = event.get("event")
 
@@ -97,8 +98,22 @@ async def chat(req: ChatRequest):
                             or getattr(chunk, "tool_call_chunks", None)
                         )
                         if not has_tool_calls and isinstance(chunk.content, str):
+                            streamed_any_text = True
                             data = json.dumps({"type": "text_chunk", "content": chunk.content})
                             yield f"data: {data}\n\n"
+
+                # Catch static or fallback AIMessages from finalize if LLM streaming didn't run
+                elif kind == "on_chain_end" and event.get("name") == "finalize" and not streamed_any_text:
+                    output_data = event.get("data", {}).get("output")
+                    if isinstance(output_data, dict):
+                        output_messages = output_data.get("messages", [])
+                        if output_messages:
+                            last_msg = output_messages[-1]
+                            content = getattr(last_msg, "content", "")
+                            if content:
+                                streamed_any_text = True
+                                data = json.dumps({"type": "text_chunk", "content": str(content)})
+                                yield f"data: {data}\n\n"
 
                 # Stream status notifications when a specialist tool starts
                 elif kind == "on_tool_start":
