@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+antenv/
+.venv/
+.env
+App/shaidow-backend/generated_images/
+
+# .NET
+bin/
+obj/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
