@@ -1,6 +1,7 @@
 import os
 import re
 import uuid
+import base64
 from typing import Any
 from urllib.parse import quote
 import httpx
@@ -10,6 +11,13 @@ from langchain_mistralai import ChatMistralAI
 from pydantic import SecretStr
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+SHAIDOW_VOICE = (
+    "You are SHAIDOW, a loyal, sharp, pragmatic, and slightly futuristic AI ally "
+    "created by Ricky (Md Ayman Iqbal). Structure your response clearly using markdown headings, "
+    "bullet points, and fenced code blocks with language tags (e.g., ```csharp or ```python). "
+    "End with 1-2 concise, proactive next steps."
+)
 
 
 def _mistral() -> ChatMistralAI:
@@ -89,7 +97,7 @@ async def reasoning_tool(query: str) -> str:
     return await _groq_chat_async(
         ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "llama-3.1-8b-instant"],
         query,
-        "You are a deep reasoning specialist. Provide a thorough, logically structured analysis and solution.",
+        f"{SHAIDOW_VOICE}\nYou are operating as SHAIDOW's Deep Reasoning Specialist. Provide a thorough, logically structured analysis and solution.",
         temperature=0.3,
     )
 
@@ -100,19 +108,96 @@ async def coding_tool(query: str) -> str:
     return await _groq_chat_async(
         ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "llama-3.1-8b-instant"],
         query,
-        "You are a principal software engineer. Write production-ready, well-structured code inside fenced markdown code blocks (e.g., ```python or ```csharp) with clear step-by-step explanations.",
+        f"{SHAIDOW_VOICE}\nYou are operating as SHAIDOW's Principal Software Engineer. Write production-ready, well-structured code inside fenced markdown code blocks with clear step-by-step explanations and time/space complexity where relevant.",
         temperature=0.1,
     )
 
 
 @tool
 async def mistral_tool(query: str) -> str:
-    """Delegate factual lookups, general knowledge, historical/geographical summaries, definitions, and quick explanations."""
+    """Delegate factual lookups, general knowledge, historical/geographical summaries, itineraries, definitions, and quick explanations."""
     try:
-        response = await _mistral().ainvoke(query)
+        prompt = f"{SHAIDOW_VOICE}\n\nUser request: {query}"
+        response = await _mistral().ainvoke(prompt)
         return _extract_content(response)
     except Exception as e:
         return f"Error invoking Mistral specialist: {e}"
+
+
+@tool
+async def web_search_tool(query: str) -> str:
+    """Search the live web for current events, recent news, live facts, sports schedules, or up-to-date documentation."""
+    tavily_key = os.getenv("TAVILY_API_KEY")
+    snippets: list[str] = []
+
+    async with httpx.AsyncClient(timeout=20.0) as client:
+        # 1. Use Tavily Search API if TAVILY_API_KEY is configured in Azure
+        if tavily_key:
+            try:
+                resp = await client.post(
+                    "https://api.tavily.com/search",
+                    json={
+                        "api_key": tavily_key,
+                        "query": query,
+                        "search_depth": "basic",
+                        "include_answer": True,
+                        "max_results": 5,
+                    },
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if data.get("answer"):
+                        snippets.append(f"**Direct Answer:** {data['answer']}")
+                    for item in data.get("results", []):
+                        snippets.append(
+                            f"- **{item.get('title')}** ({item.get('url')}): {item.get('content')}"
+                        )
+                    if snippets:
+                        return "\n".join(snippets)
+            except Exception:
+                pass
+
+        # 2. Zero-Key Fallback: DuckDuckGo Instant Answer + Wikipedia Search API
+        try:
+            ddg_resp = await client.get(
+                "https://api.duckduckgo.com/",
+                params={"q": query, "format": "json", "no_html": 1, "skip_disambig": 1},
+            )
+            if ddg_resp.status_code == 200:
+                ddg_data = ddg_resp.json()
+                if ddg_data.get("AbstractText"):
+                    snippets.append(
+                        f"**Summary ({ddg_data.get('AbstractSource', 'Web')}):** {ddg_data['AbstractText']} ({ddg_data.get('AbstractURL', '')})"
+                    )
+                for topic in ddg_data.get("RelatedTopics", [])[:4]:
+                    if isinstance(topic, dict) and topic.get("Text"):
+                        snippets.append(f"- {topic['Text']}")
+        except Exception:
+            pass
+
+        try:
+            wiki_resp = await client.get(
+                "https://en.wikipedia.org/w/api.php",
+                params={
+                    "action": "query",
+                    "list": "search",
+                    "srsearch": query,
+                    "format": "json",
+                    "srlimit": 3,
+                },
+                headers={"User-Agent": "SHAIDOW-Agent/4.1 (https://github.com/RICKY-gmdev/SHAIDOW)"},
+            )
+            if wiki_resp.status_code == 200:
+                search_items = wiki_resp.json().get("query", {}).get("search", [])
+                for item in search_items:
+                    clean_snippet = re.sub(r"<[^>]+>", "", item.get("snippet", ""))
+                    snippets.append(f"- **Wikipedia ({item.get('title')}):** {clean_snippet}")
+        except Exception:
+            pass
+
+    if snippets:
+        return "\n".join(snippets)
+    return f"No live web results found for '{query}'. Please answer using best available knowledge."
 
 
 @tool
@@ -143,12 +228,8 @@ async def generate_image_tool(prompt: str) -> str:
     api_url = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
     api_key = os.getenv("STABILITY_API_KEY")
 
-    os.makedirs("generated_images", exist_ok=True)
-    image_filename = f"{uuid.uuid4()}.png"
-    image_filepath = os.path.join("generated_images", image_filename)
-
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
-        # 1. Try Stability AI first if key is present
+        # 1. Try Stability AI first if key is present and has credits
         if api_key:
             headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
             files = {
@@ -159,24 +240,20 @@ async def generate_image_tool(prompt: str) -> str:
             try:
                 resp = await client.post(api_url, headers=headers, files=files)
                 if resp.status_code == 200:
-                    with open(image_filepath, "wb") as f:
-                        f.write(resp.content)
-                    return f"IMAGE_URL::/images/{image_filename}"
+                    b64_img = base64.b64encode(resp.content).decode("utf-8")
+                    return f"IMAGE_URL::data:image/png;base64,{b64_img}"
             except Exception:
-                pass  # Fall through to free Flux generator
+                pass  # Fall through to permanent cloud Flux URL
 
-        # 2. Automatic Free Fallback (Flux via Pollinations — no API key or credits needed)
+        # 2. Permanent Cloud URL Fallback (Pollinations Flux — never 404s on Azure container restart)
         try:
             encoded_prompt = quote(prompt)
             seed = uuid.uuid4().int % 1000000
-            free_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&seed={seed}&nologo=true&model=flux"
-            resp = await client.get(free_url)
-            resp.raise_for_status()
-
-            with open(image_filepath, "wb") as f:
-                f.write(resp.content)
-
-            return f"IMAGE_URL::/images/{image_filename}"
+            free_url = (
+                f"https://image.pollinations.ai/prompt/{encoded_prompt}"
+                f"?width=1024&height=1024&seed={seed}&nologo=true&model=flux"
+            )
+            return f"IMAGE_URL::{free_url}"
         except Exception as e:
             return f"Image generation error: {e}"
 
@@ -185,6 +262,7 @@ all_tools = [
     reasoning_tool,
     coding_tool,
     mistral_tool,
+    web_search_tool,
     search_for_image_tool,
     generate_image_tool,
 ]
