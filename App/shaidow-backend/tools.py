@@ -2,8 +2,8 @@ import os
 import re
 import uuid
 from typing import Any
-import httpx
 from urllib.parse import quote
+import httpx
 from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage
 from langchain_mistralai import ChatMistralAI
