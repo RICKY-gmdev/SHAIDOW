@@ -46,7 +46,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="SHAIDOW Agentic Core API", version="4.0.3", lifespan=lifespan)
+app = FastAPI(title="SHAIDOW Agentic Core API", version="4.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -68,7 +68,7 @@ class ChatRequest(BaseModel):
 def read_root():
     return {
         "status": "healthy",
-        "version": "4.0.3",
+        "version": "4.1.0",
         "agent_ready": agent_executor is not None,
         "startup_error": STARTUP_ERROR,
     }
@@ -109,6 +109,7 @@ async def chat(req: ChatRequest):
                             data = json.dumps({"type": "text_chunk", "content": chunk.content})
                             yield f"data: {data}\n\n"
 
+                # Catches Fast-Path AIMessages and Fallback AIMessages from finalize
                 elif kind == "on_chain_end" and event.get("name") == "finalize" and not streamed_any_text:
                     output_data = event.get("data", {}).get("output")
                     if isinstance(output_data, dict):
