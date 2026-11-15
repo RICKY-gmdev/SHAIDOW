@@ -35,8 +35,7 @@ async def lifespan(app: FastAPI):
 
     try:
         initialize_agent()
-        graph = create_agent_graph(SYSTEM_PROMPT)
-        agent_executor = graph.with_config(checkpointer=memory)
+        agent_executor = create_agent_graph(SYSTEM_PROMPT, checkpointer=memory)
         STARTUP_ERROR = None
         print("Agent Engine Status: Online.")
     except Exception as e:
