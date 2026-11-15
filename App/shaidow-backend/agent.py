@@ -21,13 +21,16 @@ agent_model: Optional[ChatGroq] = None
 agent_with_tools = None
 tool_node = ToolNode(all_tools)
 
+MAX_HISTORY_MESSAGES = 12
+
 ROUTER_INSTRUCTION = """You are SHAIDOW's Orchestrator Core, created by Ricky (Md Ayman Iqbal).
 Inspect the conversation and route the user's request to the right specialist tool(s):
 1. Call `coding_tool` for ANY code, debugging, software architecture, .NET/C#, Python, SQL, or algorithm request.
 2. Call `reasoning_tool` for complex analysis, logic puzzles, math, strategy, or deep multi-step questions.
-3. Call `mistral_tool` for quick facts, summaries, definitions, or real-world overviews.
-4. Call `search_for_image_tool` when the user asks to see a real photo OR when a real photo enriches a factual topic.
-5. Call `generate_image_tool` when the user asks to create, draw, or generate custom AI art, anime, or illustrations.
+3. Call `mistral_tool` for general knowledge, summaries, definitions, itineraries, or topic overviews.
+4. Call `web_search_tool` for current events, live news, recent releases, or real-time facts.
+5. Call `search_for_image_tool` when the user asks to see a real photo OR when a real photo enriches a factual topic.
+6. Call `generate_image_tool` when the user asks to create, draw, or generate custom AI art, anime, or illustrations.
    - IMPORTANT FOR IMAGE GENERATION: Never refuse requests for fictional, anime, or gaming characters (e.g., Monkey D. Luffy, Valorant agents, etc.). Always fulfill them by calling `generate_image_tool` with a vivid visual description of the character's appearance and style.
    - You MAY call multiple tools in parallel (e.g., `mistral_tool` + `search_for_image_tool`).
    - Always pass a self-contained, detailed `query` (include relevant context from earlier messages so the specialist tool has everything it needs).
@@ -55,9 +58,14 @@ def initialize_agent():
     return agent_model
 
 
-def _replace_system_prompt(messages: Sequence[AnyMessage], prompt: str) -> list[BaseMessage]:
-    filtered = [m for m in messages if not isinstance(m, SystemMessage)]
-    return [SystemMessage(content=prompt.strip())] + list(filtered)
+def _prepare_trimmed_messages(messages: Sequence[AnyMessage], system_prompt: str) -> list[BaseMessage]:
+    """Keeps the system prompt + the most recent MAX_HISTORY_MESSAGES to prevent Groq 413/TPM errors."""
+    non_system = [m for m in messages if not isinstance(m, SystemMessage)]
+    trimmed = list(non_system[-MAX_HISTORY_MESSAGES:])
+    # Ensure we don't start with an orphaned ToolMessage after slicing
+    while trimmed and isinstance(trimmed[0], ToolMessage):
+        trimmed.pop(0)
+    return [SystemMessage(content=system_prompt.strip())] + trimmed
 
 
 def route_decision(state: AgentState) -> str:
@@ -74,7 +82,7 @@ def create_agent_graph(system_prompt: str, checkpointer=None):
             raise RuntimeError("Agent not initialized. Call initialize_agent() first.")
 
         combined_router_prompt = f"{ROUTER_INSTRUCTION}\n\n---\n{system_prompt}"
-        messages = _replace_system_prompt(state["messages"], combined_router_prompt)
+        messages = _prepare_trimmed_messages(state["messages"], combined_router_prompt)
 
         try:
             response = await agent_with_tools.ainvoke(messages, config=config)
@@ -100,23 +108,41 @@ def create_agent_graph(system_prompt: str, checkpointer=None):
         specialist_outputs = []
         raw_clean_outputs = []
         image_notices = []
+        tool_names_called = []
 
         for tm in tool_messages:
-            content = tm.content if isinstance(tm.content, str) else str(tm.content)
+            content = (tm.content if isinstance(tm.content, str) else str(tm.content)).strip()
+            t_name = getattr(tm, "name", "") or "specialist"
+            tool_names_called.append(t_name)
+
             if content.startswith("IMAGE_DATA::") or content.startswith("IMAGE_URL::"):
                 image_notices.append("[Visual asset successfully retrieved/generated and displayed below.]")
             else:
-                specialist_outputs.append(f"### Reference Data:\n{content}")
+                specialist_outputs.append(f"### Reference Data ({t_name}):\n{content}")
                 raw_clean_outputs.append(content)
 
-        # If only an image was returned, no need to invoke the LLM
+        # FAST PATH 1: Only an image was requested/returned
         if image_notices and not specialist_outputs:
             return {"messages": [AIMessage(content="Here is the visual you requested.")]}
 
+        # FAST PATH 2: Single specialist LLM tool succeeded (and isn't raw web search snippets)
+        # Avoids a redundant second LLM generation and cuts response latency in half!
+        if len(raw_clean_outputs) == 1 and tool_names_called[0] in (
+            "coding_tool",
+            "reasoning_tool",
+            "mistral_tool",
+        ):
+            single_result = raw_clean_outputs[0]
+            has_error = single_result.startswith(("Error", "Specialist error:", "Groq", "Stability"))
+            if not has_error:
+                return {"messages": [AIMessage(content=single_result)]}
+
+        # SYNTHESIS PATH: Used when multiple tools ran in parallel, web_search_tool returned raw snippets,
+        # or a tool encountered an error that needs intelligent diagnosis.
         history_without_tools = [
             m for m in messages
             if isinstance(m, (HumanMessage, AIMessage)) and not getattr(m, "tool_calls", None)
-        ]
+        ][-MAX_HISTORY_MESSAGES:]
 
         joined_specialist_data = "\n\n".join(specialist_outputs + image_notices)
 
