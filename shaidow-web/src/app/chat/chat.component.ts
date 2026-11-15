@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
-export class ChatComponent implements AfterViewChecked {
+export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('chatList') chatListEl!: ElementRef<HTMLDivElement>;
   @ViewChild('toolAnim') toolAnim!: ToolAnimationComponent;
   @ViewChild('sidebar') sidebarRef!: SidebarComponent;
@@ -37,11 +37,27 @@ export class ChatComponent implements AfterViewChecked {
     private sanitizer: DomSanitizer
   ) {}
 
+  ngOnInit(): void {
+    // Fire-and-forget wakeup ping so the Azure F1 Python container warms up immediately
+    fetch(`${this.mlBaseUrl}/`, { mode: 'cors' }).catch(() => {});
+  }
+
   ngAfterViewChecked(): void {
     if (this.shouldScroll) {
       this.scrollToBottom();
       this.shouldScroll = false;
     }
+  }
+
+  private highlightSyntax(escapedCode: string): string {
+    // Lightweight tokenizer for dark-mode syntax coloring on already-escaped HTML
+    return escapedCode
+      .replace(
+        /\b(def|return|async|await|import|from|class|if|elif|else|for|while|try|except|finally|with|as|pass|break|continue|lambda|yield|public|private|protected|internal|static|readonly|void|int|string|bool|var|new|using|namespace|record|true|false|null|None|True|False|const|let|function|interface|export)\b/g,
+        '<span class="hl-kw">$1</span>'
+      )
+      .replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="hl-num">$1</span>')
+      .replace(/(#.*$|\/\/.*$)/gm, '<span class="hl-comment">$1</span>');
   }
 
   renderMarkdown(text: string | undefined): SafeHtml {
@@ -52,6 +68,7 @@ export class ChatComponent implements AfterViewChecked {
       /<pre><code(?: class="language-([a-zA-Z0-9_+-]+)")?>([\s\S]*?)<\/code><\/pre>/g,
       (_match, lang, codeContent) => {
         const label = (lang || 'code').toUpperCase();
+        const highlighted = this.highlightSyntax(codeContent);
         return `
           <div class="code-box">
             <div class="code-box-header">
@@ -63,7 +80,7 @@ export class ChatComponent implements AfterViewChecked {
                 setTimeout(() => (this.textContent = 'Copy'), 1500);
               ">Copy</button>
             </div>
-            <pre><code class="language-${lang || 'plaintext'}">${codeContent}</code></pre>
+            <pre><code class="language-${lang || 'plaintext'}">${highlighted}</code></pre>
           </div>
         `;
       }
@@ -130,9 +147,10 @@ export class ChatComponent implements AfterViewChecked {
 
             if (output.startsWith('IMAGE_URL::')) {
               const rawUrl = output.replace('IMAGE_URL::', '').trim();
-              capturedImageUrl = rawUrl.startsWith('http')
-                ? rawUrl
-                : `${this.mlBaseUrl}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
+              capturedImageUrl =
+                rawUrl.startsWith('http') || rawUrl.startsWith('data:')
+                  ? rawUrl
+                  : `${this.mlBaseUrl}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
             }
 
             aiMessage.status =
