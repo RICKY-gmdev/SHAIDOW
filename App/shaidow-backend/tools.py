@@ -3,6 +3,7 @@ import re
 import uuid
 from typing import Any
 import httpx
+from urllib.parse import quote
 from langchain_core.tools import tool
 from langchain_core.messages import BaseMessage
 from langchain_mistralai import ChatMistralAI
@@ -138,34 +139,46 @@ async def search_for_image_tool(query: str) -> str:
 
 @tool
 async def generate_image_tool(prompt: str) -> str:
-    """Generate a brand-new AI artwork or illustration from a detailed text prompt using Stability AI."""
+    """Generate a brand-new AI artwork or illustration from a detailed text prompt."""
     api_url = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
     api_key = os.getenv("STABILITY_API_KEY")
-    if not api_key:
-        return "Error: STABILITY_API_KEY environment variable not set."
 
-    headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
-    files = {
-        "prompt": (None, prompt),
-        "model": (None, "sd3.5-flash"),
-        "output_format": (None, "png"),
-    }
+    os.makedirs("generated_images", exist_ok=True)
+    image_filename = f"{uuid.uuid4()}.png"
+    image_filepath = os.path.join("generated_images", image_filename)
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
+    async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
+        # 1. Try Stability AI first if key is present
+        if api_key:
+            headers = {"authorization": f"Bearer {api_key}", "accept": "image/*"}
+            files = {
+                "prompt": (None, prompt),
+                "model": (None, "sd3.5-flash"),
+                "output_format": (None, "png"),
+            }
+            try:
+                resp = await client.post(api_url, headers=headers, files=files)
+                if resp.status_code == 200:
+                    with open(image_filepath, "wb") as f:
+                        f.write(resp.content)
+                    return f"IMAGE_URL::/images/{image_filename}"
+            except Exception:
+                pass  # Fall through to free Flux generator
+
+        # 2. Automatic Free Fallback (Flux via Pollinations — no API key or credits needed)
         try:
-            resp = await client.post(api_url, headers=headers, files=files)
+            encoded_prompt = quote(prompt)
+            seed = uuid.uuid4().int % 1000000
+            free_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&seed={seed}&nologo=true&model=flux"
+            resp = await client.get(free_url)
             resp.raise_for_status()
-
-            os.makedirs("generated_images", exist_ok=True)
-            image_filename = f"{uuid.uuid4()}.png"
-            image_filepath = os.path.join("generated_images", image_filename)
 
             with open(image_filepath, "wb") as f:
                 f.write(resp.content)
 
             return f"IMAGE_URL::/images/{image_filename}"
         except Exception as e:
-            return f"Stability AI error: {e}"
+            return f"Image generation error: {e}"
 
 
 all_tools = [
