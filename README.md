@@ -1,28 +1,25 @@
+
 <div align="center">
 
 <!-- SCREENSHOT PLACEHOLDER: Add a banner/logo image here -->
-<!-- Suggested: The SHAIDOW mascot on the dark cosmic gradient background -->
-<!-- ![SHAIDOW Banner](assets/banner.png) -->
 <img width="300" height="300" alt="shaidow" src="https://github.com/user-attachments/assets/6352c507-6f27-4f04-8981-fcf9b965c0aa" />
 
-### **SHAIDOW**
+### **SHAIDOW (v4.1)**
 ### *The AI That Thinks Twice Before It Answers*
 
-**A full-stack AI assistant with intelligent specialist routing, persistent memory, and cloud-native deployment**
+**A cloud-native, multi-agent AI orchestrator with specialist routing, self-healing model fallbacks, and persistent memory**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Live Demo](https://img.shields.io/badge/demo-web.shaidow.me-brightgreen.svg)](https://web.shaidow.me)
-[![.NET](https://img.shields.io/badge/.NET-9-512BD4.svg)]()
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://orange-smoke-05f6fd200.7.azurestaticapps.net/)
+[![.NET](https://img.shields.io/badge/.NET-10.0%20LTS-512BD4.svg)]()
 [![Angular](https://img.shields.io/badge/Angular-18%2B-DD0031.svg)]()
 [![LangGraph](https://img.shields.io/badge/powered%20by-LangGraph-orange.svg)]()
+[![Neon DB](https://img.shields.io/badge/PostgreSQL-Neon%20Serverless-00E599.svg)]()
 [![Azure](https://img.shields.io/badge/deployed%20on-Azure-0078D4.svg)]()
 
 <br/>
 
-**🔗 Live: [SHAIDOW](https://orange-smoke-05f6fd200.7.azurestaticapps.net/)**
-
-<!-- SCREENSHOT PLACEHOLDER: Add a demo GIF or screenshot of the chat interface -->
-<!-- ![SHAIDOW Demo](assets/demo.gif) -->
+**🔗 Live App: [SHAIDOW Web](https://orange-smoke-05f6fd200.7.azurestaticapps.net/)**
 
 </div>
 
@@ -30,56 +27,111 @@
 
 ## 📌 What is SHAIDOW?
 
-**SHAIDOW** is a Cloud-native full-stack application with intelligent multi-agent AI routing that doesn't just forward every message to one generic model. A lightweight router model looks at each query first and delegates it to whichever specialist is actually best suited to answer it — a fast factual model for quick lookups, a reasoning-tuned model for deep questions, a coding-tuned model for programming help, or an image search/generation tool when that's what's actually being asked for.
+**SHAIDOW** is a cloud-native, three-tier full-stack AI platform powered by a **LangGraph multi-agent orchestrator**. Instead of sending every prompt to a single monolithic LLM, SHAIDOW's **Orchestrator Core** inspects user intent and dynamically dispatches tasks to **six specialized sub-engines**—covering software engineering, deep reasoning, factual synthesis, live web search, real-world photography, and AI artwork generation.
 
-Unlike the single-service prototype this started as, SHAIDOW is now a genuine three-tier cloud application: a persistent Angular frontend, a .NET/C# API layer handling authentication and conversation history, and a Python agent service doing the actual LLM orchestration — all independently deployed on Azure behind a custom domain.
+Built for resilience on cloud infrastructure, SHAIDOW features **cascading multi-model fallbacks** (automatically recovering from upstream API deprecations, 402 credit exhaustion, or 404 model retirements), **smart context-window trimming**, and a **Hybrid Fast-Path / Persona Synthesizer** that keeps single-tool latency low while seamlessly weaving multi-tool outputs into a unified voice.
 
 ---
 
 ## ✨ Key Features
 
-- **🔁 Specialist Routing** — A Groq-hosted router model classifies each query and delegates to the right specialist (information, reasoning, coding, image search, or image generation) rather than treating every prompt the same way
-- **🔐 Real Authentication** — JWT-based auth with BCrypt password hashing; every conversation is scoped to the signed-in user
-- **💾 Persistent Conversations** — Full thread history stored in PostgreSQL; pick up any past conversation with its complete context intact, not just a fresh session each time
-- **⚡ Live Streaming Responses** — Direct answers stream token-by-token in real time; multi-tool answers append progressively as each specialist finishes, with a live status indicator while others are still working
-- **🖼️ Multi-Model Image Pipeline** — Real photo search via Pexels, original image generation via Stable Diffusion, each user's gallery scoped privately to their own account
-- **🛡️ Graceful Degradation** — If a specialist's tool-call generation fails or returns malformed output, SHAIDOW automatically falls back to a direct answer instead of surfacing a broken response
-- **📱 Responsive UI** — Collapsible sidebar becomes a slide-in drawer on mobile; chat, gallery, and image viewer all adapt to small screens
-- **☁️ Fully Cloud-Deployed** — Three independently deployed Azure services behind a custom domain, with CI/CD via GitHub Actions on every push
+- **🧠 6-Specialist LangGraph Orchestration** — Dynamically routes queries across Coding, Deep Reasoning, Factual Lookup, Live Web Search, Real Photo Search, and AI Image Generation—including parallel multi-tool execution.
+- **🛡️ Self-Healing Model Fallbacks** — Never crashes when an upstream provider deprecates a model or exhausts credits:
+  - *LLM Cascade:* `openai/gpt-oss-120b` $\rightarrow$ `openai/gpt-oss-20b` $\rightarrow$ `llama-3.1-8b-instant` $\rightarrow$ `mistral-large-latest`
+  - *Image Gen Cascade:* `Stability AI (SD3.5 Flash)` $\rightarrow$ `Pollinations.ai (Flux Cloud)`
+  - *Web Search Cascade:* `Tavily AI Search` $\rightarrow$ `DuckDuckGo Instant Answer + Wikipedia API`
+- **⚡ Hybrid Fast-Path & Persona Synthesis** — Single-specialist calls take a zero-overhead Fast-Path straight to the user, while parallel multi-tool runs and upstream API errors are synthesized in real time by the `finalize` LLM node.
+- **💻 Custom Dark Terminal Code Boxes** — Fenced code blocks render with language headers, neon syntax highlighting, and one-click copy-to-clipboard support.
+- **🔐 JWT Auth & Neon PostgreSQL Persistence** — Full user authentication (JWT + BCrypt) with thread history and permanent cloud image URLs stored in **Neon Serverless PostgreSQL**.
+- **🔥 Cold-Start Wakeup Optimization** — Background health-probe pings from the Angular client automatically warm up the Azure Linux containers the moment the app opens.
 
 ---
 
 ## 🏗️ Architecture Overview
 
+### 1. System Infrastructure Diagram
+
+
 ```
-┌──────────────────────────────────────────────────────────┐
-│                      Angular Frontend                    │
-│         (Azure Static Web Apps · web.shaidow.me)         │
-│   Chat UI · Thread Sidebar · Gallery · Auth Screens      │
-└───────────────────────────┬──────────────────────────────┘
-                            │ HTTPS / JWT
-                            ▼
-┌──────────────────────────────────────────────────────────┐
-│                   SHAIDOW.Api (.NET 9)                   │
-│                    (Azure App Service)                   │
-│   Auth (JWT + BCrypt) · Thread/Message Persistence       │
-│   Streaming Proxy to Agent Service                       │
-└──────────────┬─────────────────────────────┬─────────────┘
-               │                             │
-               ▼                             ▼
-   ┌───────────────────────┐     ┌─────────────────────────┐
-   │  Azure PostgreSQL     │     │   Python Agent Service   │
-   │  Flexible Server      │     │   (FastAPI + LangGraph)  │
-   │  Users · Threads ·    │     │   (Azure App Service)    │
-   │  Messages             │     └────────────┬─────────────┘
-   └───────────────────────┘                  │
-                                    Router decides, then:
-                     ┌──────────────┬──────────┼──────────────┬─────────────────┐
-                     ▼              ▼          ▼              ▼                 ▼
-               ┌──────────┐  ┌──────────┐ ┌──────────┐  ┌──────────────┐ ┌──────────────┐
-               │ Mistral  │  │  Groq    │ │  Groq    │  │   Pexels     │ │ Stability AI │
-               │(Info)    │  │(Reason)  │ │(Coding)  │  │(Image Search)│ │(Image Gen)   │
-               └──────────┘  └──────────┘ └──────────┘  └──────────────┘ └──────────────┘
+
+┌────────────────────────────────────────────────────────────────────────┐
+│                            Angular Frontend                            │
+│        (Azure Static Web Apps · orange-smoke-05f6fd200...net)          │
+│   Chat UI · Custom Code Boxes · Thread Sidebar · Gallery · Cold-Ping   │
+└───────────────────────────────────┬────────────────────────────────────┘
+│ HTTPS / JWT + SSE Stream
+▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        SHAIDOW.Api (.NET 10 LTS)                       │
+│                  (Azure App Service Linux · shaidow-api-n)             │
+│       Auth (JWT + BCrypt) · Thread & Message Persistence · CORS        │
+│             Real-Time SSE Streaming Proxy to Agent Backend             │
+└──────────────────┬───────────────────────────────────┬─────────────────┘
+│ ADO.NET / SSL Pooler              │ HTTP SSE (/chat)
+▼                                   ▼
+┌───────────────────────────────┐   ┌─────────────────────────────────┐
+│   Neon Serverless PostgreSQL  │   │  SHAIDOW Agentic Core (v4.1.0)  │
+│          (AWS Region)         │   │  (FastAPI + LangGraph · Python) │
+│   Users · Threads · Messages  │   │  (Azure App Service · ml-n)     │
+└───────────────────────────────┘   └───────────────┬─────────────────┘
+│
+▼
+┌───────────────────────────────┐
+│   LangGraph Orchestrator Core │
+│  (Context Trimmer + Router)   │
+└───────────────┬───────────────┘
+│
+┌───────────────┬───────────────┬───────────────┼───────────────┬───────────────┐
+▼               ▼               ▼               ▼               ▼               ▼
+┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│ coding_tool │ │reasoning_tl │ │mistral_tool │ │web_search_tl│ │search_image │ │generate_img │
+│  Groq LLM   │ │  Groq LLM   │ │Mistral Large│ │Tavily / DDG │ │ Pexels API  │ │Stability AI │
+│  Cascade    │ │  Cascade    │ │   Latest    │ │ + Wikipedia │ │Real Photos  │ │+ Flux Cloud │
+└──────┬──────┘ └──────┬──────┘ └──────┬──────┘ └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
+└───────────────┴───────────────┴───────────────┼───────────────┴───────────────┘
+▼
+┌───────────────────────────────┐
+│   Finalize / Synthesizer Node │
+│  • Fast-Path (1 Text Tool)    │
+│  • LLM Synthesis (Multi-Tool  │
+│    / Web Search / Error Diag) │
+└───────────────────────────────┘
+
+```
+
+### 2. LangGraph Orchestration & Fallback Flow
+
+
+```
+
+[User Message + Thread ID]
+│
+▼
+┌────────────────────────────────────────────────────────┐
+│ 1. Context Window Trimmer (_prepare_trimmed_messages)  │
+│    Keeps System Prompt + Latest 12 Messages            │
+└──────────────────────────┬─────────────────────────────┘
+▼
+┌────────────────────────────────────────────────────────┐
+│ 2. Router Node (ChatGroq: openai/gpt-oss-20b)          │
+└───────────┬──────────────────────────────┬─────────────┘
+│ Casual / Greeting            │ Domain / Multi-Part Query
+▼                              ▼
+[Stream Direct Reply]        ┌────────────────────────┐
+│                   │ 3. ToolNode Execution  │
+│                   │ (Parallel Async Tools) │
+│                   └──────────┬─────────────┘
+│                              ▼
+│                   ┌──────────────────────────────────────────┐
+│                   │ 4. Finalize Node (Smart Routing)         │
+│                   │  ├─ Image Only? ──► Confirm Visual       │
+│                   │  ├─ 1 Specialist Succeeded? ──► Fast-Path│
+│                   │  └─ Multi-Tool / Web / Error? ──►        │
+│                   │     Synthesize via LLM (No Tools Bound)  │
+│                   └──────────┬───────────────────────────────┘
+▼                              ▼
+[SSE Event Stream: tool_start ➔ tool_end ➔ text_chunk ➔ stream_end]
+
 ```
 
 ---
@@ -88,50 +140,48 @@ Unlike the single-service prototype this started as, SHAIDOW is now a genuine th
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| **Frontend** | Angular (standalone components, signals) | Chat UI, auth, thread sidebar, gallery |
-| **API Layer** | ASP.NET Core (.NET 9), EF Core | Auth, JWT issuance, thread/message persistence, SSE proxy |
-| **Database** | Azure Database for PostgreSQL (Flexible Server) | Users, threads, messages |
-| **Agent Service** | Python, FastAPI, LangGraph, LangChain | Query routing, specialist orchestration, tool execution |
-| **LLM Providers** | Groq (router, reasoning, coding), Mistral (information) | Specialist model inference |
-| **Image Providers** | Pexels API, Stability AI | Real photo search, AI image generation |
-| **Hosting** | Azure App Service ×2, Azure Static Web Apps | Independent deployment of each tier |
-| **CI/CD** | GitHub Actions | Auto-deploy on push per service |
-
----
-
-## 🧩 How Routing Works
-
-Unlike a single always-on agent loop, SHAIDOW's router makes **one decision per turn**:
-
-1. **Receive the message** along with conversation history
-2. **Router model** (Groq) either answers directly for simple conversation, or selects exactly one specialist — sometimes more than one in parallel when the query calls for it (e.g. "tell me about X" → information summary *and* a real photo)
-3. **Selected specialist(s) execute** — each one's result streams back to the user the moment *it* finishes, not after every parallel call completes
-4. **No re-interpretation loop** — the specialist's result *is* the final answer; the router doesn't second-guess or rewrite it, which keeps latency low and avoids the compounding errors that come from chaining model calls unnecessarily
-5. **Automatic fallback** — if the router's tool-call generation fails or comes back malformed, the same turn retries as a plain direct answer instead of surfacing an error to the user
+| **Frontend** | Angular (Standalone Components, Signals, Marked, SCSS) | Reactive chat UI, syntax-highlighted code boxes, gallery, cold-start ping |
+| **API Layer** | ASP.NET Core (.NET 10 LTS), Entity Framework Core, Npgsql | JWT auth, user/thread persistence, real-time SSE streaming proxy |
+| **Database** | Neon Serverless PostgreSQL (Connection Pooler) | Cloud persistence for users, threads, messages, and image URLs |
+| **Agent Service** | Python 3.12, FastAPI, LangGraph 0.6, LangChain, HTTPX | Multi-agent state graph, context trimming, async tool execution |
+| **LLM Cascade** | Groq (`gpt-oss-120b`, `gpt-oss-20b`, `llama-3.1-8b`) + Mistral (`mistral-large-latest`) | Orchestration routing, coding, deep reasoning, factual synthesis |
+| **Search & Visuals** | Tavily / DuckDuckGo + Wikipedia, Pexels API, Stability AI + Pollinations Flux | Live web search, real photography lookup, permanent AI art generation |
+| **Cloud & CI/CD** | Azure App Service (Linux ×2), Azure Static Web Apps, GitHub Actions | Independent per-service cloud hosting and automated CI/CD pipelines |
 
 ---
 
 ## 📂 Project Structure
 
+
 ```
+
 SHAIDOW/
 ├── .github/
-│   └── workflows/          # Per-service GitHub Actions CI/CD pipelines
-├── shaidow-web/             # Angular frontend
+│   └── workflows/
+│       ├── api.yml                                # CI/CD for .NET 10 API (shaidow-api-n)
+│       ├── backend.yml                            # CI/CD for Python ML Core (shaidow-ml-n)
+│       └── azure-static-web-apps-*.yml            # CI/CD for Angular Web App
+├── App/
+│   ├── SHAIDOW.Api/                               # .NET 10 LTS Web API
+│   │   ├── Controllers/                           # Auth, Chat (SSE Proxy), Threads
+│   │   ├── Data/                                  # EF Core AppDbContext & Entities
+│   │   ├── Services/                              # JwtService & AgentBackendClient
+│   │   └── Program.cs                             # DI, JWT, Npgsql & CORS configuration
+│   └── shaidow-backend/                           # Python 3.12 FastAPI + LangGraph Service
+│       ├── main.py                                # FastAPI lifespan, health & /chat SSE stream
+│       ├── agent.py                               # LangGraph router, trimmer & finalize nodes
+│       ├── tools.py                               # 6 specialist tools with cascading fallbacks
+│       ├── system_prompt.txt                      # SHAIDOW core identity & persona rules
+│       └── requirements.txt                       # Python dependencies
+├── shaidow-web/                                   # Angular Frontend
 │   └── src/app/
-│       ├── chat/            # Main chat interface
-│       ├── sidebar/         # Thread history, collapsible/mobile drawer
-│       ├── gallery/         # Per-user generated image gallery
-│       ├── login/           # Auth screens
-│       └── services/        # Auth + chat streaming services
-├── SHAIDOW.Api/              # .NET 9 Web API
-│   ├── Controllers/          # Auth, Chat (SSE proxy), Threads
-│   ├── Data/                 # EF Core DbContext + entities
-│   └── Services/             # JWT service, agent backend client
-└── shaidow-backend/          # Python agent service
-    ├── main.py               # FastAPI app, SSE streaming endpoint
-    ├── agent.py               # LangGraph router + specialist graph
-    └── tools.py               # Specialist tool implementations
+│       ├── chat/                                  # Chat UI, custom code-box renderer & styles
+│       ├── sidebar/                               # Thread history drawer
+│       ├── gallery/                               # Per-user visual gallery
+│       ├── login/                                 # Authentication views
+│       └── services/                              # SSE stream consumer & API services
+└── .gitignore                                     # Root ignore rules for Python, .NET & Node
+
 ```
 
 ---
@@ -142,7 +192,7 @@ Built with dedication by a team of five:
 
 | Role | Name |
 |---|---|
-| **Team Lead** | Md Ayman Iqbal (Ricky) |
+| **Team Lead & Architect** | Md Ayman Iqbal (Ricky) |
 | **Developer** | Ankit Sharma |
 | **Developer** | Sk Wasef Mostafa |
 | **Developer** | Vedant Jain |
@@ -152,15 +202,15 @@ Built with dedication by a team of five:
 
 ## 🔮 Roadmap
 
-- [ ] True token-by-token streaming for tool-routed answers (currently token-streamed only for direct/no-tool responses)
-- [ ] Persistent LangGraph checkpointing so agent memory survives service restarts, not just conversation history
-- [ ] RAG / document knowledge layer
+- [x] True token-by-token & synthesized streaming for tool-routed answers
+- [x] Cascading multi-model & zero-cost image generation fallbacks
+- [x] Live Web Search specialist (`web_search_tool`)
+- [x] Dark-mode syntax-highlighted code boxes with one-click copy
+- [ ] Persistent LangGraph Postgres checkpointer (`langgraph-checkpoint-postgres`)
+- [ ] RAG / document upload knowledge layer
 - [ ] Voice input and output support
-- [ ] Confidence scoring and telemetry on routing decisions
-- [ ] Native mobile app
 
 ---
-
 
 ## 📄 License
 
@@ -172,8 +222,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 Made with ❤️ by **Team SHAIDOW**
 
-*"The right specialist for the right question."*
+*"Strength born from struggle; light hidden within darkness."*
 
 ⭐ **Star this repo if SHAIDOW impressed you!** ⭐
 
 </div>
+
+```
