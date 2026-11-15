@@ -1,2 +1,0 @@
-int raw aboutassets 0x7f010000
-int raw my_video.mp4 0x7f010001

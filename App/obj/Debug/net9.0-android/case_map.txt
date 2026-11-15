@@ -1,7 +1,0 @@
-appicon\appicon;appicon\appicon
-images\imagehandler;images\ImageHandler
-images\mistral_icon;images\mistral_icon
-images\shaidow;images\shaidow
-images\themeswitch;images\themeswitch
-raw\aboutassets;raw\AboutAssets
-raw\my_video.mp4;raw\my_video.mp4
